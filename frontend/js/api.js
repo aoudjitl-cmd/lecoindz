@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000";
+const API_URL = "https://rayahdz-production.up.railway.app";
 
 const Auth = {
   getToken: () => localStorage.getItem("cg_token"),
