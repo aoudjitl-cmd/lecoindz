@@ -147,12 +147,5 @@
 
     loadTrips();
   </script>
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/service-worker.js")
-      .then(() => console.log("✅ Service Worker enregistré"))
-      .catch(e => console.log("❌ Erreur SW:", e));
-  }
-</script>
 </body>
 </html>
