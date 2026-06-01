@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RayahDZ — Colis à transporter</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand">📦 RayahDZ</a>
+    <div class="navbar-nav">
+	  <a href="dashboard.html" class="nav-link">📋 <span>Dashboard</span></a>
+      <a href="trips.html" class="nav-link">✈️ <span>Trajets</span></a>
+      <a href="parcels.html" class="nav-link active">📦 <span>Colis</span></a>
+	  <a href="conversations.html" class="nav-link">Messages</a>
+      <a href="subscription.html" class="nav-link">⭐ <span>Premium</span></a>
+      <div id="nav-auth"></div>
+    </div>
+  </nav>
+
+  <div class="container section">
+
+    <!-- TITRE + BOUTON PUBLIER -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+      <h1 class="section-title" style="margin:0;">📦 Colis à transporter</h1>
+      <button class="btn btn-secondary" id="btn-publier">+ Envoyer un colis</button>
+    </div>
+
+    <!-- FILTRES -->
+    <div class="search-bar" style="margin-bottom:2rem;">
+      <div class="form-group" style="flex:1; margin:0;">
+        <label class="form-label">Ville d'arrivée</label>
+        <input type="text" id="filter-dest-city" class="form-input" placeholder="Ex: Alger">
+      </div>
+      <div class="form-group" style="flex:1; margin:0;">
+        <label class="form-label">Pays d'arrivée</label>
+        <input type="text" id="filter-dest-country" class="form-input" placeholder="Ex: Algérie">
+      </div>
+      <button class="btn btn-primary" id="btn-filtrer">🔍 Filtrer</button>
+      <button class="btn btn-outline" id="btn-reset">↺ Réinitialiser</button>
+    </div>
+
+    <div id="alert-container"></div>
+
+    <!-- LISTE DES COLIS -->
+    <div id="parcels-container" class="card-grid">
+      <p style="color:var(--gray-400);">Chargement...</p>
+    </div>
+
+  </div>
+
+  <!-- FORMULAIRE PUBLIER UN COLIS -->
+  <div id="form-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center;">
+    <div class="card" style="width:100%; max-width:560px; max-height:90vh; overflow-y:auto; margin:1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <h2 style="font-size:1.2rem;">📦 Envoyer un colis</h2>
+        <button id="btn-fermer-form" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
+      </div>
+      <div id="alert-form"></div>
+      <div class="form-group">
+        <label class="form-label">Titre de l'annonce</label>
+        <input type="text" id="p-title" class="form-input" placeholder="Ex: Vêtements pour la famille">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description (optionnel)</label>
+        <textarea id="p-description" class="form-input" rows="2" placeholder="Détails sur le contenu du colis..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Ville de départ</label>
+          <input type="text" id="p-origin-city" class="form-input" placeholder="Paris">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Pays de départ</label>
+          <input type="text" id="p-origin-country" class="form-input" placeholder="France">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Ville d'arrivée</label>
+          <input type="text" id="p-dest-city" class="form-input" placeholder="Alger">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Pays d'arrivée</label>
+          <input type="text" id="p-dest-country" class="form-input" placeholder="Algérie">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Poids (kg)</label>
+          <input type="number" id="p-weight" class="form-input" placeholder="3.5" step="0.5">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Taille</label>
+          <select id="p-taille" class="form-input">
+            <option value="SMALL">Small (sac à main)</option>
+            <option value="MEDIUM" selected>Medium (valise cabine)</option>
+            <option value="LARGE">Large (grande valise)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Date limite (optionnel)</label>
+          <input type="date" id="p-deadline" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fragile ?</label>
+          <select id="p-fragile" class="form-input">
+            <option value="0">Non</option>
+            <option value="1">Oui</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-secondary btn-full" id="btn-publier-colis">Publier l'annonce</button>
+    </div>
+  </div>
+
+  <!-- MODAL RÉSERVATION -->
+  <div id="booking-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center;">
+    <div class="card" style="width:100%; max-width:420px; margin:1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <h2 style="font-size:1.2rem;">🤝 Proposer un transport</h2>
+        <button id="btn-fermer-booking" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
+      </div>
+      <div id="alert-booking"></div>
+      <p style="color:var(--gray-600); font-size:0.9rem; margin-bottom:1rem;">
+        Sélectionnez votre trajet et proposez un prix pour transporter ce colis.
+      </p>
+      <div class="form-group">
+        <label class="form-label">Votre trajet</label>
+        <select id="b-trip-id" class="form-input">
+          <option value="">-- Chargement de vos trajets... --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Prix proposé (€)</label>
+        <input type="number" id="b-price" class="form-input" placeholder="Ex: 15.00" step="0.5">
+      </div>
+      <input type="hidden" id="b-parcel-id">
+      <button class="btn btn-primary btn-full" id="btn-confirmer-booking">Envoyer la proposition</button>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    // Fonction globale accessible depuis le onclick HTML
+    async function ouvrirBooking(parcelId) {
+      document.getElementById("b-parcel-id").value = parcelId;
+      document.getElementById("booking-overlay").style.display = "flex";
+
+      try {
+        const data = await TripsAPI.getMine();
+        const select = document.getElementById("b-trip-id");
+
+        if (data.trips.length === 0) {
+          select.innerHTML = `<option value="">-- Aucun trajet disponible --</option>`;
+          showAlert("Vous n'avez pas encore de trajet publié.", "error", "alert-booking");
+          return;
+        }
+
+        select.innerHTML = `<option value="">-- Sélectionnez votre trajet --</option>` +
+          data.trips.map(t => `
+            <option value="${t.id}">
+              ${t.origin_city} → ${t.dest_city} · ${formatDate(t.departure_date)} · ${t.max_weight}kg dispo
+            </option>
+          `).join("");
+      } catch (e) {
+        showAlert("Impossible de charger vos trajets.", "error", "alert-booking");
+      }
+    }
+
+    (async () => {
+      await requireSubscription();
+      updateNavbar();
+
+      const user = Auth.getUser();
+
+      // ===== ÉVÉNEMENTS =====
+      document.getElementById("btn-publier").addEventListener("click", ouvrirFormulaire);
+      document.getElementById("btn-filtrer").addEventListener("click", searchParcels);
+      document.getElementById("btn-reset").addEventListener("click", resetFilters);
+      document.getElementById("btn-fermer-form").addEventListener("click", fermerFormulaire);
+      document.getElementById("btn-publier-colis").addEventListener("click", publierColis);
+      document.getElementById("btn-fermer-booking").addEventListener("click", fermerBooking);
+      document.getElementById("btn-confirmer-booking").addEventListener("click", confirmerReservation);
+
+      // ===== RECHERCHE =====
+      async function searchParcels() {
+        const params = {};
+        const destCity = document.getElementById("filter-dest-city").value;
+        const destCountry = document.getElementById("filter-dest-country").value;
+        if (destCity) params.dest_city = destCity;
+        if (destCountry) params.dest_country = destCountry;
+        try {
+          const data = await ParcelsAPI.search(params);
+          renderParcels(data.parcels);
+        } catch (e) {
+          showAlert(e.message);
+        }
+      }
+
+      function resetFilters() {
+        document.getElementById("filter-dest-city").value = "";
+        document.getElementById("filter-dest-country").value = "";
+        searchParcels();
+      }
+
+      // ===== AFFICHAGE COLIS =====
+      function renderParcels(parcels) {
+        const container = document.getElementById("parcels-container");
+        if (parcels.length === 0) {
+          container.innerHTML = "<p style='color:var(--gray-400); grid-column:1/-1;'>Aucun colis trouvé.</p>";
+          return;
+        }
+        container.innerHTML = parcels.map(p => `
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:0.75rem;">
+              <div>
+                <div style="font-weight:700; font-size:1.05rem;">${p.title}</div>
+                <div style="color:var(--gray-400); font-size:0.82rem;">${p.origin_city} → ${p.dest_city}</div>
+              </div>
+              ${getStatusBadge(p.status)}
+            </div>
+            <div style="font-size:0.875rem; color:var(--gray-600); margin-bottom:1rem; display:flex; flex-direction:column; gap:4px;">
+              <span>⚖️ Poids : <strong>${p.weight} kg</strong> · ${p.taille}</span>
+              ${p.is_fragile == 1 ? '<span>⚠️ <strong>Fragile</strong></span>' : ''}
+              ${p.deadline_date ? `<span>📅 Avant le : <strong>${formatDate(p.deadline_date)}</strong></span>` : ''}
+              ${p.description ? `<span style="color:var(--gray-400);">${p.description}</span>` : ''}
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="font-size:0.85rem; color:var(--gray-600);">
+                👤 ${p.sender.first_name} ${p.sender.last_name}
+                <span class="stars">★</span> ${p.sender.rating || "Nouveau"}
+              </div>
+              ${p.status === "PENDING" && p.user_id !== user?.id ? `
+                <button class="btn btn-primary btn-sm" onclick="ouvrirBooking(${p.id})">
+                  Je transporte
+                </button>` : p.status === "PENDING" && p.user_id === user?.id ? `
+                <span style="font-size:0.8rem; color:var(--gray-400);">📦 Votre colis</span>
+              ` : ""}
+            </div>
+          </div>
+        `).join("");
+      }
+
+      // ===== FORMULAIRE COLIS =====
+      function ouvrirFormulaire() {
+        document.getElementById("form-overlay").style.display = "flex";
+      }
+
+      function fermerFormulaire() {
+        document.getElementById("form-overlay").style.display = "none";
+      }
+
+      async function publierColis() {
+        try {
+          await ParcelsAPI.create({
+            title: document.getElementById("p-title").value,
+            description: document.getElementById("p-description").value,
+            origin_city: document.getElementById("p-origin-city").value,
+            origin_country: document.getElementById("p-origin-country").value,
+            dest_city: document.getElementById("p-dest-city").value,
+            dest_country: document.getElementById("p-dest-country").value,
+            weight: parseFloat(document.getElementById("p-weight").value),
+            taille: document.getElementById("p-taille").value,
+            deadline_date: document.getElementById("p-deadline").value || null,
+            is_fragile: parseInt(document.getElementById("p-fragile").value),
+          });
+          fermerFormulaire();
+          showAlert("Annonce publiée avec succès !", "success");
+          searchParcels();
+        } catch (e) {
+          showAlert(e.message, "error", "alert-form");
+        }
+      }
+
+      // ===== MODAL RÉSERVATION =====
+      function fermerBooking() {
+        document.getElementById("booking-overlay").style.display = "none";
+      }
+
+      async function confirmerReservation() {
+        try {
+          await BookingsAPI.create({
+            parcel_id: parseInt(document.getElementById("b-parcel-id").value),
+            trip_id: parseInt(document.getElementById("b-trip-id").value),
+            agreed_price: parseFloat(document.getElementById("b-price").value),
+          });
+          fermerBooking();
+          showAlert("Proposition envoyée ! Consultez votre tableau de bord.", "success");
+          searchParcels();
+        } catch (e) {
+          showAlert(e.message, "error", "alert-booking");
+        }
+      }
+
+      searchParcels();
+    })();
+  </script>
+</body>
+</html>

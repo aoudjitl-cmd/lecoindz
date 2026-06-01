@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head><title>Générer icônes RayahDZ</title></head>
+<body>
+  <canvas id="c192" width="192" height="192"></canvas>
+  <canvas id="c512" width="512" height="512"></canvas>
+  <br><br>
+  <button onclick="download('c192', 'icon-192.png')">⬇️ Télécharger 192x192</button>
+  <button onclick="download('c512', 'icon-512.png')">⬇️ Télécharger 512x512</button>
+
+  <script>
+    function drawIcon(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      const size = canvas.width;
+      const ctx = canvas.getContext("2d");
+
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, "#2563eb");
+      gradient.addColorStop(1, "#7c3aed");
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.roundRect(0, 0, size, size, size * 0.2);
+      ctx.fill();
+
+      ctx.font = `${size * 0.5}px serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("📦", size / 2, size / 2.2);
+
+      ctx.fillStyle = "white";
+      ctx.font = `bold ${size * 0.12}px sans-serif`;
+      ctx.fillText("RayahDZ", size / 2, size * 0.82);
+    }
+
+    function download(canvasId, filename) {
+      const canvas = document.getElementById(canvasId);
+      const link = document.createElement("a");
+      link.download = filename;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+
+    drawIcon("c192");
+    drawIcon("c512");
+  </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RayahDZ - Mes conversations</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand">RayahDZ</a>
+    <div class="navbar-nav">
+      <a href="dashboard.html" class="nav-link">📋 <span>Dashboard</span></a>
+      <a href="trips.html" class="nav-link"><span>✈️</span> <span>Trajets</span></a>
+      <a href="parcels.html" class="nav-link"><span>📦</span> <span>Colis</span></a>
+      <a href="conversations.html" class="nav-link" id="nav-messages">Messages</a>
+      <a href="subscription.html" class="nav-link">Premium</a>
+      <div id="nav-auth"></div>
+    </div>
+  </nav>
+
+  <div class="container section">
+
+    <div id="alert-container"></div>
+
+    <h1 class="section-title">Mes conversations</h1>
+
+    <div id="conversations-container">
+      <p style="color:var(--gray-400);">Chargement...</p>
+    </div>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    (async () => {
+      await requireSubscription();
+      updateNavbar();
+
+      const user = Auth.getUser();
+
+      async function loadConversations() {
+        try {
+          const data = await DirectAPI.getConversations();
+          const container = document.getElementById("conversations-container");
+
+          if (data.conversations.length === 0) {
+            container.innerHTML = `
+              <div class="card" style="text-align:center; padding:3rem;">
+                <div style="font-size:3rem; margin-bottom:1rem;">💬</div>
+                <p style="color:var(--gray-400);">Aucune conversation pour le moment.</p>
+                <a href="trips.html" class="btn btn-primary" style="margin-top:1rem;">
+                  Voir les trajets
+                </a>
+              </div>`;
+            return;
+          }
+
+          container.innerHTML = data.conversations.map(conv => {
+            const other = conv.user1.id === user.id ? conv.user2 : conv.user1;
+            return `
+              <div class="card" style="margin-bottom:1rem; cursor:pointer;"
+                onclick="window.location.href='direct-chat.html?user_id=${other.id}&name=${encodeURIComponent(other.first_name + ' ' + other.last_name)}'">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <div style="display:flex; align-items:center; gap:1rem;">
+                    <div style="width:48px; height:48px; border-radius:50%; background:var(--primary); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:1.2rem; flex-shrink:0;">
+                      ${other.first_name[0].toUpperCase()}
+                    </div>
+                    <div>
+                      <div style="font-weight:600;">${other.first_name} ${other.last_name}</div>
+                      <div style="font-size:0.85rem; color:var(--gray-400); margin-top:2px;">
+                        ${conv.last_message || "Pas encore de message"}
+                      </div>
+                    </div>
+                  </div>
+                  ${conv.unread > 0 ? `
+                    <span style="background:var(--danger); color:white; border-radius:50%; padding:4px 8px; font-size:0.75rem; font-weight:600;">
+                      ${conv.unread}
+                    </span>` : ""}
+                </div>
+              </div>`;
+          }).join("");
+
+        } catch (e) {
+          showAlert(e.message);
+        }
+      }
+
+      loadConversations();
+    })();
+  </script>
+</body>
+</html>

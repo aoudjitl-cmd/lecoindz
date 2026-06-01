@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RayahDZ - Messagerie</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .chat-container {
+      max-width: 700px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    .chat-box {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      height: 450px;
+      overflow-y: auto;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .message {
+      display: flex;
+      flex-direction: column;
+      max-width: 70%;
+    }
+    .message.moi {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+    .message.autre {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+    .message-bubble {
+      padding: 10px 14px;
+      border-radius: 18px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .moi .message-bubble {
+      background: var(--primary);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+    .autre .message-bubble {
+      background: var(--gray-100);
+      color: var(--gray-800);
+      border-bottom-left-radius: 4px;
+    }
+    .message-meta {
+      font-size: 0.75rem;
+      color: var(--gray-400);
+      margin-top: 3px;
+      padding: 0 4px;
+    }
+    .chat-input-area {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-end;
+    }
+    .chat-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid var(--gray-200);
+      border-radius: 24px;
+      font-size: 0.95rem;
+      resize: none;
+      outline: none;
+      font-family: inherit;
+      max-height: 120px;
+    }
+    .chat-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    .btn-send {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+    .btn-send:hover { background: var(--primary-dark); }
+    .chat-header {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .empty-chat {
+      text-align: center;
+      color: var(--gray-400);
+      margin: auto;
+      padding: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand">RayahDZ</a>
+    <div class="navbar-nav">
+      <a href="dashboard.html" class="nav-link">?? <span>Dashboard</span></a>
+      <a href="trips.html" class="nav-link"><span>??</span> <span>Trajets</span></a>
+      <a href="parcels.html" class="nav-link"><span>??</span> <span>Colis</span></a>
+      <a href="conversations.html" class="nav-link" id="nav-messages">Messages</a>
+      <a href="subscription.html" class="nav-link">? <span>Premium</span></a>
+      <div id="nav-auth"></div>
+    </div>
+  </nav>
+
+  <div class="chat-container">
+
+    <div id="alert-container"></div>
+
+    <div class="chat-header">
+      <div>
+        <a href="dashboard.html" style="color:var(--gray-400); font-size:0.85rem;">
+          Retour au tableau de bord
+        </a>
+        <div id="chat-title" style="font-weight:600; font-size:1.05rem; margin-top:4px;">
+          Chargement...
+        </div>
+        <div id="chat-subtitle" style="font-size:0.85rem; color:var(--gray-400);"></div>
+      </div>
+      <div id="booking-status"></div>
+    </div>
+
+    <div class="chat-box" id="chat-box">
+      <div class="empty-chat">
+        <p>Chargement des messages...</p>
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <textarea
+        id="message-input"
+        class="chat-input"
+        placeholder="Ecrivez votre message..."
+        rows="1"
+      ></textarea>
+      <button class="btn-send" id="btn-send">&#10148;</button>
+    </div>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    (async () => {
+      await requireSubscription();
+      updateNavbar();
+
+      const user = Auth.getUser();
+      const urlParams = new URLSearchParams(window.location.search);
+      const bookingId = urlParams.get("booking_id");
+
+      if (!bookingId) window.location.href = "dashboard.html";
+
+      async function loadConversation() {
+        try {
+          const booking = await BookingsAPI.get(bookingId);
+          const other = booking.sender_id === user.id
+            ? booking.carrier
+            : booking.sender;
+
+          document.getElementById("chat-title").textContent =
+            "Conversation avec " + other.first_name + " " + other.last_name;
+          document.getElementById("chat-subtitle").textContent =
+            "Reservation #" + bookingId;
+          document.getElementById("booking-status").innerHTML =
+            getStatusBadge(booking.status);
+
+          const data = await MessagesAPI.getConversation(bookingId);
+          renderMessages(data.messages);
+        } catch (e) {
+          showAlert(e.message);
+        }
+      }
+
+      function renderMessages(messages) {
+        const box = document.getElementById("chat-box");
+        const wasAtBottom = box.scrollHeight - box.scrollTop <= box.clientHeight + 50;
+
+        if (messages.length === 0) {
+          box.innerHTML = `
+            <div class="empty-chat">
+              <p>Aucun message pour le moment. Commencez la conversation !</p>
+            </div>`;
+          return;
+        }
+
+        box.innerHTML = messages.map(m => {
+          const isMoi = m.sender_id === user.id;
+          const time = new Date(m.created_at).toLocaleTimeString("fr-FR", {
+            hour: "2-digit", minute: "2-digit"
+          });
+          return `
+            <div class="message ${isMoi ? 'moi' : 'autre'}">
+              <div class="message-bubble">${m.content}</div>
+              <div class="message-meta">
+                ${isMoi ? 'Vous' : m.sender.first_name} - ${time}
+              </div>
+            </div>`;
+        }).join("");
+
+        if (wasAtBottom) {
+          box.scrollTop = box.scrollHeight;
+        }
+      }
+
+      async function envoyerMessage() {
+        const input = document.getElementById("message-input");
+        const content = input.value.trim();
+        if (!content) return;
+
+        try {
+          await MessagesAPI.send(bookingId, content);
+          input.value = "";
+          input.style.height = "auto";
+          const data = await MessagesAPI.getConversation(bookingId);
+          renderMessages(data.messages);
+          if (data.messages.length > 0) {
+            dernierMessageId = data.messages[data.messages.length - 1].id;
+          }
+        } catch (e) {
+          showAlert(e.message);
+        }
+      }
+
+      document.getElementById("btn-send").addEventListener("click", envoyerMessage);
+
+      document.getElementById("message-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          envoyerMessage();
+        }
+      });
+
+      document.getElementById("message-input").addEventListener("input", function() {
+        this.style.height = "auto";
+        this.style.height = Math.min(this.scrollHeight, 120) + "px";
+      });
+
+      let dernierMessageId = 0;
+      let titreClignotant = null;
+
+      function clignoterTitre(message) {
+        let visible = true;
+        if (titreClignotant) clearInterval(titreClignotant);
+        titreClignotant = setInterval(() => {
+          document.title = visible ? "Nouveau message - " + message : "RayahDZ - Chat";
+          visible = !visible;
+        }, 1000);
+      }
+
+      function stopClignotement() {
+        if (titreClignotant) {
+          clearInterval(titreClignotant);
+          titreClignotant = null;
+          document.title = "RayahDZ - Messagerie";
+        }
+      }
+
+      function jouerSon() {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const oscillator = ctx.createOscillator();
+          const gainNode = ctx.createGain();
+          oscillator.connect(gainNode);
+          gainNode.connect(ctx.destination);
+          oscillator.frequency.value = 800;
+          oscillator.type = "sine";
+          gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+          oscillator.start(ctx.currentTime);
+          oscillator.stop(ctx.currentTime + 0.3);
+        } catch(e) {}
+      }
+
+      async function checkNouveauxMessages() {
+        try {
+          const data = await MessagesAPI.getConversation(bookingId);
+          const messages = data.messages;
+          if (messages.length === 0) return;
+          const dernierMsg = messages[messages.length - 1];
+          if (dernierMsg.id > dernierMessageId) {
+            if (dernierMessageId !== 0 && dernierMsg.sender_id !== user.id) {
+              jouerSon();
+              clignoterTitre(dernierMsg.sender.first_name);
+              window.addEventListener("focus", stopClignotement, { once: true });
+            }
+            renderMessages(messages);
+            dernierMessageId = dernierMsg.id;
+          }
+        } catch(e) {}
+      }
+
+      loadConversation().then(async () => {
+        try {
+          const data = await MessagesAPI.getConversation(bookingId);
+          if (data.messages.length > 0) {
+            dernierMessageId = data.messages[data.messages.length - 1].id;
+          }
+        } catch(e) {}
+      });
+
+      setInterval(checkNouveauxMessages, 3000);
+      document.addEventListener("click", stopClignotement);
+    })();
+  </script>
+</body>
+</html>

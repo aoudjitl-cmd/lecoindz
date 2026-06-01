@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RayahDZ — Paiement</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    .payment-container {
+      max-width: 500px;
+      margin: 3rem auto;
+      padding: 0 1rem;
+    }
+    .payment-summary {
+      background: var(--gray-100);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .payment-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      padding: 6px 0;
+      color: var(--gray-600);
+    }
+    .payment-row.total {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--gray-800);
+      border-top: 1px solid var(--gray-200);
+      margin-top: 8px;
+      padding-top: 12px;
+    }
+    #card-element {
+      padding: 14px;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      background: white;
+      margin-bottom: 1rem;
+    }
+    #card-errors {
+      color: var(--danger);
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+    .payment-success {
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand">?? RayahDZ</a>
+    <div class="navbar-nav">
+	  <a href="dashboard.html" class="nav-link">?? <span>Dashboard</span></a>
+      <a href="trips.html" class="nav-link">?? <span>Trajets</span></a>
+      <a href="parcels.html" class="nav-link">?? <span>Colis</span></a>
+	  <a href="conversations.html" class="nav-link">Messages</a>
+      <a href="subscription.html" class="nav-link">? <span>Premium</span></a>
+      <div id="nav-auth"></div>
+    </div>
+  </nav>
+
+  <div class="payment-container">
+
+    <div id="alert-container"></div>
+
+    <!-- FORMULAIRE DE PAIEMENT -->
+    <div id="payment-form-section">
+      <div class="card">
+        <h2 style="font-size:1.2rem; margin-bottom:1.5rem;">?? Paiement sécurisé</h2>
+
+        <!-- RÉSUMÉ -->
+        <div class="payment-summary" id="payment-summary">
+          <p style="color:var(--gray-400); font-size:0.9rem;">Chargement...</p>
+        </div>
+
+        <!-- CARTE BANCAIRE -->
+        <label class="form-label">Informations de carte</label>
+        <div id="card-element"></div>
+        <div id="card-errors"></div>
+
+        <button class="btn btn-primary btn-full" id="btn-pay">
+          ?? Payer maintenant
+        </button>
+
+        <p style="text-align:center; font-size:0.8rem; color:var(--gray-400); margin-top:1rem;">
+          Paiement sécurisé par Stripe · Vos données sont protégées
+        </p>
+      </div>
+    </div>
+
+    <!-- SUCCÈS -->
+    <div id="payment-success" style="display:none;">
+      <div class="card payment-success">
+        <div style="font-size:4rem; margin-bottom:1rem;">?</div>
+        <h2 style="margin-bottom:0.5rem;">Paiement effectué !</h2>
+        <p style="color:var(--gray-600); margin-bottom:2rem;">
+          Votre paiement a été effectué avec succès.
+        </p>
+        <a href="dashboard.html" class="btn btn-primary">Retour au tableau de bord</a>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    (async () => {
+      await requireSubscription();
+      updateNavbar();
+
+      const user = Auth.getUser();
+      const urlParams = new URLSearchParams(window.location.search);
+      const bookingId = urlParams.get("booking_id");
+
+      if (!bookingId) window.location.href = "dashboard.html";
+
+      let stripe, cardElement, clientSecret;
+
+      async function initPayment() {
+        try {
+          const data = await PaymentsAPI.createIntent(bookingId);
+          clientSecret = data.client_secret;
+
+          document.getElementById("payment-summary").innerHTML = `
+            <div class="payment-row">
+              <span>Prix convenu</span>
+              <span>${data.amount}€</span>
+            </div>
+            <div class="payment-row">
+              <span>Commission RayahDZ (10%)</span>
+              <span>${data.commission}€</span>
+            </div>
+            <div class="payment-row">
+              <span>Part du voyageur</span>
+              <span>${data.carrier_amount}€</span>
+            </div>
+            <div class="payment-row total">
+              <span>Total à payer</span>
+              <span>${data.amount}€</span>
+            </div>
+          `;
+
+          stripe = Stripe(data.public_key);
+          const elements = stripe.elements();
+          cardElement = elements.create("card", {
+            style: {
+              base: {
+                fontSize: "16px",
+                color: "#1e293b",
+                "::placeholder": { color: "#94a3b8" }
+              }
+            }
+          });
+          cardElement.mount("#card-element");
+
+          cardElement.on("change", (e) => {
+            document.getElementById("card-errors").textContent = e.error ? e.error.message : "";
+          });
+
+        } catch (e) {
+          showAlert(e.message);
+        }
+      }
+
+      document.getElementById("btn-pay").addEventListener("click", async () => {
+        const btn = document.getElementById("btn-pay");
+        btn.disabled = true;
+        btn.textContent = "Traitement en cours...";
+
+        try {
+          const result = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: { card: cardElement }
+          });
+
+          if (result.error) {
+            document.getElementById("card-errors").textContent = result.error.message;
+            btn.disabled = false;
+            btn.textContent = "?? Payer maintenant";
+          } else if (result.paymentIntent.status === "succeeded") {
+            try {
+              console.log("Marquage paiement pour booking:", bookingId);
+              const resp = await BookingsAPI.markPaid(bookingId);
+              console.log("Réponse markPaid:", resp);
+            } catch(e) {
+              console.log("Erreur markPaid:", e.message);
+            }
+            document.getElementById("payment-form-section").style.display = "none";
+            document.getElementById("payment-success").style.display = "block";
+          }
+        } catch (e) {
+          showAlert(e.message);
+          btn.disabled = false;
+          btn.textContent = "?? Payer maintenant";
+        }
+      });
+
+      initPayment();
+    })();
+  </script>
+</body>
+</html>
