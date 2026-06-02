@@ -5,6 +5,9 @@ def get_connection():
     connection = oracledb.connect(
         user=settings.ORACLE_USER,
         password=settings.ORACLE_PASSWORD,
-        dsn=f"{settings.ORACLE_HOST}:{settings.ORACLE_PORT}/{settings.ORACLE_SERVICE}"
+        host=settings.ORACLE_HOST,
+        port=settings.ORACLE_PORT,
+        service_name=settings.ORACLE_SERVICE,
+        protocol="tcps"
     )
     return connection
