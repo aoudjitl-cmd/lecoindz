@@ -4,11 +4,11 @@ from pydantic_settings import BaseSettings
 ENV_PATH = os.path.join(os.path.dirname(__file__), "..", "..", ".env")
 
 class Settings(BaseSettings):
-    ORACLE_HOST: str
-    ORACLE_PORT: int = 1521
-    ORACLE_SERVICE: str
-    ORACLE_USER: str
-    ORACLE_PASSWORD: str
+    DB_HOST: str
+    DB_PORT: int = 3306
+    DB_NAME: str
+    DB_USER: str
+    DB_PASSWORD: str
     JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = 60 * 24 * 7

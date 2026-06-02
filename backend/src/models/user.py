@@ -4,8 +4,8 @@ def find_user_by_email(email: str):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        "SELECT id, email, password, first_name, last_name, phone, is_verified, rating FROM CG_USERS WHERE email = :email",
-        {"email": email}
+        "SELECT id, email, password, first_name, last_name, phone, is_verified, rating FROM CG_USERS WHERE email = %s",
+        (email,)
     )
     row = cursor.fetchone()
     cursor.close()
@@ -23,9 +23,8 @@ def create_user(email: str, password: str, first_name: str, last_name: str, phon
     cursor = conn.cursor()
     cursor.execute(
         """INSERT INTO CG_USERS (email, password, first_name, last_name, phone)
-           VALUES (:email, :password, :first_name, :last_name, :phone)""",
-        {"email": email, "password": password, "first_name": first_name,
-         "last_name": last_name, "phone": phone}
+           VALUES (%s, %s, %s, %s, %s)""",
+        (email, password, first_name, last_name, phone)
     )
     conn.commit()
     cursor.close()

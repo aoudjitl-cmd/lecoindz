@@ -1,13 +1,11 @@
 from src.config.settings import settings
-import oracledb
+import mysql.connector
 
 def get_connection():
-    dsn = f"(description=(address=(protocol=tcps)(host={settings.ORACLE_HOST})(port={settings.ORACLE_PORT}))(connect_data=(service_name={settings.ORACLE_SERVICE})))"
-
-    connection = oracledb.connect(
-        user=settings.ORACLE_USER,
-        password=settings.ORACLE_PASSWORD,
-        dsn=dsn
+    return mysql.connector.connect(
+        host=settings.DB_HOST,
+        user=settings.DB_USER,
+        password=settings.DB_PASSWORD,
+        database=settings.DB_NAME,
+        port=settings.DB_PORT
     )
-
-    return connection
