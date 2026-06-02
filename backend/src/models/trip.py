@@ -33,7 +33,6 @@ def get_trips(dest_city=None, dest_country=None, min_weight=None):
         FROM CG_TRIPS t
         JOIN CG_USERS u ON t.user_id = u.id
         WHERE t.status = 'ACTIVE'
-        AND t.departure_date >= SYSDATE
     """
     params = {}
     if dest_city:
