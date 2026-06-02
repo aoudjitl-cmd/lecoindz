@@ -33,7 +33,7 @@ def get_trips(dest_city=None, dest_country=None, min_weight=None):
                t.departure_date, t.arrival_date, t.max_weight, t.max_size,
                t.price_per_kg, t.description, t.status
         FROM CG_TRIPS t
-        JOIN CG_USER u ON t.user_id = u.id
+        JOIN CG_USERS u ON t.user_id = u.id
         WHERE t.status = 'ACTIVE'
     """
     params = {}
@@ -63,7 +63,7 @@ def get_trip_by_id(trip_id):
                t.departure_date, t.arrival_date, t.max_weight, t.max_size,
                t.price_per_kg, t.description, t.status
         FROM CG_TRIPS t
-        JOIN CG_USER u ON t.user_id = u.id
+        JOIN CG_USERS u ON t.user_id = u.id
         WHERE t.id = %(trip_id)s
     """, {"trip_id": trip_id})
     row = cursor.fetchone()
