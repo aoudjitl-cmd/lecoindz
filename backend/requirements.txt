@@ -1,6 +1,6 @@
 fastapi
 uvicorn[standard]
-oracledb
+mysql-connector-python
 python-jose[cryptography]
 bcrypt==4.0.1
 passlib[bcrypt]
