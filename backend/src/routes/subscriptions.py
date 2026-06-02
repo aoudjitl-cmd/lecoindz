@@ -13,7 +13,7 @@ def get_user_by_id(user_id):
     cursor = conn.cursor()
     cursor.execute("""
         SELECT id, email, first_name, last_name, subscription_status, subscription_id, trial_end
-        FROM CG_USERS WHERE id = :user_id
+        FROM CG_USERS WHERE id = %(user_id)s
     """, {"user_id": user_id})
     row = cursor.fetchone()
     cursor.close()
@@ -33,9 +33,9 @@ def update_subscription(user_id, subscription_status, subscription_id=None):
     cursor = conn.cursor()
     cursor.execute("""
         UPDATE CG_USERS
-        SET subscription_status = :status,
-            subscription_id = :sub_id
-        WHERE id = :user_id
+        SET subscription_status = %(status)s,
+            subscription_id = %(sub_id)s
+        WHERE id = %(user_id)s
     """, {
         "status": subscription_status,
         "sub_id": subscription_id,
