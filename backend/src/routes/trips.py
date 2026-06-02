@@ -41,8 +41,8 @@ def mes_trajets(current_user=Depends(get_current_user)):
                t.departure_date, t.arrival_date, t.max_weight, t.max_size,
                t.price_per_kg, t.description, t.status
         FROM CG_TRIPS t
-        JOIN CG_USERS u ON t.user_id = u.id
-        WHERE t.user_id = :user_id
+        JOIN CG_USER u ON t.user_id = u.id
+        WHERE t.user_id = %(user_id)s
         ORDER BY t.departure_date DESC
     """, {"user_id": current_user["user_id"]})
     rows = cursor.fetchall()
@@ -79,7 +79,7 @@ def supprimer_trip(trip_id: int, current_user=Depends(get_current_user)):
         # Verifier s'il y a des reservations actives
         cursor.execute("""
             SELECT COUNT(*) FROM CG_BOOKINGS
-            WHERE trip_id = :trip_id
+            WHERE trip_id = %(trip_id)s
             AND status NOT IN ('CANCELLED', 'DELIVERED')
         """, {"trip_id": trip_id})
         count = cursor.fetchone()[0]
@@ -93,13 +93,13 @@ def supprimer_trip(trip_id: int, current_user=Depends(get_current_user)):
         # Supprimer d'abord les reservations annulees/livrees
         cursor.execute("""
             DELETE FROM CG_BOOKINGS
-            WHERE trip_id = :trip_id
+            WHERE trip_id = %(trip_id)s
             AND status IN ('CANCELLED', 'DELIVERED')
         """, {"trip_id": trip_id})
 
         # Supprimer le trajet
         cursor.execute(
-            "DELETE FROM CG_TRIPS WHERE id = :trip_id",
+            "DELETE FROM CG_TRIPS WHERE id = %(trip_id)s",
             {"trip_id": trip_id}
         )
         conn.commit()
