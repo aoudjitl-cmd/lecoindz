@@ -16,8 +16,8 @@ def get_or_create_conversation(user1_id, user2_id):
     # Chercher une conversation existante
     cursor.execute("""
         SELECT id FROM CG_CONVERSATIONS
-        WHERE (user1_id = :u1 AND user2_id = :u2)
-        OR (user1_id = :u2 AND user2_id = :u1)
+        WHERE (user1_id = %(u1)s AND user2_id = %(u2)s)
+        OR (user1_id = %(u2)s AND user2_id = %(u1)s)
     """, {"u1": user1_id, "u2": user2_id})
     row = cursor.fetchone()
 
@@ -27,15 +27,10 @@ def get_or_create_conversation(user1_id, user2_id):
         # Créer une nouvelle conversation
         cursor.execute("""
             INSERT INTO CG_CONVERSATIONS (user1_id, user2_id)
-            VALUES (:u1, :u2)
+            VALUES (%(u1)s, %(u2)s)
         """, {"u1": user1_id, "u2": user2_id})
         conn.commit()
-
-        cursor.execute("""
-            SELECT id FROM CG_CONVERSATIONS
-            WHERE user1_id = :u1 AND user2_id = :u2
-        """, {"u1": user1_id, "u2": user2_id})
-        conv_id = cursor.fetchone()[0]
+        conv_id = cursor.lastrowid
 
     cursor.close()
     conn.close()
@@ -51,7 +46,7 @@ def get_conversation_messages(conv_id):
                u.first_name, u.last_name
         FROM CG_DIRECT_MESSAGES m
         JOIN CG_USERS u ON m.sender_id = u.id
-        WHERE m.conversation_id = :conv_id
+        WHERE m.conversation_id = %(conv_id)s
         ORDER BY m.created_at ASC
     """, {"conv_id": conv_id})
     rows = cursor.fetchall()
@@ -74,16 +69,16 @@ def get_user_conversations(user_id):
                u2.id, u2.first_name, u2.last_name,
                (SELECT COUNT(*) FROM CG_DIRECT_MESSAGES m
                 WHERE m.conversation_id = c.id
-                AND m.sender_id != :user_id
+                AND m.sender_id != %(user_id)s
                 AND m.is_read = 0) as unread,
                (SELECT m2.content FROM CG_DIRECT_MESSAGES m2
                 WHERE m2.conversation_id = c.id
                 ORDER BY m2.created_at DESC
-                FETCH FIRST 1 ROWS ONLY) as last_message
+                LIMIT 1) as last_message
         FROM CG_CONVERSATIONS c
         JOIN CG_USERS u1 ON c.user1_id = u1.id
         JOIN CG_USERS u2 ON c.user2_id = u2.id
-        WHERE c.user1_id = :user_id OR c.user2_id = :user_id
+        WHERE c.user1_id = %(user_id)s OR c.user2_id = %(user_id)s
         ORDER BY c.created_at DESC
     """, {"user_id": user_id})
     rows = cursor.fetchall()
@@ -109,7 +104,7 @@ def envoyer_message(other_user_id: int, data: MessageRequest, current_user=Depen
     cursor = conn.cursor()
     cursor.execute("""
         INSERT INTO CG_DIRECT_MESSAGES (conversation_id, sender_id, content)
-        VALUES (:conv_id, :sender_id, :content)
+        VALUES (%(conv_id)s, %(sender_id)s, %(content)s)
     """, {"conv_id": conv_id, "sender_id": current_user["user_id"], "content": data.content})
     conn.commit()
     cursor.close()
@@ -128,8 +123,8 @@ def get_messages(other_user_id: int, current_user=Depends(get_current_user)):
     cursor.execute("""
         UPDATE CG_DIRECT_MESSAGES
         SET is_read = 1
-        WHERE conversation_id = :conv_id
-        AND sender_id != :user_id
+        WHERE conversation_id = %(conv_id)s
+        AND sender_id != %(user_id)s
         AND is_read = 0
     """, {"conv_id": conv_id, "user_id": current_user["user_id"]})
     conn.commit()
