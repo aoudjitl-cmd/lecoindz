@@ -111,7 +111,7 @@ def marquer_paye(booking_id: int, current_user=Depends(get_current_user)):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
-        UPDATE CG_BOOKINGS SET is_paid = 1 WHERE id = :booking_id
+        UPDATE CG_BOOKINGS SET is_paid = 1 WHERE id = %(booking_id)s
     """, {"booking_id": booking_id})
     conn.commit()
     cursor.close()

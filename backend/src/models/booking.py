@@ -1,9 +1,11 @@
 from src.config.database import get_connection
 import random, string
 
+
 def generate_code(length=6):
     """Génère un code aléatoire pour la remise/livraison."""
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+
 
 def create_booking(parcel_id, trip_id, sender_id, carrier_id, agreed_price):
     """Créer une réservation entre un expéditeur et un voyageur."""
@@ -14,8 +16,8 @@ def create_booking(parcel_id, trip_id, sender_id, carrier_id, agreed_price):
     cursor.execute("""
         INSERT INTO CG_BOOKINGS (parcel_id, trip_id, sender_id, carrier_id,
                                  agreed_price, pickup_code, delivery_code)
-        VALUES (:parcel_id, :trip_id, :sender_id, :carrier_id,
-                :agreed_price, :pickup_code, :delivery_code)
+        VALUES (%(parcel_id)s, %(trip_id)s, %(sender_id)s, %(carrier_id)s,
+                %(agreed_price)s, %(pickup_code)s, %(delivery_code)s)
     """, {
         "parcel_id": parcel_id, "trip_id": trip_id,
         "sender_id": sender_id, "carrier_id": carrier_id,
@@ -25,6 +27,7 @@ def create_booking(parcel_id, trip_id, sender_id, carrier_id, agreed_price):
     conn.commit()
     cursor.close()
     conn.close()
+
 
 def get_booking_by_id(booking_id):
     conn = get_connection()
@@ -38,12 +41,13 @@ def get_booking_by_id(booking_id):
         FROM CG_BOOKINGS b
         JOIN CG_USERS u1 ON b.sender_id = u1.id
         JOIN CG_USERS u2 ON b.carrier_id = u2.id
-        WHERE b.id = :booking_id
+        WHERE b.id = %(booking_id)s
     """, {"booking_id": booking_id})
     row = cursor.fetchone()
     cursor.close()
     conn.close()
     return _format_booking(row) if row else None
+
 
 def get_user_bookings(user_id):
     """Récupère toutes les réservations d'un utilisateur (en tant qu'expéditeur ou voyageur)."""
@@ -58,7 +62,7 @@ def get_user_bookings(user_id):
         FROM CG_BOOKINGS b
         JOIN CG_USERS u1 ON b.sender_id = u1.id
         JOIN CG_USERS u2 ON b.carrier_id = u2.id
-        WHERE b.sender_id = :user_id OR b.carrier_id = :user_id
+        WHERE b.sender_id = %(user_id)s OR b.carrier_id = %(user_id)s
         ORDER BY b.created_at DESC
     """, {"user_id": user_id})
     rows = cursor.fetchall()
@@ -66,29 +70,32 @@ def get_user_bookings(user_id):
     conn.close()
     return [_format_booking(row) for row in rows]
 
+
 def update_booking_status(booking_id, status):
     """Met à jour le statut d'une réservation."""
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
         UPDATE CG_BOOKINGS
-        SET status = :status, updated_at = CURRENT_TIMESTAMP
-        WHERE id = :booking_id
+        SET status = %(status)s, updated_at = CURRENT_TIMESTAMP
+        WHERE id = %(booking_id)s
     """, {"status": status, "booking_id": booking_id})
     conn.commit()
     cursor.close()
     conn.close()
+
 
 def update_parcel_status(parcel_id, status):
     """Met à jour le statut d'un colis."""
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
-        UPDATE CG_PARCELS SET status = :status WHERE id = :parcel_id
+        UPDATE CG_PARCELS SET status = %(status)s WHERE id = %(parcel_id)s
     """, {"status": status, "parcel_id": parcel_id})
     conn.commit()
     cursor.close()
     conn.close()
+
 
 def _format_booking(row):
     return {

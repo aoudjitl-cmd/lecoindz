@@ -1,5 +1,6 @@
 from src.config.database import get_connection
 
+
 def create_parcel(user_id, title, description, origin_city, origin_country,
                   dest_city, dest_country, weight, taille, deadline_date=None, is_fragile=0):
     conn = get_connection()
@@ -7,9 +8,9 @@ def create_parcel(user_id, title, description, origin_city, origin_country,
     cursor.execute("""
         INSERT INTO CG_PARCELS (user_id, title, description, origin_city, origin_country,
                                 dest_city, dest_country, weight, taille, deadline_date, is_fragile)
-        VALUES (:user_id, :title, :description, :origin_city, :origin_country,
-                :dest_city, :dest_country, :weight, :taille,
-                TO_DATE(:deadline_date, 'YYYY-MM-DD'), :is_fragile)
+        VALUES (%(user_id)s, %(title)s, %(description)s, %(origin_city)s, %(origin_country)s,
+                %(dest_city)s, %(dest_country)s, %(weight)s, %(taille)s,
+                %(deadline_date)s, %(is_fragile)s)
     """, {
         "user_id": user_id, "title": title, "description": description,
         "origin_city": origin_city, "origin_country": origin_country,
@@ -20,6 +21,7 @@ def create_parcel(user_id, title, description, origin_city, origin_country,
     conn.commit()
     cursor.close()
     conn.close()
+
 
 def get_parcels(dest_city=None, dest_country=None):
     conn = get_connection()
@@ -35,18 +37,18 @@ def get_parcels(dest_city=None, dest_country=None):
     """
     params = {}
     if dest_city:
-        query += " AND UPPER(p.dest_city) = UPPER(:dest_city)"
+        query += " AND UPPER(p.dest_city) = UPPER(%(dest_city)s)"
         params["dest_city"] = dest_city
     if dest_country:
-        query += " AND UPPER(p.dest_country) = UPPER(:dest_country)"
+        query += " AND UPPER(p.dest_country) = UPPER(%(dest_country)s)"
         params["dest_country"] = dest_country
     query += " ORDER BY p.created_at DESC"
-
     cursor.execute(query, params)
     rows = cursor.fetchall()
     cursor.close()
     conn.close()
     return [_format_parcel(row) for row in rows]
+
 
 def get_parcel_by_id(parcel_id):
     conn = get_connection()
@@ -58,12 +60,13 @@ def get_parcel_by_id(parcel_id):
                p.deadline_date, p.is_fragile, p.status, p.created_at
         FROM CG_PARCELS p
         JOIN CG_USERS u ON p.user_id = u.id
-        WHERE p.id = :parcel_id
+        WHERE p.id = %(parcel_id)s
     """, {"parcel_id": parcel_id})
     row = cursor.fetchone()
     cursor.close()
     conn.close()
     return _format_parcel(row) if row else None
+
 
 def _format_parcel(row):
     return {
