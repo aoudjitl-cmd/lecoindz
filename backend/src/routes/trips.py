@@ -41,7 +41,7 @@ def mes_trajets(current_user=Depends(get_current_user)):
                t.departure_date, t.arrival_date, t.max_weight, t.max_size,
                t.price_per_kg, t.description, t.status
         FROM CG_TRIPS t
-        JOIN CG_USER u ON t.user_id = u.id
+        JOIN CG_USERS u ON t.user_id = u.id
         WHERE t.user_id = %(user_id)s
         ORDER BY t.departure_date DESC
     """, {"user_id": current_user["user_id"]})
