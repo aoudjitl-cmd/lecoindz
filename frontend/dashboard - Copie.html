@@ -145,7 +145,10 @@ if (!isCarrier && b.status === "IN_TRANSIT") {
                   <div style="margin-top:8px; font-size:0.8rem; color:var(--gray-600);">
                     Code livraison : <strong>${b.delivery_code}</strong>
                   </div>` : ""}
-
+                ${b.status === "DELIVERED" ? `
+                  <div style="margin-top:8px; font-size:0.8rem; color:var(--gray-600);">
+                    Livre avec succes
+                  </div>` : ""}
               </div>
             </div>
             <div style="margin-top:1rem; display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
@@ -225,5 +228,6 @@ if (!isCarrier && b.status === "IN_TRANSIT") {
       setInterval(loadUnreadCounts, 10000);
     })();
   </script>
+  <script src="js/hamburger.js"></script>
 </body>
 </html>
