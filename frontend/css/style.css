@@ -305,7 +305,8 @@ img { max-width: 100%; }
 
   /* --- Container + espace latéral --- */
   .container { padding: 0 1.25rem; }
-  .section { padding: 2rem 0; }
+  .section { padding: 2rem 1.25rem; }
+  .container.section { padding: 2rem 1.25rem; }
   .section-title { font-size: 1.3rem; }
 
   /* --- Search bar --- */
