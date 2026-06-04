@@ -6,7 +6,7 @@ def send_message(booking_id, sender_id, content):
     cursor = conn.cursor()
     cursor.execute("""
         INSERT INTO CG_MESSAGES (booking_id, sender_id, content)
-        VALUES (:booking_id, :sender_id, :content)
+        VALUES (%(booking_id)s, %(sender_id)s, %(content)s)
     """, {"booking_id": booking_id, "sender_id": sender_id, "content": content})
     conn.commit()
     cursor.close()
@@ -22,7 +22,7 @@ def get_messages(booking_id):
                u.first_name, u.last_name
         FROM CG_MESSAGES m
         JOIN CG_USERS u ON m.sender_id = u.id
-        WHERE m.booking_id = :booking_id
+        WHERE m.booking_id = %(booking_id)s
         ORDER BY m.created_at ASC
     """, {"booking_id": booking_id})
     rows = cursor.fetchall()
@@ -37,8 +37,8 @@ def mark_as_read(booking_id, user_id):
     cursor.execute("""
         UPDATE CG_MESSAGES
         SET is_read = 1
-        WHERE booking_id = :booking_id
-        AND sender_id != :user_id
+        WHERE booking_id = %(booking_id)s
+        AND sender_id != %(user_id)s
         AND is_read = 0
     """, {"booking_id": booking_id, "user_id": user_id})
     conn.commit()
@@ -53,8 +53,8 @@ def count_unread(user_id):
         SELECT COUNT(*)
         FROM CG_MESSAGES m
         JOIN CG_BOOKINGS b ON m.booking_id = b.id
-        WHERE (b.sender_id = :user_id OR b.carrier_id = :user_id)
-        AND m.sender_id != :user_id
+        WHERE (b.sender_id = %(user_id)s OR b.carrier_id = %(user_id)s)
+        AND m.sender_id != %(user_id)s
         AND m.is_read = 0
     """, {"user_id": user_id})
     row = cursor.fetchone()
