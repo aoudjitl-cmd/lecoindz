@@ -29,10 +29,6 @@
 
     <div class="search-bar" style="margin-bottom:2rem;">
       <div class="form-group" style="flex:1; margin:0;">
-        <label class="form-label">Ville de départ</label>
-        <input type="text" id="filter-origin-city" class="form-input" placeholder="Ex: Paris">
-      </div>
-      <div class="form-group" style="flex:1; margin:0;">
         <label class="form-label">Ville d'arrivee</label>
         <input type="text" id="filter-dest-city" class="form-input" placeholder="Ex: Alger">
       </div>
@@ -139,11 +135,9 @@
 
     async function searchTrips() {
       const params = {};
-      const originCity = document.getElementById("filter-origin-city").value;
       const destCity = document.getElementById("filter-dest-city").value;
       const destCountry = document.getElementById("filter-dest-country").value;
       const minWeight = document.getElementById("filter-weight").value;
-      if (originCity) params.origin_city = originCity;
       if (destCity) params.dest_city = destCity;
       if (destCountry) params.dest_country = destCountry;
       if (minWeight) params.min_weight = minWeight;
@@ -157,7 +151,6 @@
     }
 
     function resetFilters() {
-      document.getElementById("filter-origin-city").value = "";
       document.getElementById("filter-dest-city").value = "";
       document.getElementById("filter-dest-country").value = "";
       document.getElementById("filter-weight").value = "";
