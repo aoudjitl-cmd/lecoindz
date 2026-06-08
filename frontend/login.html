@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RayahDZ - Connexion</title>
+  <title>Colisgo - Connexion</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); min-height:100vh; display:flex; align-items:center; justify-content:center;">
 
   <div style="width:100%; max-width:420px; padding:1rem;">
     <div style="text-align:center; margin-bottom:2rem;">
-      <a href="index.html" style="font-size:1.8rem; font-weight:800; color:white;">RayahDZ</a>
+      <a href="index.html" style="font-size:1.8rem; font-weight:800; color:white;">Colisgo</a>
       <p style="color:rgba(255,255,255,0.8); margin-top:0.5rem; font-size:0.9rem;">
         Envoyez vos colis avec des voyageurs
       </p>
@@ -68,6 +68,16 @@
           <label class="form-label">Mot de passe</label>
           <input type="password" id="reg-password" class="form-input" placeholder="••••••••">
         </div>
+
+        <!-- CGU CHECKBOX -->
+        <div class="form-group cgu-container">
+          <input type="checkbox" id="acceptCGU">
+          <label for="acceptCGU">
+            J'accepte les <a href="cgu.html" target="_blank">Conditions Générales d'Utilisation</a>
+          </label>
+          <span id="cguError">Vous devez accepter les CGU pour continuer.</span>
+        </div>
+
         <button class="btn btn-primary btn-full" id="btn-register">Creer mon compte</button>
       </div>
     </div>
@@ -118,6 +128,15 @@
     }
 
     async function handleRegister() {
+      // Validation CGU
+      const checkbox = document.getElementById("acceptCGU");
+      const cguError = document.getElementById("cguError");
+      if (!checkbox.checked) {
+        cguError.style.display = "block";
+        return;
+      }
+      cguError.style.display = "none";
+
       const btn = document.getElementById("btn-register");
       btn.disabled = true;
       btn.textContent = "Creation...";
@@ -128,6 +147,8 @@
           first_name: document.getElementById("reg-firstname").value,
           last_name: document.getElementById("reg-lastname").value,
           phone: document.getElementById("reg-phone").value,
+          cgu_accepted_at: new Date().toISOString(),
+          cgu_version: "1.0"
         });
         Auth.setSession(data.token, data.user);
         window.location.href = "index.html";
