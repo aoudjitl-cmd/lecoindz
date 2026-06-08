@@ -247,6 +247,8 @@
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get("dest_city")) {
         document.getElementById("filter-dest-city").value = urlParams.get("dest_city");
+		if (urlParams.get("origin_city")) {
+        document.getElementById("filter-origin-city").value = urlParams.get("origin_city");
       }
 
       searchTrips();
