@@ -142,11 +142,13 @@
     }
 
     function rechercher() {
-	  const origin = document.getElementById("search-origin").value;
-      const dest = document.getElementById("search-dest").value;
-      if (origin) window.location.href = `trips.html?origin_city=${origin}`;
-	  if (dest) window.location.href = `trips.html?dest_city=${dest}`;
-    }
+  const origin = document.getElementById("search-origin").value;
+  const dest = document.getElementById("search-dest").value;
+  const params = new URLSearchParams();
+  if (origin) params.append("origin_city", origin);
+  if (dest) params.append("dest_city", dest);
+  if (params.toString()) window.location.href = `trips.html?${params.toString()}`;
+}
 
     loadTrips();
   </script>
