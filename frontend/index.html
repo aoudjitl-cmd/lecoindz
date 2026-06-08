@@ -70,7 +70,7 @@
         <div class="card" style="text-align:center;">
           <div style="font-size:2.5rem; margin-bottom:1rem;">🔒</div>
           <h3 style="margin-bottom:0.5rem;">3. Payez en sécurité</h3>
-          <p style="color:var(--gray-600); font-size:0.9rem;">Le paiement est sécurisé et libéré à la confirmation de livraison.</p>
+          <p style="color:var(--gray-600); font-size:0.9rem;">Le paiement s'effctue directement entre vous et le voyageur.</p>
         </div>
         <div class="card" style="text-align:center;">
           <div style="font-size:2.5rem; margin-bottom:1rem;">✅</div>
@@ -142,8 +142,10 @@
     }
 
     function rechercher() {
+	  const origin = document.getElementById("search-origin").value;
       const dest = document.getElementById("search-dest").value;
-      if (dest) window.location.href = `trips.html?dest_city=${dest}`;
+      if (origin) window.location.href = `trips.html?dest_city=${origin}`;
+	  if (dest) window.location.href = `trips.html?dest_city=${dest}`;
     }
 
     loadTrips();
