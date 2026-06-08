@@ -27,22 +27,22 @@
       <button class="btn btn-primary" id="btn-publier">+ Publier mon trajet</button>
     </div>
 
-    <div class="search-bar" style="margin-bottom:2rem;">
-      <div class="form-group" style="flex:1; margin:0;">
-        <label class="form-label">Ville d'arrivee</label>
-        <input type="text" id="filter-dest-city" class="form-input" placeholder="Ex: Alger">
-      </div>
-      <div class="form-group" style="flex:1; margin:0;">
-        <label class="form-label">Pays d'arrivee</label>
-        <input type="text" id="filter-dest-country" class="form-input" placeholder="Ex: Algerie">
-      </div>
-      <div class="form-group" style="margin:0;">
-        <label class="form-label">Poids min (kg)</label>
-        <input type="number" id="filter-weight" class="form-input" placeholder="Ex: 5" style="width:120px;">
-      </div>
-      <button class="btn btn-primary" id="btn-filtrer">Filtrer</button>
-      <button class="btn btn-outline" id="btn-reset">Reinitialiser</button>
-    </div>
+   <div class="search-bar" style="margin-bottom:2rem;">
+  <div class="form-group" style="flex:1; margin:0;">
+    <label class="form-label">Ville de départ</label>
+    <input type="text" id="filter-origin-city" class="form-input" placeholder="Ex: Paris">
+  </div>
+  <div class="form-group" style="flex:1; margin:0;">
+    <label class="form-label">Ville d'arrivée</label>
+    <input type="text" id="filter-dest-city" class="form-input" placeholder="Ex: Alger">
+  </div>
+  <div class="form-group" style="margin:0;">
+    <label class="form-label">Poids min (kg)</label>
+    <input type="number" id="filter-weight" class="form-input" placeholder="Ex: 5" style="width:120px;">
+  </div>
+  <button class="btn btn-primary" id="btn-filtrer">Filtrer</button>
+  <button class="btn btn-outline" id="btn-reset">Réinitialiser</button>
+</div>
 
     <div id="alert-container"></div>
 
@@ -136,10 +136,10 @@
     async function searchTrips() {
       const params = {};
       const destCity = document.getElementById("filter-dest-city").value;
-      const destCountry = document.getElementById("filter-dest-country").value;
+      const originCity = document.getElementById("filter-origin-city").value;
       const minWeight = document.getElementById("filter-weight").value;
       if (destCity) params.dest_city = destCity;
-      if (destCountry) params.dest_country = destCountry;
+      if (originCity) params.origin_city = originCity;
       if (minWeight) params.min_weight = minWeight;
 
       try {
