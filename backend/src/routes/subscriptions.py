@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from fastapi import APIRouter, HTTPException, Depends
 import stripe
 from src.config.settings import settings
@@ -47,17 +48,14 @@ def update_subscription(user_id, subscription_status, subscription_id=None):
 
 @router.post("/create-checkout")
 def create_checkout(current_user=Depends(get_current_user)):
-    """Crée une session de paiement Stripe pour l'abonnement."""
     user = get_user_by_id(current_user["user_id"])
     if not user:
         raise HTTPException(status_code=404, detail="Utilisateur introuvable")
 
-    # Vérifier si déjà abonné
     if user["subscription_status"] == "ACTIVE":
-        raise HTTPException(status_code=400, detail="Vous avez déjà un abonnement actif")
+        raise HTTPException(status_code=400, detail="Vous avez deja un abonnement actif")
 
     try:
-        # Créer ou récupérer le customer Stripe
         customers = stripe.Customer.list(email=user["email"], limit=1)
         if customers.data:
             customer = customers.data[0]
@@ -67,7 +65,6 @@ def create_checkout(current_user=Depends(get_current_user)):
                 name=f"{user['first_name']} {user['last_name']}"
             )
 
-        # Créer la session de checkout
         session = stripe.checkout.Session.create(
             customer=customer.id,
             payment_method_types=["card"],
@@ -79,8 +76,8 @@ def create_checkout(current_user=Depends(get_current_user)):
             subscription_data={
                 "trial_period_days": 30
             },
-            success_url="http://localhost:3000/subscription-success.html?session_id={CHECKOUT_SESSION_ID}",
-            cancel_url="http://localhost:3000/subscription.html",
+            success_url="https://www.rayahdz.com/subscription-success.html?session_id={CHECKOUT_SESSION_ID}",
+            cancel_url="https://www.rayahdz.com/subscription.html",
         )
 
         return {
@@ -93,7 +90,6 @@ def create_checkout(current_user=Depends(get_current_user)):
 
 @router.get("/status")
 def subscription_status(current_user=Depends(get_current_user)):
-    """Récupère le statut d'abonnement de l'utilisateur."""
     user = get_user_by_id(current_user["user_id"])
     if not user:
         raise HTTPException(status_code=404, detail="Utilisateur introuvable")
@@ -104,7 +100,6 @@ def subscription_status(current_user=Depends(get_current_user)):
 
 @router.post("/verify/{session_id}")
 def verify_subscription(session_id: str, current_user=Depends(get_current_user)):
-    """Vérifie et active l'abonnement après paiement."""
     try:
         session = stripe.checkout.Session.retrieve(session_id)
         if session.status == "complete":
@@ -113,14 +108,13 @@ def verify_subscription(session_id: str, current_user=Depends(get_current_user))
                 "ACTIVE",
                 session.subscription
             )
-            return {"message": "Abonnement activé avec succès"}
-        raise HTTPException(status_code=400, detail="Session non complète")
+            return {"message": "Abonnement active avec succes"}
+        raise HTTPException(status_code=400, detail="Session non complete")
     except stripe.error.StripeError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.delete("/cancel")
 def cancel_subscription(current_user=Depends(get_current_user)):
-    """Annule l'abonnement de l'utilisateur."""
     user = get_user_by_id(current_user["user_id"])
     if not user or not user["subscription_id"]:
         raise HTTPException(status_code=400, detail="Aucun abonnement actif")
@@ -131,6 +125,6 @@ def cancel_subscription(current_user=Depends(get_current_user)):
             cancel_at_period_end=True
         )
         update_subscription(current_user["user_id"], "CANCELLED")
-        return {"message": "Abonnement annulé — accès jusqu'à la fin de la période"}
+        return {"message": "Abonnement annule — acces jusqu'a la fin de la periode"}
     except stripe.error.StripeError as e:
         raise HTTPException(status_code=400, detail=str(e))
