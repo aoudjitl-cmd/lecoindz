@@ -23,7 +23,7 @@ def create_trip(user_id, origin_city, origin_country, dest_city, dest_country,
     conn.close()
 
 
-def get_trips(dest_city=None, dest_country=None, min_weight=None):
+def get_trips(origin_city=None, dest_city=None, min_weight=None):
     """Recherche des trajets selon destination et capacité."""
     conn = get_connection()
     cursor = conn.cursor()
