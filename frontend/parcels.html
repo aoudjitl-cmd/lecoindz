@@ -231,23 +231,28 @@
               ${p.deadline_date ? `<span>📅 Avant le : <strong>${formatDate(p.deadline_date)}</strong></span>` : ''}
               ${p.description ? `<span style="color:var(--gray-400);">${p.description}</span>` : ''}
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
               <div style="font-size:0.85rem; color:var(--gray-600);">
                 👤 ${p.sender.first_name} ${p.sender.last_name}
                 <span class="stars">★</span> ${p.sender.rating || "Nouveau"}
               </div>
-              ${p.status === "PENDING" && p.user_id !== user?.id ? `
-                <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end;">
-                  <a href="direct-chat.html?user_id=${p.user_id}&name=${encodeURIComponent(p.sender.first_name + ' ' + p.sender.last_name)}"
-                    class="btn btn-outline btn-sm">
-                    Contacter l'expéditeur
-                  </a>
-                  <button class="btn btn-primary btn-sm" onclick="ouvrirBooking(${p.id})">
-                    Je transporte
-                  </button>
-                </div>` : p.status === "PENDING" && p.user_id === user?.id ? `
-                <span style="font-size:0.8rem; color:var(--gray-400);">📦 Votre colis</span>
-              ` : ""}
+              ${(() => {
+                const isOwner = user && (p.user_id === user.id || p.sender?.id === user.id);
+                if (isOwner) {
+                  return `<span style="font-size:0.8rem; color:var(--gray-400);">📦 Votre colis</span>`;
+                }
+                return `
+                  <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end;">
+                    <a href="direct-chat.html?user_id=${p.user_id || p.sender?.id}&name=${encodeURIComponent(p.sender.first_name + ' ' + p.sender.last_name)}"
+                      class="btn btn-outline btn-sm">
+                      Contacter l'expéditeur
+                    </a>
+                    ${p.status === "PENDING" ? `
+                      <button class="btn btn-primary btn-sm" onclick="ouvrirBooking(${p.id})">
+                        Je transporte
+                      </button>` : ""}
+                  </div>`;
+              })()}
             </div>
           </div>
         `).join("");
