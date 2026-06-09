@@ -31,21 +31,16 @@ app.include_router(reviews.router, prefix="/reviews", tags=["Avis"])
 def root():
     return {"message": "Bienvenue sur l'API RayahDZ"}
 
-@app.get("/admin/fix-reviews-table")
-def fix_reviews_table():
+@app.get("/admin/migrate-cgu")
+def migrate_cgu():
     from src.config.database import get_connection
     conn = get_connection()
     cursor = conn.cursor()
     results = []
-    migrations = [
-        "ALTER TABLE CG_REVIEWS ADD COLUMN comment TEXT NULL",
-        "ALTER TABLE CG_REVIEWS ADD COLUMN reviewer_id INT NOT NULL",
-        "ALTER TABLE CG_REVIEWS ADD COLUMN reviewed_id INT NOT NULL",
-        "ALTER TABLE CG_REVIEWS ADD COLUMN booking_id INT NOT NULL",
-        "ALTER TABLE CG_REVIEWS ADD COLUMN rating TINYINT NOT NULL",
-        "ALTER TABLE CG_REVIEWS ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
-    ]
-    for sql in migrations:
+    for sql in [
+        "ALTER TABLE CG_USERS ADD COLUMN cgu_accepted_at DATETIME NULL",
+        "ALTER TABLE CG_USERS ADD COLUMN cgu_version VARCHAR(10) NULL",
+    ]:
         try:
             cursor.execute(sql)
             conn.commit()
