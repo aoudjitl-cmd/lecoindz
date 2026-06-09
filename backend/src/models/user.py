@@ -18,13 +18,14 @@ def find_user_by_email(email: str):
         }
     return None
 
-def create_user(email: str, password: str, first_name: str, last_name: str, phone: str = None):
+def create_user(email: str, password: str, first_name: str, last_name: str,
+                phone: str = None, cgu_accepted_at: str = None, cgu_version: str = "1.0"):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        """INSERT INTO CG_USERS (email, password, first_name, last_name, phone)
-           VALUES (%s, %s, %s, %s, %s)""",
-        (email, password, first_name, last_name, phone)
+        """INSERT INTO CG_USERS (email, password, first_name, last_name, phone, cgu_accepted_at, cgu_version)
+           VALUES (%s, %s, %s, %s, %s, %s, %s)""",
+        (email, password, first_name, last_name, phone, cgu_accepted_at, cgu_version)
     )
     conn.commit()
     cursor.close()

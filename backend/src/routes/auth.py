@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, EmailStr
+from typing import Optional
 from src.models.user import find_user_by_email, create_user
 from src.middleware.auth import hash_password, verify_password, create_token
 
@@ -11,6 +12,8 @@ class RegisterRequest(BaseModel):
     first_name: str
     last_name: str
     phone: str = None
+    cgu_accepted_at: Optional[str] = None
+    cgu_version: Optional[str] = "1.0"
 
 class LoginRequest(BaseModel):
     email: EmailStr
@@ -18,13 +21,25 @@ class LoginRequest(BaseModel):
 
 @router.post("/register", status_code=201)
 def register(data: RegisterRequest):
+    # Vérifier que les CGU ont été acceptées
+    if not data.cgu_accepted_at:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Vous devez accepter les Conditions Générales d'Utilisation"
+        )
+
     if find_user_by_email(data.email):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Cet email est déjà utilisé"
         )
+
     hashed = hash_password(data.password)
-    user = create_user(data.email, hashed, data.first_name, data.last_name, data.phone)
+    user = create_user(
+        data.email, hashed, data.first_name, data.last_name, data.phone,
+        cgu_accepted_at=data.cgu_accepted_at,
+        cgu_version=data.cgu_version
+    )
     token = create_token({"user_id": user["id"], "email": user["email"]})
     return {
         "message": "Compte créé avec succès",

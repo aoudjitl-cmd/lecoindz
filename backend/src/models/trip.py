@@ -37,12 +37,12 @@ def get_trips(dest_city=None, dest_country=None, min_weight=None):
         WHERE t.status = 'ACTIVE'
     """
     params = {}
+    if origin_city:
+        query += " AND UPPER(t.origin_city) = UPPER(%(origin_city)s)"
+        params["origin_city"] = origin_city
     if dest_city:
         query += " AND UPPER(t.dest_city) = UPPER(%(dest_city)s)"
         params["dest_city"] = dest_city
-    if dest_country:
-        query += " AND UPPER(t.dest_country) = UPPER(%(dest_country)s)"
-        params["dest_country"] = dest_country
     if min_weight:
         query += " AND t.max_weight >= %(min_weight)s"
         params["min_weight"] = min_weight

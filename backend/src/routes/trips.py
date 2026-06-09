@@ -51,9 +51,9 @@ def mes_trajets(current_user=Depends(get_current_user)):
     return {"total": len(rows), "trips": [_format_trip(row) for row in rows]}
 
 @router.get("/")
-def search_trips(dest_city: Optional[str] = None, dest_country: Optional[str] = None,
+def search_trips(origin_city: Optional[str] = None, dest_city: Optional[str] = None,
                  min_weight: Optional[float] = None):
-    trips = get_trips(dest_city, dest_country, min_weight)
+    trips = get_trips(origin_city, dest_city, min_weight)
     return {"total": len(trips), "trips": trips}
 
 @router.get("/{trip_id}")
