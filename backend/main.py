@@ -31,31 +31,27 @@ app.include_router(reviews.router, prefix="/reviews", tags=["Avis"])
 def root():
     return {"message": "Bienvenue sur l'API RayahDZ"}
 
-@app.get("/admin/migrate-reviews")
-def migrate_reviews():
+@app.get("/admin/fix-reviews-table")
+def fix_reviews_table():
     from src.config.database import get_connection
     conn = get_connection()
     cursor = conn.cursor()
-    try:
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS CG_REVIEWS (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                reviewer_id INT NOT NULL,
-                reviewed_id INT NOT NULL,
-                booking_id INT NOT NULL,
-                rating TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
-                comment TEXT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (reviewer_id) REFERENCES CG_USERS(id),
-                FOREIGN KEY (reviewed_id) REFERENCES CG_USERS(id),
-                FOREIGN KEY (booking_id) REFERENCES CG_BOOKINGS(id),
-                UNIQUE KEY unique_review (reviewer_id, booking_id)
-            )
-        """)
-        conn.commit()
-        return {"status": "ok", "message": "Table CG_REVIEWS creee avec succes"}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-    finally:
-        cursor.close()
-        conn.close()
+    results = []
+    migrations = [
+        "ALTER TABLE CG_REVIEWS ADD COLUMN comment TEXT NULL",
+        "ALTER TABLE CG_REVIEWS ADD COLUMN reviewer_id INT NOT NULL",
+        "ALTER TABLE CG_REVIEWS ADD COLUMN reviewed_id INT NOT NULL",
+        "ALTER TABLE CG_REVIEWS ADD COLUMN booking_id INT NOT NULL",
+        "ALTER TABLE CG_REVIEWS ADD COLUMN rating TINYINT NOT NULL",
+        "ALTER TABLE CG_REVIEWS ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+    ]
+    for sql in migrations:
+        try:
+            cursor.execute(sql)
+            conn.commit()
+            results.append({"sql": sql, "status": "ok"})
+        except Exception as e:
+            results.append({"sql": sql, "status": "skip", "reason": str(e)})
+    cursor.close()
+    conn.close()
+    return {"results": results}
