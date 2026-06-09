@@ -32,7 +32,7 @@ def root():
 
 @app.get("/admin/migrate-budget")
 def migrate_budget():
-    from src.models.database import get_connection
+    from src.config.database import get_connection
     conn = get_connection()
     cursor = conn.cursor()
     try:
