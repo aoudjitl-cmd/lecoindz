@@ -3,7 +3,6 @@
 <head>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#2563eb">
-  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="RayahDZ">
@@ -65,18 +64,18 @@
         </div>
         <div class="card" style="text-align:center;">
           <div style="font-size:2.5rem; margin-bottom:1rem;">🤝</div>
-          <h3 style="margin-bottom:0.5rem;">2. Contactez</h3>
-          <p style="color:var(--gray-600); font-size:0.9rem;">Trouvez le voyageur/expediteur idéal et discutez des détails.</p>
+          <h3 style="margin-bottom:0.5rem;">2. Connectez</h3>
+          <p style="color:var(--gray-600); font-size:0.9rem;">Trouvez le voyageur idéal et discutez des détails directement.</p>
         </div>
         <div class="card" style="text-align:center;">
-          <div style="font-size:2.5rem; margin-bottom:1rem;">💵</div>
-          <h3 style="margin-bottom:0.5rem;">3. Payez</h3>
-          <p style="color:var(--gray-600); font-size:0.9rem;">Le paiement s'effctue directement entre vous et le voyageur/expediteur.</p>
+          <div style="font-size:2.5rem; margin-bottom:1rem;">🔒</div>
+          <h3 style="margin-bottom:0.5rem;">3. Payez le voyageur</h3>
+          <p style="color:var(--gray-600); font-size:0.9rem;">Le paiement s'effctue directement entre vous et le voyageur.</p>
         </div>
         <div class="card" style="text-align:center;">
           <div style="font-size:2.5rem; margin-bottom:1rem;">✅</div>
           <h3 style="margin-bottom:0.5rem;">4. Livré !</h3>
-          <p style="color:var(--gray-600); font-size:0.9rem;">Confirmez la réception et laissez un avis au voyageur/expediteur.</p>
+          <p style="color:var(--gray-600); font-size:0.9rem;">Confirmez la réception et laissez un avis au voyageur.</p>
         </div>
       </div>
     </div>
@@ -87,7 +86,7 @@
     <div class="container">
       <h2 class="section-title">Trajets disponibles</h2>
       <div id="trips-container" class="card-grid">
-        <p style="color:var(--gray-400);">Chargement....</p>
+        <p style="color:var(--gray-400);">Chargement...</p>
       </div>
       <div style="text-align:center; margin-top:1.5rem;">
         <a href="trips.html" class="btn btn-outline">Voir tous les trajets →</a>
@@ -95,8 +94,56 @@
     </div>
   </section>
 
+  <!-- MODAL AVIS -->
+  <div id="avis-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:300; align-items:center; justify-content:center;">
+    <div class="card" style="width:100%; max-width:480px; max-height:80vh; overflow-y:auto; margin:1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+        <h2 id="avis-titre" style="font-size:1.1rem;">Avis</h2>
+        <button onclick="document.getElementById('avis-overlay').style.display='none'" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
+      </div>
+      <div id="avis-moyenne" style="text-align:center; margin-bottom:1.25rem;"></div>
+      <div id="avis-liste"></div>
+    </div>
+  </div>
+
   <script src="js/api.js"></script>
   <script>
+    async function voirAvis(userId, userName) {
+      document.getElementById("avis-titre").textContent = "Avis sur " + userName;
+      document.getElementById("avis-moyenne").innerHTML = "<p style='color:var(--gray-400);'>Chargement...</p>";
+      document.getElementById("avis-liste").innerHTML = "";
+      document.getElementById("avis-overlay").style.display = "flex";
+      try {
+        const data = await apiCall("/reviews/user/" + userId);
+        if (data.total === 0) {
+          document.getElementById("avis-moyenne").innerHTML =
+            "<p style='color:var(--gray-400); font-size:0.9rem;'>Aucun avis pour le moment.</p>";
+          return;
+        }
+        const etoiles = "★".repeat(Math.round(data.average)) + "☆".repeat(5 - Math.round(data.average));
+        document.getElementById("avis-moyenne").innerHTML = `
+          <div style="font-size:1.8rem; color:#f59e0b;">${etoiles}</div>
+          <div style="font-weight:700; font-size:1.1rem; margin-top:4px;">${data.average} / 5</div>
+          <div style="font-size:0.85rem; color:var(--gray-400);">${data.total} avis</div>`;
+        document.getElementById("avis-liste").innerHTML = data.reviews.map(r => {
+          const etoilesR = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
+          const date = new Date(r.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+          return `
+            <div style="border-top:1px solid var(--gray-100); padding:1rem 0;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <div style="font-weight:600; font-size:0.9rem;">${r.reviewer.first_name} ${r.reviewer.last_name}</div>
+                <div style="color:#f59e0b; font-size:0.95rem;">${etoilesR}</div>
+              </div>
+              ${r.comment ? `<p style="font-size:0.875rem; color:var(--gray-600); margin:0;">${r.comment}</p>` : ""}
+              <div style="font-size:0.75rem; color:var(--gray-400); margin-top:4px;">${date}</div>
+            </div>`;
+        }).join("");
+      } catch(e) {
+        document.getElementById("avis-moyenne").innerHTML =
+          "<p style='color:var(--danger);'>Impossible de charger les avis.</p>";
+      }
+    }
+
     updateNavbar();
 
     // Charger les trajets récents
@@ -129,16 +176,13 @@
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <div style="font-size:0.85rem; color:var(--gray-600);">
-                👤 ${trip.carrier.first_name} ${trip.carrier.last_name}
-                <span class="stars">★</span> ${trip.carrier.rating || "Nouveau"}
+                👤 <span onclick="voirAvis(${trip.user_id}, '${trip.carrier.first_name} ${trip.carrier.last_name}')"
+                  style="cursor:pointer; text-decoration:underline; text-underline-offset:3px;">
+                  ${trip.carrier.first_name} ${trip.carrier.last_name}
+                </span>
+                <span style="color:#f59e0b;">★</span> ${trip.carrier.rating || "Nouveau"}
               </div>
-              <div style="display:flex; gap:0.5rem;">
-                <a href="direct-chat.html?user_id=${trip.user_id}&name=${encodeURIComponent(trip.carrier.first_name + ' ' + trip.carrier.last_name)}"
-                  class="btn btn-outline btn-sm">
-                  Contacter
-                </a>
-                <a href="trips.html?id=${trip.id}" class="btn btn-primary btn-sm">Voir</a>
-              </div>
+              <a href="trips.html?id=${trip.id}" class="btn btn-primary btn-sm">Voir</a>
             </div>
           </div>
         `).join("");
