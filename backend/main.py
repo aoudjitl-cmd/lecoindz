@@ -31,22 +31,13 @@ app.include_router(reviews.router, prefix="/reviews", tags=["Avis"])
 def root():
     return {"message": "Bienvenue sur l'API RayahDZ"}
 
-@app.get("/admin/migrate-cgu")
-def migrate_cgu():
+@app.get("/admin/show-users-columns")
+def show_users_columns():
     from src.config.database import get_connection
     conn = get_connection()
     cursor = conn.cursor()
-    results = []
-    for sql in [
-        "ALTER TABLE CG_USERS ADD COLUMN cgu_accepted_at DATETIME NULL",
-        "ALTER TABLE CG_USERS ADD COLUMN cgu_version VARCHAR(10) NULL",
-    ]:
-        try:
-            cursor.execute(sql)
-            conn.commit()
-            results.append({"sql": sql, "status": "ok"})
-        except Exception as e:
-            results.append({"sql": sql, "status": "skip", "reason": str(e)})
+    cursor.execute("SHOW COLUMNS FROM CG_USERS")
+    rows = cursor.fetchall()
     cursor.close()
     conn.close()
-    return {"results": results}
+    return {"columns": [{"field": r[0], "type": r[1], "null": r[2], "key": r[3]} for r in rows]}
