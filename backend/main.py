@@ -28,3 +28,18 @@ app.include_router(direct_messages.router, prefix="/direct", tags=["Messages dir
 @app.get("/")
 def root():
     return {"message": "Bienvenue sur l'API RayahDZ"}
+
+@app.get("/admin/migrate-budget")
+def migrate_budget():
+    from src.models.database import get_connection
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("ALTER TABLE CG_PARCELS ADD COLUMN budget DECIMAL(10,2) NULL")
+        conn.commit()
+        return {"status": "ok", "message": "Colonne budget ajoutée avec succès"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        cursor.close()
+        conn.close()
