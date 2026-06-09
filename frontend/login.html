@@ -141,7 +141,7 @@
       btn.disabled = true;
       btn.textContent = "Creation...";
       try {
-        const data = await AuthAPI.register({
+        await AuthAPI.register({
           email: document.getElementById("reg-email").value,
           password: document.getElementById("reg-password").value,
           first_name: document.getElementById("reg-firstname").value,
@@ -150,8 +150,14 @@
           cgu_accepted_at: new Date().toISOString(),
           cgu_version: "1.0"
         });
-        Auth.setSession(data.token, data.user);
-        window.location.href = "index.html";
+        // Afficher message de confirmation au lieu de connecter
+        document.getElementById("form-register").style.display = "none";
+        showAlert(
+          "Compte cree ! Un email de verification a ete envoye a " +
+          document.getElementById("reg-email").value +
+          ". Cliquez sur le lien pour activer votre compte.",
+          "success"
+        );
       } catch (e) {
         showAlert(e.message);
         btn.disabled = false;

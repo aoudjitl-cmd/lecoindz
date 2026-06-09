@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RayahDZ — Verification email</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .verify-container {
+      max-width: 460px;
+      margin: 5rem auto;
+      padding: 0 1rem;
+      text-align: center;
+    }
+    @keyframes bounce {
+      0% { transform: scale(0); }
+      60% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .icon { font-size: 4rem; margin-bottom: 1.5rem; animation: bounce 0.6s ease; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand">📦 RayahDZ</a>
+  </nav>
+
+  <div class="verify-container">
+
+    <div id="loading-section">
+      <p style="color:var(--gray-400);">Verification en cours...</p>
+    </div>
+
+    <div id="success-section" style="display:none;">
+      <div class="card" style="padding:3rem 2rem;">
+        <div class="icon">✅</div>
+        <h1 style="font-size:1.6rem; font-weight:800; margin-bottom:1rem;">Email verifie !</h1>
+        <p style="color:var(--gray-600); margin-bottom:2rem;">
+          Votre compte est maintenant actif. Vous etes connecte automatiquement.
+        </p>
+        <a href="index.html" class="btn btn-primary btn-full">Aller sur RayahDZ</a>
+      </div>
+    </div>
+
+    <div id="error-section" style="display:none;">
+      <div class="card" style="padding:3rem 2rem;">
+        <div class="icon">❌</div>
+        <h2 style="margin-bottom:1rem;">Lien invalide</h2>
+        <p style="color:var(--gray-600); margin-bottom:2rem;">
+          Ce lien de verification est invalide ou a deja ete utilise.
+        </p>
+        <a href="login.html" class="btn btn-primary btn-full">Retour a la connexion</a>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    (async () => {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token");
+
+      if (!token) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      try {
+        const data = await apiCall("/auth/verify-email?token=" + encodeURIComponent(token));
+        // Connecter automatiquement l'utilisateur
+        Auth.setSession(data.token, data.user);
+        document.getElementById("loading-section").style.display = "none";
+        document.getElementById("success-section").style.display = "block";
+      } catch(e) {
+        document.getElementById("loading-section").style.display = "none";
+        document.getElementById("error-section").style.display = "block";
+      }
+    })();
+  </script>
+</body>
+</html>
