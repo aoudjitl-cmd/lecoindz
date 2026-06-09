@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional
@@ -14,9 +15,10 @@ class ParcelRequest(BaseModel):
     dest_city: str
     dest_country: str
     weight: float
-    taille: str          # SMALL / MEDIUM / LARGE
+    taille: str
     deadline_date: Optional[str] = None
     is_fragile: Optional[int] = 0
+    budget: Optional[float] = None
 
 @router.post("/", status_code=201)
 def add_parcel(data: ParcelRequest, current_user=Depends(get_current_user)):
@@ -26,9 +28,10 @@ def add_parcel(data: ParcelRequest, current_user=Depends(get_current_user)):
         origin_city=data.origin_city, origin_country=data.origin_country,
         dest_city=data.dest_city, dest_country=data.dest_country,
         weight=data.weight, taille=data.taille,
-        deadline_date=data.deadline_date, is_fragile=data.is_fragile
+        deadline_date=data.deadline_date, is_fragile=data.is_fragile,
+        budget=data.budget
     )
-    return {"message": "Annonce de colis publiée avec succès"}
+    return {"message": "Annonce de colis publiee avec succes"}
 
 @router.get("/")
 def search_parcels(dest_city: Optional[str] = None, dest_country: Optional[str] = None):
