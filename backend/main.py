@@ -27,17 +27,17 @@ app.include_router(subscriptions.router, prefix="/subscriptions", tags=["Abonnem
 app.include_router(direct_messages.router, prefix="/direct", tags=["Messages directs"])
 app.include_router(reviews.router, prefix="/reviews", tags=["Avis"])
 
-@app.get("/")
-def root():
-    return {"message": "Bienvenue sur l'API RayahDZ"}
-
-@app.get("/admin/show-users-columns")
-def show_users_columns():
+@app.get("/admin/migrate-verification")
+def migrate_verification():
     from src.config.database import get_connection
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SHOW COLUMNS FROM CG_USERS")
-    rows = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return {"columns": [{"field": r[0], "type": r[1], "null": r[2], "key": r[3]} for r in rows]}
+    try:
+        cursor.execute("ALTER TABLE CG_USERS ADD COLUMN verification_token VARCHAR(100) NULL")
+        conn.commit()
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "skip", "reason": str(e)}
+    finally:
+        cursor.close()
+        conn.close()
