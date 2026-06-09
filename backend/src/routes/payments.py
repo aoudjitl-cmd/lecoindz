@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel
 import stripe
@@ -14,12 +15,11 @@ class PaymentRequest(BaseModel):
     booking_id: int
 
 def save_payment(booking_id, amount, commission, carrier_amount, payment_intent_id):
-    """Sauvegarde le paiement dans la base de données."""
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
         INSERT INTO CG_PAYMENTS (booking_id, amount, commission, carrier_amount, status, payment_ref)
-        VALUES (:booking_id, :amount, :commission, :carrier_amount, 'HELD', :payment_ref)
+        VALUES (%(booking_id)s, %(amount)s, %(commission)s, %(carrier_amount)s, 'HELD', %(payment_ref)s)
     """, {
         "booking_id": booking_id,
         "amount": amount,
@@ -32,26 +32,24 @@ def save_payment(booking_id, amount, commission, carrier_amount, payment_intent_
     conn.close()
 
 def update_payment_status(payment_intent_id, status):
-    """Met à jour le statut d'un paiement."""
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
         UPDATE CG_PAYMENTS
-        SET status = :status
-        WHERE payment_ref = :payment_ref
+        SET status = %(status)s
+        WHERE payment_ref = %(payment_ref)s
     """, {"status": status, "payment_ref": payment_intent_id})
     conn.commit()
     cursor.close()
     conn.close()
 
 def get_payment_by_booking(booking_id):
-    """Récupère le paiement d'une réservation."""
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
         SELECT id, booking_id, amount, commission, carrier_amount, status, payment_ref
         FROM CG_PAYMENTS
-        WHERE booking_id = :booking_id
+        WHERE booking_id = %(booking_id)s
     """, {"booking_id": booking_id})
     row = cursor.fetchone()
     cursor.close()
@@ -66,31 +64,23 @@ def get_payment_by_booking(booking_id):
 
 @router.post("/create-payment-intent")
 def create_payment_intent(data: PaymentRequest, current_user=Depends(get_current_user)):
-    """Crée un PaymentIntent Stripe pour une réservation."""
     booking = get_booking_by_id(data.booking_id)
     if not booking:
-        raise HTTPException(status_code=404, detail="Réservation introuvable")
-
-    # Seul l'expéditeur peut payer
+        raise HTTPException(status_code=404, detail="Reservation introuvable")
     if booking["sender_id"] != current_user["user_id"]:
-        raise HTTPException(status_code=403, detail="Seul l'expéditeur peut effectuer le paiement")
-
-    # Vérifier que la réservation est acceptée
+        raise HTTPException(status_code=403, detail="Seul l'expediteur peut effectuer le paiement")
     if booking["status"] != "ACCEPTED":
-        raise HTTPException(status_code=400, detail="La réservation doit être acceptée avant le paiement")
+        raise HTTPException(status_code=400, detail="La reservation doit etre acceptee avant le paiement")
 
-    # Vérifier qu'un paiement n'existe pas déjà
     existing = get_payment_by_booking(data.booking_id)
     if existing and existing["status"] in ["HELD", "RELEASED"]:
-        raise HTTPException(status_code=400, detail="Un paiement existe déjà pour cette réservation")
+        raise HTTPException(status_code=400, detail="Un paiement existe deja pour cette reservation")
 
-    # Calcul des montants
     amount = float(booking["agreed_price"])
-    commission = round(amount * 0.10, 2)       # 10% pour RayahDZ
-    carrier_amount = round(amount - commission, 2)  # 90% pour le voyageur
+    commission = round(amount * 0.10, 2)
+    carrier_amount = round(amount - commission, 2)
 
     try:
-        # Créer le PaymentIntent Stripe (montant en centimes)
         intent = stripe.PaymentIntent.create(
             amount=int(amount * 100),
             currency="eur",
@@ -101,10 +91,7 @@ def create_payment_intent(data: PaymentRequest, current_user=Depends(get_current
             },
             capture_method="automatic"
         )
-
-        # Sauvegarder en base
         save_payment(data.booking_id, amount, commission, carrier_amount, intent.id)
-
         return {
             "client_secret": intent.client_secret,
             "amount": amount,
@@ -117,14 +104,13 @@ def create_payment_intent(data: PaymentRequest, current_user=Depends(get_current
 
 @router.get("/status/{booking_id}")
 def payment_status(booking_id: int, current_user=Depends(get_current_user)):
-    """Récupère le statut du paiement d'une réservation."""
     booking = get_booking_by_id(booking_id)
     if not booking:
-        raise HTTPException(status_code=404, detail="Réservation introuvable")
+        raise HTTPException(status_code=404, detail="Reservation introuvable")
     if booking["sender_id"] != current_user["user_id"] and booking["carrier_id"] != current_user["user_id"]:
-        raise HTTPException(status_code=403, detail="Accès refusé")
+        raise HTTPException(status_code=403, detail="Acces refuse")
 
     payment = get_payment_by_booking(booking_id)
     if not payment:
-        return {"status": "NOT_PAID", "message": "Aucun paiement trouvé"}
+        return {"status": "NOT_PAID", "message": "Aucun paiement trouve"}
     return payment
