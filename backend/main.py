@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.routes import auth, trips, parcels, bookings, messages, payments, subscriptions, direct_messages
@@ -37,7 +38,7 @@ def migrate_budget():
     try:
         cursor.execute("ALTER TABLE CG_PARCELS ADD COLUMN budget DECIMAL(10,2) NULL")
         conn.commit()
-        return {"status": "ok", "message": "Colonne budget ajoutée avec succès"}
+        return {"status": "ok", "message": "Colonne budget ajoutee avec succes"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
     finally:
