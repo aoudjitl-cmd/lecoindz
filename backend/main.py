@@ -30,15 +30,29 @@ app.include_router(direct_messages.router, prefix="/direct", tags=["Messages dir
 def root():
     return {"message": "Bienvenue sur l'API RayahDZ"}
 
-@app.get("/admin/migrate-budget")
-def migrate_budget():
+@app.get("/admin/migrate-reviews")
+def migrate_reviews():
     from src.config.database import get_connection
     conn = get_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("ALTER TABLE CG_PARCELS ADD COLUMN budget DECIMAL(10,2) NULL")
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS CG_REVIEWS (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                reviewer_id INT NOT NULL,
+                reviewed_id INT NOT NULL,
+                booking_id INT NOT NULL,
+                rating TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+                comment TEXT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (reviewer_id) REFERENCES CG_USERS(id),
+                FOREIGN KEY (reviewed_id) REFERENCES CG_USERS(id),
+                FOREIGN KEY (booking_id) REFERENCES CG_BOOKINGS(id),
+                UNIQUE KEY unique_review (reviewer_id, booking_id)
+            )
+        """)
         conn.commit()
-        return {"status": "ok", "message": "Colonne budget ajoutee avec succes"}
+        return {"status": "ok", "message": "Table CG_REVIEWS creee avec succes"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
     finally:
