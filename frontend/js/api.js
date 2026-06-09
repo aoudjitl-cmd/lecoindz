@@ -24,6 +24,13 @@ async function apiCall(endpoint, method = "GET", body = null) {
   if (body) options.body = JSON.stringify(body);
 
   const response = await fetch(`${API_URL}${endpoint}`, options);
+
+  // Token expiré ou invalide → déconnexion propre
+  if (response.status === 401) {
+    Auth.logout();
+    return;
+  }
+
   const data = await response.json();
 
   if (!response.ok) {
@@ -139,7 +146,9 @@ async function requireSubscription() {
     window.location.href = "subscription.html";
 
   } catch(e) {
+    // Si l'appel échoue (token expiré, réseau...) → login
     console.log("Erreur verification abonnement:", e.message);
+    window.location.href = "login.html";
   }
 }
 
