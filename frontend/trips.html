@@ -14,7 +14,7 @@
       <a href="dashboard.html" class="nav-link">📋 <span>Dashboard</span></a>
       <a href="trips.html" class="nav-link">✈️ <span>Trajets</span></a>
       <a href="parcels.html" class="nav-link active">📦 <span>Colis</span></a>
-	  <a href="conversations.html" class="nav-link" id="nav-messages">💬 Messages</a>
+      <a href="conversations.html" class="nav-link" id="nav-messages">💬 Messages</a>
       <a href="subscription.html" class="nav-link">⭐ <span>Premium</span></a>
       <div id="nav-auth"></div>
     </div>
@@ -27,22 +27,22 @@
       <button class="btn btn-primary" id="btn-publier">+ Publier mon trajet</button>
     </div>
 
-   <div class="search-bar" style="margin-bottom:2rem;">
-  <div class="form-group" style="flex:1; margin:0;">
-    <label class="form-label">Ville de départ</label>
-    <input type="text" id="filter-origin-city" class="form-input" placeholder="Ex: Paris">
-  </div>
-  <div class="form-group" style="flex:1; margin:0;">
-    <label class="form-label">Ville d'arrivée</label>
-    <input type="text" id="filter-dest-city" class="form-input" placeholder="Ex: Alger">
-  </div>
-  <div class="form-group" style="margin:0;">
-    <label class="form-label">Poids min (kg)</label>
-    <input type="number" id="filter-weight" class="form-input" placeholder="Ex: 5" style="width:120px;">
-  </div>
-  <button class="btn btn-primary" id="btn-filtrer">Filtrer</button>
-  <button class="btn btn-outline" id="btn-reset">Réinitialiser</button>
-</div>
+    <div class="search-bar" style="margin-bottom:2rem;">
+      <div class="form-group" style="flex:1; margin:0;">
+        <label class="form-label">Ville de départ</label>
+        <input type="text" id="filter-origin-city" class="form-input" placeholder="Ex: Paris">
+      </div>
+      <div class="form-group" style="flex:1; margin:0;">
+        <label class="form-label">Ville d'arrivée</label>
+        <input type="text" id="filter-dest-city" class="form-input" placeholder="Ex: Alger">
+      </div>
+      <div class="form-group" style="margin:0;">
+        <label class="form-label">Poids min (kg)</label>
+        <input type="number" id="filter-weight" class="form-input" placeholder="Ex: 5" style="width:120px;">
+      </div>
+      <button class="btn btn-primary" id="btn-filtrer">Filtrer</button>
+      <button class="btn btn-outline" id="btn-reset">Réinitialiser</button>
+    </div>
 
     <div id="alert-container"></div>
 
@@ -116,12 +116,75 @@
     </div>
   </div>
 
+  <!-- MODAL AVIS UTILISATEUR -->
+  <div id="avis-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:300; align-items:center; justify-content:center;">
+    <div class="card" style="width:100%; max-width:480px; max-height:80vh; overflow-y:auto; margin:1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+        <h2 id="avis-titre" style="font-size:1.1rem;">Avis</h2>
+        <button onclick="fermerAvis()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
+      </div>
+      <div id="avis-moyenne" style="text-align:center; margin-bottom:1.25rem;"></div>
+      <div id="avis-liste"></div>
+    </div>
+  </div>
+
   <script src="js/api.js"></script>
   <script>
-    // ===== VARIABLES GLOBALES =====
     let currentUser = null;
 
-    // ===== FONCTIONS GLOBALES =====
+    // ===== MODAL AVIS =====
+    async function voirAvis(userId, userName) {
+      document.getElementById("avis-titre").textContent = "Avis sur " + userName;
+      document.getElementById("avis-moyenne").innerHTML = "<p style='color:var(--gray-400);'>Chargement...</p>";
+      document.getElementById("avis-liste").innerHTML = "";
+      document.getElementById("avis-overlay").style.display = "flex";
+
+      try {
+        const data = await apiCall("/reviews/user/" + userId);
+
+        if (data.total === 0) {
+          document.getElementById("avis-moyenne").innerHTML = `
+            <p style="color:var(--gray-400); font-size:0.9rem;">Aucun avis pour le moment.</p>`;
+          return;
+        }
+
+        // Moyenne
+        const etoiles = "★".repeat(Math.round(data.average)) + "☆".repeat(5 - Math.round(data.average));
+        document.getElementById("avis-moyenne").innerHTML = `
+          <div style="font-size:1.8rem; color:#f59e0b;">${etoiles}</div>
+          <div style="font-weight:700; font-size:1.1rem; margin-top:4px;">${data.average} / 5</div>
+          <div style="font-size:0.85rem; color:var(--gray-400);">${data.total} avis</div>`;
+
+        // Liste des avis
+        document.getElementById("avis-liste").innerHTML = data.reviews.map(r => {
+          const etoilesR = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
+          const date = new Date(r.created_at).toLocaleDateString("fr-FR", {
+            day: "numeric", month: "long", year: "numeric"
+          });
+          return `
+            <div style="border-top:1px solid var(--gray-100); padding:1rem 0;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <div style="font-weight:600; font-size:0.9rem;">
+                  ${r.reviewer.first_name} ${r.reviewer.last_name}
+                </div>
+                <div style="color:#f59e0b; font-size:0.95rem;">${etoilesR}</div>
+              </div>
+              ${r.comment ? `<p style="font-size:0.875rem; color:var(--gray-600); margin:0;">${r.comment}</p>` : ""}
+              <div style="font-size:0.75rem; color:var(--gray-400); margin-top:4px;">${date}</div>
+            </div>`;
+        }).join("");
+
+      } catch(e) {
+        document.getElementById("avis-moyenne").innerHTML =
+          "<p style='color:var(--danger);'>Impossible de charger les avis.</p>";
+      }
+    }
+
+    function fermerAvis() {
+      document.getElementById("avis-overlay").style.display = "none";
+    }
+
+    // ===== TRAJETS =====
     async function supprimerTrajet(tripId) {
       if (!confirm("Voulez-vous vraiment supprimer ce trajet ?")) return;
       try {
@@ -141,7 +204,6 @@
       if (destCity) params.dest_city = destCity;
       if (originCity) params.origin_city = originCity;
       if (minWeight) params.min_weight = minWeight;
-
       try {
         const data = await TripsAPI.search(params);
         renderTrips(data.trips);
@@ -152,7 +214,7 @@
 
     function resetFilters() {
       document.getElementById("filter-dest-city").value = "";
-      document.getElementById("filter-dest-country").value = "";
+      document.getElementById("filter-origin-city").value = "";
       document.getElementById("filter-weight").value = "";
       searchTrips();
     }
@@ -179,8 +241,11 @@
           </div>
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div style="font-size:0.85rem; color:var(--gray-600);">
-              ${trip.carrier.first_name} ${trip.carrier.last_name}
-              <span class="stars">★</span> ${trip.carrier.rating || "Nouveau"}
+              <span onclick="voirAvis(${trip.user_id}, '${trip.carrier.first_name} ${trip.carrier.last_name}')"
+                style="cursor:pointer; text-decoration:underline; text-underline-offset:3px;">
+                ${trip.carrier.first_name} ${trip.carrier.last_name}
+              </span>
+              <span style="color:#f59e0b;">★</span> ${trip.carrier.rating || "Nouveau"}
             </div>
             ${getStatusBadge(trip.status)}
           </div>
@@ -231,11 +296,9 @@
       }
     }
 
-    // ===== INITIALISATION =====
     (async () => {
       await requireSubscription();
       updateNavbar();
-
       currentUser = Auth.getUser();
 
       document.getElementById("btn-publier").addEventListener("click", ouvrirFormulaire);
@@ -247,8 +310,8 @@
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get("dest_city")) {
         document.getElementById("filter-dest-city").value = urlParams.get("dest_city");
-		document.getElementById("filter-origin-city").value = urlParams.get("origin_city");
-		} 
+        document.getElementById("filter-origin-city").value = urlParams.get("origin_city") || "";
+      }
       searchTrips();
     })();
   </script>
