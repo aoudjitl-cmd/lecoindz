@@ -27,17 +27,28 @@ app.include_router(subscriptions.router, prefix="/subscriptions", tags=["Abonnem
 app.include_router(direct_messages.router, prefix="/direct", tags=["Messages directs"])
 app.include_router(reviews.router, prefix="/reviews", tags=["Avis"])
 
-@app.get("/admin/migrate-verification")
-def migrate_verification():
+@app.get("/admin/free-unverified-emails")
+def free_unverified_emails():
     from src.config.database import get_connection
     conn = get_connection()
     cursor = conn.cursor()
-    try:
-        cursor.execute("ALTER TABLE CG_USERS ADD COLUMN verification_token VARCHAR(100) NULL")
-        conn.commit()
-        return {"status": "ok"}
-    except Exception as e:
-        return {"status": "skip", "reason": str(e)}
-    finally:
-        cursor.close()
-        conn.close()
+    cursor.execute("UPDATE CG_USERS SET email = CONCAT(email, '_old') WHERE is_verified = 0")
+    conn.commit()
+    affected = cursor.rowcount
+    cursor.close()
+    conn.close()
+    return {"updated": affected}
+	
+	
+	
+@app.get("/admin/verify-existing-users")
+def verify_existing_users():
+    from src.config.database import get_connection
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE CG_USERS SET is_verified = 1 WHERE is_verified = 0")
+    conn.commit()
+    affected = cursor.rowcount
+    cursor.close()
+    conn.close()
+    return {"updated": affected}

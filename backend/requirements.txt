@@ -8,3 +8,4 @@ python-multipart
 email-validator
 pydantic-settings
 stripe
+resend

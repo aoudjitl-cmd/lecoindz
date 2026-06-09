@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from src.config.database import get_connection
 
 def find_user_by_email(email: str):
@@ -23,11 +24,44 @@ def create_user(email: str, password: str, first_name: str, last_name: str,
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        """INSERT INTO CG_USERS (email, password, first_name, last_name, phone, cgu_accepted_at, cgu_version)
-           VALUES (%s, %s, %s, %s, %s, %s, %s)""",
+        """INSERT INTO CG_USERS (email, password, first_name, last_name, phone, cgu_accepted_at, cgu_version, is_verified)
+           VALUES (%s, %s, %s, %s, %s, %s, %s, 0)""",
         (email, password, first_name, last_name, phone, cgu_accepted_at, cgu_version)
     )
     conn.commit()
     cursor.close()
     conn.close()
     return find_user_by_email(email)
+
+def set_verification_token(user_id: int, token: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE CG_USERS SET verification_token = %s WHERE id = %s",
+        (token, user_id)
+    )
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+def verify_user_token(token: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT id, email, first_name, last_name FROM CG_USERS WHERE verification_token = %s AND is_verified = 0",
+        (token,)
+    )
+    row = cursor.fetchone()
+    if not row:
+        cursor.close()
+        conn.close()
+        return None
+    # Activer le compte et supprimer le token
+    cursor.execute(
+        "UPDATE CG_USERS SET is_verified = 1, verification_token = NULL WHERE id = %s",
+        (row[0],)
+    )
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return {"id": row[0], "email": row[1], "first_name": row[2], "last_name": row[3]}
