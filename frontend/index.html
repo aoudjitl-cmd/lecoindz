@@ -131,7 +131,13 @@
                 👤 ${trip.carrier.first_name} ${trip.carrier.last_name}
                 <span class="stars">★</span> ${trip.carrier.rating || "Nouveau"}
               </div>
-              <a href="trips.html?id=${trip.id}" class="btn btn-primary btn-sm">Voir</a>
+              <div style="display:flex; gap:0.5rem;">
+                <a href="direct-chat.html?user_id=${trip.user_id}&name=${encodeURIComponent(trip.carrier.first_name + ' ' + trip.carrier.last_name)}"
+                  class="btn btn-outline btn-sm">
+                  Contacter
+                </a>
+                <a href="trips.html?id=${trip.id}" class="btn btn-primary btn-sm">Voir</a>
+              </div>
             </div>
           </div>
         `).join("");

@@ -237,9 +237,15 @@
                 <span class="stars">★</span> ${p.sender.rating || "Nouveau"}
               </div>
               ${p.status === "PENDING" && p.user_id !== user?.id ? `
-                <button class="btn btn-primary btn-sm" onclick="ouvrirBooking(${p.id})">
-                  Je transporte
-                </button>` : p.status === "PENDING" && p.user_id === user?.id ? `
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end;">
+                  <a href="direct-chat.html?user_id=${p.user_id}&name=${encodeURIComponent(p.sender.first_name + ' ' + p.sender.last_name)}"
+                    class="btn btn-outline btn-sm">
+                    Contacter l'expéditeur
+                  </a>
+                  <button class="btn btn-primary btn-sm" onclick="ouvrirBooking(${p.id})">
+                    Je transporte
+                  </button>
+                </div>` : p.status === "PENDING" && p.user_id === user?.id ? `
                 <span style="font-size:0.8rem; color:var(--gray-400);">📦 Votre colis</span>
               ` : ""}
             </div>
