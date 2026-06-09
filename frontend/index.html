@@ -179,16 +179,17 @@
                 👤 <span onclick="voirAvis(${trip.user_id}, '${trip.carrier.first_name} ${trip.carrier.last_name}')"
                   style="cursor:pointer; text-decoration:underline; text-underline-offset:3px;">
                   ${trip.carrier.first_name} ${trip.carrier.last_name}
-                </span>
+                </span><br>
                 <span style="color:#f59e0b;">★</span> ${trip.carrier.rating || "Nouveau"}
               </div>
-              <div style="display:flex; gap:0.5rem;">
-                <a href="direct-chat.html?user_id=${trip.user_id}&name=${encodeURIComponent(trip.carrier.first_name + ' ' + trip.carrier.last_name)}"
-                  class="btn btn-outline btn-sm">
-                  Contacter
-                </a>
-                <a href="trips.html?id=${trip.id}" class="btn btn-primary btn-sm">Voir</a>
-              </div>
+              <a href="trips.html?id=${trip.id}" class="btn btn-primary btn-sm">Voir</a>
+            </div>
+            <div style="margin-top:0.75rem;">
+              <a href="direct-chat.html?user_id=${trip.user_id}&name=${encodeURIComponent(trip.carrier.first_name + ' ' + trip.carrier.last_name)}"
+                class="btn btn-outline btn-full btn-sm">
+                Contacter le voyageur
+              </a>
+            </div>
             </div>
           </div>
         `).join("");
