@@ -21,12 +21,21 @@ def find_user_by_email(email: str):
 
 def create_user(email: str, password: str, first_name: str, last_name: str,
                 phone: str = None, cgu_accepted_at: str = None, cgu_version: str = "1.0"):
+    # Convertir le format ISO (2026-06-09T15:13:18.397Z) en format MySQL (2026-06-09 15:13:18)
+    cgu_dt = None
+    if cgu_accepted_at:
+        try:
+            from datetime import datetime
+            cgu_dt = datetime.fromisoformat(cgu_accepted_at.replace("Z", "+00:00")).strftime("%Y-%m-%d %H:%M:%S")
+        except Exception:
+            cgu_dt = None
+
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
         """INSERT INTO CG_USERS (email, password, first_name, last_name, phone, cgu_accepted_at, cgu_version, is_verified)
            VALUES (%s, %s, %s, %s, %s, %s, %s, 0)""",
-        (email, password, first_name, last_name, phone, cgu_accepted_at, cgu_version)
+        (email, password, first_name, last_name, phone, cgu_dt, cgu_version)
     )
     conn.commit()
     cursor.close()
