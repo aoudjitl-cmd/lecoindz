@@ -11,7 +11,7 @@
   <nav class="navbar">
     <a href="index.html" class="navbar-brand">📦 RayahDZ</a>
     <div class="navbar-nav">
-	  <a href="dashboard.html" class="nav-link">📋 <span>Dashboard</span></a>
+      <a href="dashboard.html" class="nav-link">📋 <span>Dashboard</span></a>
       <a href="trips.html" class="nav-link"><span>✈️</span> <span>Trajets</span></a>
       <a href="parcels.html" class="nav-link"><span>📦</span> <span>Colis</span></a>
       <a href="conversations.html" class="nav-link" id="nav-messages">💬 Messages</a>
@@ -49,29 +49,58 @@
 
   </div>
 
+  <!-- MODAL AVIS -->
+  <div id="avis-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center;">
+    <div class="card" style="width:100%; max-width:420px; margin:1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <h2 style="font-size:1.2rem;">⭐ Laisser un avis</h2>
+        <button onclick="fermerAvis()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
+      </div>
+      <div id="alert-avis"></div>
+      <p id="avis-pour" style="color:var(--gray-600); margin-bottom:1rem; font-size:0.95rem;"></p>
+      <div style="margin-bottom:1.25rem;">
+        <label class="form-label">Note</label>
+        <div id="stars-container" style="display:flex; gap:0.5rem; font-size:2rem; cursor:pointer;">
+          <span class="star" data-value="1">☆</span>
+          <span class="star" data-value="2">☆</span>
+          <span class="star" data-value="3">☆</span>
+          <span class="star" data-value="4">☆</span>
+          <span class="star" data-value="5">☆</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Commentaire (optionnel)</label>
+        <textarea id="avis-comment" class="form-input" rows="3" placeholder="Decrivez votre experience..."></textarea>
+      </div>
+      <input type="hidden" id="avis-booking-id">
+      <input type="hidden" id="avis-rating" value="0">
+      <button class="btn btn-primary btn-full" id="btn-soumettre-avis">Publier l'avis</button>
+    </div>
+  </div>
+
   <script src="js/api.js"></script>
   <script>
     let tousLesBookings = [];
     let filtreActuel = "tous";
     let currentUser = null;
 
+    // ===== FILTRES =====
     function filtrerReservations(filtre) {
       filtreActuel = filtre;
       const tabs = ["tous", "pending", "accepted", "transit", "delivered"];
       tabs.forEach(t => {
-        const tab = document.getElementById(`tab-${t}`);
+        const tab = document.getElementById("tab-" + t);
         tab.className = t === filtre ? "btn btn-primary btn-sm" : "btn btn-outline btn-sm";
       });
-
       let filtered = tousLesBookings;
       if (filtre === "pending") filtered = tousLesBookings.filter(b => b.status === "PENDING");
       else if (filtre === "accepted") filtered = tousLesBookings.filter(b => b.status === "ACCEPTED");
       else if (filtre === "transit") filtered = tousLesBookings.filter(b => b.status === "IN_TRANSIT");
       else if (filtre === "delivered") filtered = tousLesBookings.filter(b => b.status === "DELIVERED");
-
       renderBookings(filtered);
     }
 
+    // ===== STATUT =====
     async function changerStatut(bookingId, status) {
       try {
         await BookingsAPI.updateStatus(bookingId, status);
@@ -82,6 +111,65 @@
       }
     }
 
+    // ===== AVIS =====
+    function ouvrirAvis(bookingId, reviewedId, reviewedName) {
+      document.getElementById("avis-booking-id").value = bookingId;
+      document.getElementById("avis-rating").value = 0;
+      document.getElementById("avis-comment").value = "";
+      document.getElementById("avis-pour").textContent = "Votre avis sur : " + reviewedName;
+      document.getElementById("avis-overlay").style.display = "flex";
+      resetStars();
+    }
+
+    function fermerAvis() {
+      document.getElementById("avis-overlay").style.display = "none";
+    }
+
+    function resetStars() {
+      document.querySelectorAll(".star").forEach(s => s.textContent = "☆");
+      document.getElementById("avis-rating").value = 0;
+    }
+
+    function setStars(value) {
+      document.querySelectorAll(".star").forEach(s => {
+        s.textContent = parseInt(s.dataset.value) <= value ? "★" : "☆";
+      });
+      document.getElementById("avis-rating").value = value;
+    }
+
+    document.querySelectorAll(".star").forEach(star => {
+      star.addEventListener("click", () => setStars(parseInt(star.dataset.value)));
+      star.addEventListener("mouseover", () => {
+        document.querySelectorAll(".star").forEach(s => {
+          s.textContent = parseInt(s.dataset.value) <= parseInt(star.dataset.value) ? "★" : "☆";
+        });
+      });
+      star.addEventListener("mouseout", () => {
+        setStars(parseInt(document.getElementById("avis-rating").value));
+      });
+    });
+
+    document.getElementById("btn-soumettre-avis").addEventListener("click", async () => {
+      const rating = parseInt(document.getElementById("avis-rating").value);
+      if (rating === 0) {
+        showAlert("Veuillez selectionner une note.", "error", "alert-avis");
+        return;
+      }
+      try {
+        await apiCall("/reviews/", "POST", {
+          booking_id: parseInt(document.getElementById("avis-booking-id").value),
+          rating: rating,
+          comment: document.getElementById("avis-comment").value || null
+        });
+        fermerAvis();
+        showAlert("Avis publie avec succes !", "success");
+        await loadBookings();
+      } catch(e) {
+        showAlert(e.message, "error", "alert-avis");
+      }
+    });
+
+    // ===== RENDU RESERVATIONS =====
     function renderBookings(bookings) {
       const container = document.getElementById("bookings-container");
       const user = currentUser;
@@ -98,30 +186,28 @@
       container.innerHTML = bookings.map(b => {
         const isCarrier = b.carrier_id === user.id;
         const role = isCarrier ? "Vous transportez" : "Votre colis";
-
         const actions = [];
 
-        // L'expediteur accepte ou refuse toujours
         if (!isCarrier && b.status === "PENDING") {
           actions.push(`<button class="btn btn-secondary btn-sm" onclick="changerStatut(${b.id}, 'ACCEPTED')">Accepter</button>`);
           actions.push(`<button class="btn btn-danger btn-sm" onclick="changerStatut(${b.id}, 'CANCELLED')">Refuser</button>`);
         }
-
-        // Le voyageur attend
         if (isCarrier && b.status === "PENDING") {
           actions.push(`<span style="font-size:0.8rem; color:var(--gray-400);">En attente de l'expediteur</span>`);
         }
-
-
-        // Le voyageur confirme la prise en charge — sans condition de paiement
-if (isCarrier && b.status === "ACCEPTED") {
-  actions.push(`<button class="btn btn-primary btn-sm" onclick="changerStatut(${b.id}, 'IN_TRANSIT')">Prise en charge</button>`);
-}
-
-// L'expediteur confirme la livraison
-if (!isCarrier && b.status === "IN_TRANSIT") {
-  actions.push(`<button class="btn btn-secondary btn-sm" onclick="changerStatut(${b.id}, 'DELIVERED')">Confirmer livraison</button>`);
-}
+        if (isCarrier && b.status === "ACCEPTED") {
+          actions.push(`<button class="btn btn-primary btn-sm" onclick="changerStatut(${b.id}, 'IN_TRANSIT')">Prise en charge</button>`);
+        }
+        if (!isCarrier && b.status === "IN_TRANSIT") {
+          actions.push(`<button class="btn btn-secondary btn-sm" onclick="changerStatut(${b.id}, 'DELIVERED')">Confirmer livraison</button>`);
+        }
+        if (b.status === "DELIVERED") {
+          const reviewedId = isCarrier ? b.sender_id : b.carrier_id;
+          const reviewedName = isCarrier
+            ? b.sender.first_name + " " + b.sender.last_name
+            : b.carrier.first_name + " " + b.carrier.last_name;
+          actions.push(`<button class="btn btn-outline btn-sm" onclick="ouvrirAvis(${b.id}, ${reviewedId}, '${reviewedName}')">⭐ Laisser un avis</button>`);
+        }
 
         return `
           <div class="card" style="margin-bottom:1rem;">
@@ -145,7 +231,6 @@ if (!isCarrier && b.status === "IN_TRANSIT") {
                   <div style="margin-top:8px; font-size:0.8rem; color:var(--gray-600);">
                     Code livraison : <strong>${b.delivery_code}</strong>
                   </div>` : ""}
-
               </div>
             </div>
             <div style="margin-top:1rem; display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
@@ -158,10 +243,10 @@ if (!isCarrier && b.status === "IN_TRANSIT") {
       }).join("");
     }
 
+    // ===== CHARGEMENT =====
     async function loadBookings() {
       try {
         const data = await BookingsAPI.getMine();
-
         if (data.bookings.length === 0) {
           tousLesBookings = [];
           document.getElementById("bookings-container").innerHTML = `
@@ -172,7 +257,6 @@ if (!isCarrier && b.status === "IN_TRANSIT") {
             </div>`;
           return;
         }
-
         tousLesBookings = await Promise.all(
           data.bookings.map(async b => {
             let paymentStatus = "NOT_PAID";
@@ -183,9 +267,7 @@ if (!isCarrier && b.status === "IN_TRANSIT") {
             return { ...b, paymentStatus };
           })
         );
-
         filtrerReservations(filtreActuel);
-
       } catch (e) {
         showAlert(e.message);
       }
@@ -200,7 +282,7 @@ if (!isCarrier && b.status === "IN_TRANSIT") {
             const unread = msgs.messages.filter(m =>
               m.sender_id !== currentUser.id && m.is_read === 0
             ).length;
-            const badge = document.getElementById(`unread-${b.id}`);
+            const badge = document.getElementById("unread-" + b.id);
             if (badge && unread > 0) {
               badge.textContent = unread;
               badge.style.display = "inline";
@@ -213,13 +295,10 @@ if (!isCarrier && b.status === "IN_TRANSIT") {
     (async () => {
       await requireSubscription();
       updateNavbar();
-
       currentUser = Auth.getUser();
-
       if (currentUser) {
-        document.getElementById("welcome-title").textContent = `Bonjour, ${currentUser.first_name} !`;
+        document.getElementById("welcome-title").textContent = "Bonjour, " + currentUser.first_name + " !";
       }
-
       await loadBookings();
       loadUnreadCounts();
       setInterval(loadUnreadCounts, 10000);
