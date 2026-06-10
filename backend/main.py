@@ -65,3 +65,18 @@ def show_tables():
     cursor.close()
     conn.close()
     return {"tables": [r[0] for r in rows]}
+
+@app.get("/admin/migrate-is-admin")
+def migrate_is_admin():
+    from src.config.database import get_connection
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("ALTER TABLE CG_USERS ADD COLUMN is_admin TINYINT(1) NOT NULL DEFAULT 0")
+        conn.commit()
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "skip", "reason": str(e)}
+    finally:
+        cursor.close()
+        conn.close()
