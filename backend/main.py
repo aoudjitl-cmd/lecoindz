@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.routes import auth, trips, parcels, bookings, messages, payments, subscriptions, direct_messages, reviews
+from src.routes import auth, trips, parcels, bookings, messages, payments, subscriptions, direct_messages, reviews, admin
 
 app = FastAPI(
     title="RayahDZ API",
@@ -26,6 +26,7 @@ app.include_router(payments.router, prefix="/payments", tags=["Paiements"])
 app.include_router(subscriptions.router, prefix="/subscriptions", tags=["Abonnements"])
 app.include_router(direct_messages.router, prefix="/direct", tags=["Messages directs"])
 app.include_router(reviews.router, prefix="/reviews", tags=["Avis"])
+app.include_router(admin.router, prefix="/admin-api", tags=["Administration"])
 
 @app.get("/admin/free-unverified-emails2")
 def free_unverified_emails2():
