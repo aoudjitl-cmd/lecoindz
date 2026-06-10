@@ -74,7 +74,7 @@ def create_checkout(current_user=Depends(get_current_user)):
             }],
             mode="subscription",
             subscription_data={
-                "trial_period_days": 30
+                "trial_period_days": 0
             },
             success_url="https://www.rayahdz.com/subscription-success.html?session_id={CHECKOUT_SESSION_ID}",
             cancel_url="https://www.rayahdz.com/subscription.html",
