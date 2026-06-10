@@ -35,11 +35,11 @@
       <div id="form-login">
         <div class="form-group">
           <label class="form-label">Email</label>
-          <input type="email" id="login-email" class="form-input" placeholder="votre@email.com" autocomplete="email">
+          <input type="email" id="login-email" class="form-input" placeholder="votre@email.com">
         </div>
         <div class="form-group">
           <label class="form-label">Mot de passe</label>
-          <input type="password" id="login-password" class="form-input" placeholder="••••••••" autocomplete="current-password">
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••">
         </div>
         <button class="btn btn-primary btn-full" id="btn-login">Se connecter</button>
       </div>
@@ -111,6 +111,8 @@
 
     async function handleLogin() {
       const btn = document.getElementById("btn-login");
+      const alertContainer = document.getElementById("alert-container");
+      alertContainer.innerHTML = "";
       btn.disabled = true;
       btn.textContent = "Connexion...";
       try {
@@ -121,7 +123,13 @@
         Auth.setSession(data.token, data.user);
         window.location.href = "index.html";
       } catch (e) {
-        showAlert(e.message);
+        // Afficher l'erreur de facon permanente sans timeout
+        alertContainer.innerHTML = `
+          <div class="alert alert-error" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>${e.message}</span>
+            <button onclick="document.getElementById('alert-container').innerHTML=''"
+              style="background:none; border:none; cursor:pointer; font-size:1.2rem; color:inherit; margin-left:1rem;">✕</button>
+          </div>`;
         btn.disabled = false;
         btn.textContent = "Se connecter";
       }
