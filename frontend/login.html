@@ -3,21 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Colisgo - Connexion</title>
+  <title>RayahDZ - Connexion</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); min-height:100vh; display:flex; align-items:center; justify-content:center;">
 
   <div style="width:100%; max-width:420px; padding:1rem;">
     <div style="text-align:center; margin-bottom:2rem;">
-      <a href="index.html" style="font-size:1.8rem; font-weight:800; color:white;">Colisgo</a>
+      <a href="index.html" style="font-size:1.8rem; font-weight:800; color:white;">📦 RayahDZ</a>
       <p style="color:rgba(255,255,255,0.8); margin-top:0.5rem; font-size:0.9rem;">
         Envoyez vos colis avec des voyageurs
       </p>
     </div>
 
     <div class="card">
-      <!-- Onglets -->
       <div style="display:flex; border-bottom:1px solid var(--gray-200); margin-bottom:1.5rem;">
         <button id="tab-login" onclick="switchTab('login')"
           style="flex:1; padding:12px; border:none; background:none; font-weight:600; color:var(--primary); border-bottom:2px solid var(--primary); cursor:pointer;">
@@ -68,16 +67,13 @@
           <label class="form-label">Mot de passe</label>
           <input type="password" id="reg-password" class="form-input" placeholder="••••••••">
         </div>
-
-        <!-- CGU CHECKBOX -->
         <div class="form-group cgu-container">
           <input type="checkbox" id="acceptCGU">
           <label for="acceptCGU">
-            J'accepte les <a href="Cgu.html" target="_blank">Conditions Générales d'Utilisation</a>
+            J'accepte les <a href="cgu.html" target="_blank">Conditions Générales d'Utilisation</a>
           </label>
-          <span id="cguError">Vous devez accepter les CGU pour continuer.</span>
+          <span id="cguError" style="display:none; color:var(--danger); font-size:0.85rem;">Vous devez accepter les CGU pour continuer.</span>
         </div>
-
         <button class="btn btn-primary btn-full" id="btn-register">Creer mon compte</button>
       </div>
     </div>
@@ -91,10 +87,8 @@
 
   <script src="js/api.js"></script>
   <script>
-    // Si deja connecte, rediriger vers index
     if (Auth.isLoggedIn()) window.location.href = "index.html";
 
-    // Lire le parametre mode dans l'URL
     const params = new URLSearchParams(window.location.search);
     if (params.get("mode") === "register") switchTab("register");
 
@@ -107,6 +101,7 @@
       document.getElementById("tab-register").style.color = tab === "register" ? "var(--primary)" : "var(--gray-400)";
       document.getElementById("tab-register").style.borderBottom = tab === "register" ? "2px solid var(--primary)" : "none";
       document.getElementById("tab-register").style.fontWeight = tab === "register" ? "600" : "400";
+      document.getElementById("alert-container").innerHTML = "";
     }
 
     async function handleLogin() {
@@ -121,19 +116,12 @@
 
       try {
         const data = await AuthAPI.login({ email: emailVal, password: passVal });
-
-        if (!data || !data.token) {
-          throw new Error("Reponse invalide du serveur");
-        }
-
+        if (!data || !data.token) throw new Error("Reponse invalide du serveur");
         Auth.setSession(data.token, data.user);
         window.location.href = "index.html";
-
       } catch (e) {
-        // Restaurer les valeurs des champs apres l'erreur
         document.getElementById("login-email").value = emailVal;
         document.getElementById("login-password").value = passVal;
-
         alertContainer.innerHTML = `
           <div class="alert alert-error" style="display:flex; justify-content:space-between; align-items:center;">
             <span>${e.message}</span>
@@ -146,7 +134,6 @@
     }
 
     async function handleRegister() {
-      // Validation CGU
       const checkbox = document.getElementById("acceptCGU");
       const cguError = document.getElementById("cguError");
       if (!checkbox.checked) {
@@ -155,12 +142,14 @@
       }
       cguError.style.display = "none";
 
+      const emailVal = document.getElementById("reg-email").value;
       const btn = document.getElementById("btn-register");
       btn.disabled = true;
       btn.textContent = "Creation...";
+
       try {
-        const data = await AuthAPI.register({
-          email: document.getElementById("reg-email").value,
+        await AuthAPI.register({
+          email: emailVal,
           password: document.getElementById("reg-password").value,
           first_name: document.getElementById("reg-firstname").value,
           last_name: document.getElementById("reg-lastname").value,
@@ -168,8 +157,19 @@
           cgu_accepted_at: new Date().toISOString(),
           cgu_version: "1.0"
         });
-        Auth.setSession(data.token, data.user);
-        window.location.href = "index.html";
+
+        // Afficher message de confirmation — ne pas connecter
+        document.getElementById("form-register").style.display = "none";
+        document.getElementById("alert-container").innerHTML = `
+          <div class="alert alert-success" style="text-align:center; padding:1.5rem;">
+            <div style="font-size:2rem; margin-bottom:0.5rem;">📧</div>
+            <div style="font-weight:600; margin-bottom:0.5rem;">Compte créé avec succès !</div>
+            <div style="font-size:0.9rem;">
+              Un email de vérification a été envoyé à <strong>${emailVal}</strong>.<br>
+              Cliquez sur le lien dans l'email pour activer votre compte.
+            </div>
+          </div>`;
+
       } catch (e) {
         showAlert(e.message);
         btn.disabled = false;
@@ -180,7 +180,6 @@
     document.getElementById("btn-login").addEventListener("click", handleLogin);
     document.getElementById("btn-register").addEventListener("click", handleRegister);
 
-    // Connexion avec la touche Entree
     document.getElementById("login-password").addEventListener("keydown", (e) => {
       if (e.key === "Enter") handleLogin();
     });
