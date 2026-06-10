@@ -6,16 +6,16 @@
   <title>RayahDZ — Administration</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .admin-container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+    .admin-container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
     .stat-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 1.25rem; text-align: center; }
     .stat-value { font-size: 2rem; font-weight: 800; color: var(--primary); }
     .stat-label { font-size: 0.85rem; color: var(--gray-400); margin-top: 4px; }
     .users-table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-    .users-table th { background: var(--gray-100); padding: 12px 16px; text-align: left; font-size: 0.8rem; color: var(--gray-600); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .users-table th { background: var(--gray-100); padding: 12px 16px; text-align: left; font-size: 0.8rem; color: var(--gray-600); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
     .users-table td { padding: 12px 16px; border-top: 1px solid var(--gray-100); font-size: 0.875rem; vertical-align: middle; }
     .users-table tr:hover td { background: var(--gray-50, #f9fafb); }
-    .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
     .search-input { padding: 10px 14px; border: 1px solid var(--gray-200); border-radius: var(--radius-sm); font-size: 0.9rem; width: 100%; max-width: 320px; outline: none; }
     .search-input:focus { border-color: var(--primary); }
     #login-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); display: flex; align-items: center; justify-content: center; z-index: 1000; }
@@ -61,7 +61,7 @@
     </div>
 
     <!-- STATS -->
-    <div class="stats-grid" id="stats-grid">
+    <div class="stats-grid">
       <div class="stat-card"><div class="stat-value" id="stat-total">—</div><div class="stat-label">Utilisateurs</div></div>
       <div class="stat-card"><div class="stat-value" id="stat-verified">—</div><div class="stat-label">Vérifiés</div></div>
       <div class="stat-card"><div class="stat-value" id="stat-active">—</div><div class="stat-label">Abonnés actifs</div></div>
@@ -84,12 +84,13 @@
             <th>Inscrit le</th>
             <th>Vérifié</th>
             <th>Abonnement</th>
+            <th>Fin d'essai</th>
             <th>Note</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody id="users-tbody">
-          <tr><td colspan="8" style="text-align:center; color:var(--gray-400); padding:2rem;">Chargement...</td></tr>
+          <tr><td colspan="9" style="text-align:center; color:var(--gray-400); padding:2rem;">Chargement...</td></tr>
         </tbody>
       </table>
     </div>
@@ -128,8 +129,6 @@
           password: document.getElementById("admin-password").value,
         });
         Auth.setSession(data.token, data.user);
-
-        // Verifier que c'est bien un admin
         try {
           await apiCall("/admin-api/users");
           document.getElementById("login-overlay").style.display = "none";
@@ -173,13 +172,13 @@
     function renderUsers(users) {
       const tbody = document.getElementById("users-tbody");
       if (users.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--gray-400); padding:2rem;">Aucun utilisateur trouvé.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--gray-400); padding:2rem;">Aucun utilisateur trouvé.</td></tr>`;
         return;
       }
       tbody.innerHTML = users.map(u => {
         const subBadge = {
-          "ACTIVE": `<span class="badge badge-success">Actif</span>`,
-          "TRIAL": `<span class="badge badge-warning">Essai</span>`,
+          "ACTIVE":    `<span class="badge badge-success">Actif</span>`,
+          "TRIAL":     `<span class="badge badge-warning">Essai</span>`,
           "CANCELLED": `<span class="badge badge-danger">Annulé</span>`,
         }[u.subscription_status] || `<span class="badge badge-info">${u.subscription_status || "—"}</span>`;
 
@@ -187,16 +186,33 @@
           day: "numeric", month: "short", year: "numeric"
         });
 
+        // Date de fin d'essai avec alerte si proche
+        let trialEndCell = "—";
+        if (u.trial_end) {
+          const trialDate = new Date(u.trial_end);
+          const today = new Date();
+          const daysLeft = Math.ceil((trialDate - today) / (1000 * 60 * 60 * 24));
+          const formattedTrial = trialDate.toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
+          if (daysLeft < 0) {
+            trialEndCell = `<span style="color:var(--danger);">${formattedTrial} (expiré)</span>`;
+          } else if (daysLeft <= 5) {
+            trialEndCell = `<span style="color:#f59e0b;">${formattedTrial} (${daysLeft}j)</span>`;
+          } else {
+            trialEndCell = `<span style="color:var(--gray-600);">${formattedTrial}</span>`;
+          }
+        }
+
         return `
           <tr>
             <td style="color:var(--gray-400);">#${u.id}</td>
             <td style="font-weight:600;">${u.first_name} ${u.last_name}${u.is_admin ? ' <span style="font-size:0.7rem; background:#7c3aed; color:white; padding:2px 6px; border-radius:4px;">ADMIN</span>' : ""}</td>
             <td>${u.email}</td>
-            <td style="color:var(--gray-400);">${date}</td>
+            <td style="color:var(--gray-400); white-space:nowrap;">${date}</td>
             <td>${u.is_verified
               ? '<span style="color:var(--secondary);">✅ Oui</span>'
               : '<span style="color:var(--danger);">❌ Non</span>'}</td>
             <td>${subBadge}</td>
+            <td style="white-space:nowrap;">${trialEndCell}</td>
             <td>${u.rating ? "★ " + u.rating + " (" + u.nb_ratings + ")" : "—"}</td>
             <td>
               <div class="actions">
@@ -207,6 +223,11 @@
                   <button class="btn btn-outline btn-sm" onclick="bloquerUser(${u.id}, '${u.first_name}')">
                     🚫 Bloquer
                   </button>`}
+                ${u.subscription_status === "TRIAL" && !u.is_admin ? `
+                  <button class="btn btn-warning btn-sm" style="background:#f59e0b; color:white; border:none;"
+                    onclick="stopTrial(${u.id}, '${u.first_name}')">
+                    ⏹ Arrêter essai
+                  </button>` : ""}
                 ${!u.is_admin ? `
                   <button class="btn btn-danger btn-sm" onclick="ouvrirDelete(${u.id}, '${u.first_name} ${u.last_name}')">
                     🗑️ Supprimer
@@ -245,6 +266,15 @@
       } catch(e) { showAlert(e.message); }
     }
 
+    async function stopTrial(userId, name) {
+      if (!confirm("Arreter la periode d'essai de " + name + " ? Il devra souscrire un abonnement payant pour continuer.")) return;
+      try {
+        await apiCall("/admin-api/users/" + userId + "/stop-trial", "PATCH");
+        showAlert("Periode d'essai de " + name + " arretee.", "success");
+        loadUsers();
+      } catch(e) { showAlert(e.message); }
+    }
+
     function ouvrirDelete(userId, userName) {
       userToDelete = userId;
       document.getElementById("delete-name").textContent = userName + " (#" + userId + ")";
@@ -270,16 +300,13 @@
     });
 
     // ===== INIT =====
-    // Si deja connecte, verifier si admin
     if (Auth.isLoggedIn()) {
       apiCall("/admin-api/users").then(data => {
         document.getElementById("login-overlay").style.display = "none";
         tousLesUsers = data.users;
         updateStats(data.users);
         renderUsers(data.users);
-      }).catch(() => {
-        // Pas admin, afficher l'ecran de connexion
-      });
+      }).catch(() => {});
     }
   </script>
 </body>
