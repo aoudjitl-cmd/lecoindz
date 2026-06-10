@@ -102,7 +102,8 @@ function showAlert(message, type = "error", containerId = "alert-container") {
   const container = document.getElementById(containerId);
   if (!container) return;
   container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
-  setTimeout(() => container.innerHTML = "", 4000);
+  const delay = type === "error" ? 8000 : 4000;
+  setTimeout(() => container.innerHTML = "", delay);
 }
 
 function formatDate(dateStr) {

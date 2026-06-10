@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RayahDZ - Connexion</title>
+  <title>Colisgo - Connexion</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); min-height:100vh; display:flex; align-items:center; justify-content:center;">
 
   <div style="width:100%; max-width:420px; padding:1rem;">
     <div style="text-align:center; margin-bottom:2rem;">
-      <a href="index.html" style="font-size:1.8rem; font-weight:800; color:white;">📦 RayahDZ</a>
+      <a href="index.html" style="font-size:1.8rem; font-weight:800; color:white;">Colisgo</a>
       <p style="color:rgba(255,255,255,0.8); margin-top:0.5rem; font-size:0.9rem;">
         Envoyez vos colis avec des voyageurs
       </p>
@@ -35,11 +35,11 @@
       <div id="form-login">
         <div class="form-group">
           <label class="form-label">Email</label>
-          <input type="email" id="login-email" class="form-input" placeholder="votre@email.com">
+          <input type="email" id="login-email" class="form-input" placeholder="votre@email.com" autocomplete="email">
         </div>
         <div class="form-group">
           <label class="form-label">Mot de passe</label>
-          <input type="password" id="login-password" class="form-input" placeholder="••••••••">
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••" autocomplete="current-password">
         </div>
         <button class="btn btn-primary btn-full" id="btn-login">Se connecter</button>
       </div>
@@ -141,7 +141,7 @@
       btn.disabled = true;
       btn.textContent = "Creation...";
       try {
-        await AuthAPI.register({
+        const data = await AuthAPI.register({
           email: document.getElementById("reg-email").value,
           password: document.getElementById("reg-password").value,
           first_name: document.getElementById("reg-firstname").value,
@@ -150,14 +150,8 @@
           cgu_accepted_at: new Date().toISOString(),
           cgu_version: "1.0"
         });
-        // Afficher message de confirmation au lieu de connecter
-        document.getElementById("form-register").style.display = "none";
-        showAlert(
-          "Compte cree ! Un email de verification a ete envoye a " +
-          document.getElementById("reg-email").value +
-          ". Cliquez sur le lien pour activer votre compte.",
-          "success"
-        );
+        Auth.setSession(data.token, data.user);
+        window.location.href = "index.html";
       } catch (e) {
         showAlert(e.message);
         btn.disabled = false;
