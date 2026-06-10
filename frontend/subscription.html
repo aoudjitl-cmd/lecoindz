@@ -73,7 +73,7 @@
       <div style="display:flex; flex-direction:column; gap:1rem;">
         <div class="card" style="padding:1rem;">
           <div style="font-weight:500; margin-bottom:4px;">Que se passe-t-il après le mois gratuit ?</div>
-          <div style="font-size:0.875rem; color:var(--gray-600);">Vous serez facturé 19.99€/mois automatiquement. Vous pouvez annuler à tout moment depuis votre dashboard.</div>
+          <div style="font-size:0.875rem; color:var(--gray-600);">Vous serez facturé 3.99€/mois automatiquement. Vous pouvez annuler à tout moment depuis votre dashboard.</div>
         </div>
         <div class="card" style="padding:1rem;">
           <div style="font-weight:500; margin-bottom:4px;">Comment annuler mon abonnement ?</div>
@@ -159,7 +159,7 @@
                 Votre abonnement a été annulé. Réabonnez-vous pour retrouver l'accès.
               </div>
             </div>`;
-          document.getElementById("btn-subscribe").textContent = "🔄 Se réabonner — 19.99€/mois";
+          document.getElementById("btn-subscribe").textContent = "🔄 Se réabonner — 3.99€/mois";
           btnNote.textContent = "Votre accès sera rétabli immédiatement.";
           document.getElementById("btn-subscribe").addEventListener("click", souscrire);
 
@@ -189,7 +189,7 @@
         showAlert(e.message);
         if (btn) {
           btn.disabled = false;
-          btn.textContent = "💳 S'abonner maintenant — 19.99€/mois";
+          btn.textContent = "💳 S'abonner maintenant — 3.99€/mois";
         }
       }
     }
