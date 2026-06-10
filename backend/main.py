@@ -94,3 +94,16 @@ def set_admin():
     cursor.close()
     conn.close()
     return {"updated": affected}
+	
+	
+	
+@app.get("/admin/show-direct-messages-columns")
+def show_dm_columns():
+    from src.config.database import get_connection
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SHOW COLUMNS FROM CG_DIRECT_MESSAGES")
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return {"columns": [r[0] for r in rows]}
