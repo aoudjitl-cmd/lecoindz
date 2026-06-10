@@ -80,3 +80,16 @@ def migrate_is_admin():
     finally:
         cursor.close()
         conn.close()
+		
+		
+@app.get("/admin/set-admin")
+def set_admin():
+    from src.config.database import get_connection
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE CG_USERS SET is_admin = 1 WHERE email = 'aoudjitl@gmail.com'")
+    conn.commit()
+    affected = cursor.rowcount
+    cursor.close()
+    conn.close()
+    return {"updated": affected}
