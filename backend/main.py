@@ -52,3 +52,16 @@ def verify_existing_users():
     cursor.close()
     conn.close()
     return {"updated": affected}
+	
+	
+	
+@app.get("/admin/show-tables")
+def show_tables():
+    from src.config.database import get_connection
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SHOW TABLES")
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return {"tables": [r[0] for r in rows]}
