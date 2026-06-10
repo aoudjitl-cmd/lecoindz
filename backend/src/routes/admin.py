@@ -84,6 +84,7 @@ def delete_user(user_id: int, current_user=Depends(require_admin)):
         raise
     except Exception as e:
         conn.rollback()
+        print(f"Erreur suppression user {user_id}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         cursor.close()
