@@ -25,8 +25,8 @@ async function apiCall(endpoint, method = "GET", body = null) {
 
   const response = await fetch(`${API_URL}${endpoint}`, options);
 
-  // Token expiré ou invalide → déconnexion propre
-  if (response.status === 401) {
+  // Token expiré ou invalide → déconnexion propre (sauf sur la page login)
+  if (response.status === 401 && !window.location.pathname.includes('login')) {
     Auth.logout();
     return;
   }
