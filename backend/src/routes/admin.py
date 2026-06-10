@@ -58,7 +58,15 @@ def delete_user(user_id: int, current_user=Depends(require_admin)):
 
         # Suppression en cascade dans l'ordre des dependances
         cursor.execute("DELETE FROM CG_REVIEWS WHERE reviewer_id = %s OR reviewed_id = %s", (user_id, user_id))
-        cursor.execute("DELETE FROM CG_DIRECT_MESSAGES WHERE sender_id = %s OR receiver_id = %s", (user_id, user_id))
+        # Supprimer les messages directs via les conversations
+        cursor.execute("""
+            SELECT id FROM CG_CONVERSATIONS
+            WHERE user1_id = %s OR user2_id = %s
+        """, (user_id, user_id))
+        conv_ids = [r[0] for r in cursor.fetchall()]
+        if conv_ids:
+            placeholders = ",".join(["%s"] * len(conv_ids))
+            cursor.execute(f"DELETE FROM CG_DIRECT_MESSAGES WHERE conversation_id IN ({placeholders})", conv_ids)
         cursor.execute("DELETE FROM CG_CONVERSATIONS WHERE user1_id = %s OR user2_id = %s", (user_id, user_id))
 
         # Recuperer les bookings de cet user pour supprimer les messages
