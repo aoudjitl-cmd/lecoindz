@@ -23,7 +23,7 @@ def get_users(current_user=Depends(require_admin)):
     cursor.execute("""
         SELECT id, email, first_name, last_name, phone,
                is_verified, is_admin, subscription_status,
-               rating, nb_ratings, created_at
+               rating, nb_ratings, created_at, trial_end
         FROM CG_USERS
         ORDER BY created_at DESC
     """)
@@ -38,7 +38,8 @@ def get_users(current_user=Depends(require_admin)):
             "is_admin": r[6], "subscription_status": r[7],
             "rating": float(r[8]) if r[8] else None,
             "nb_ratings": r[9],
-            "created_at": str(r[10])
+            "created_at": str(r[10]),
+            "trial_end": str(r[11]) if r[11] else None
         } for r in rows
     ]}
 
@@ -108,8 +109,19 @@ def verify_user(user_id: int, current_user=Depends(require_admin)):
     conn.close()
     return {"message": "Utilisateur verifie"}
 
-@router.patch("/users/{user_id}/block")
-def block_user(user_id: int, current_user=Depends(require_admin)):
+@router.patch("/users/{user_id}/stop-trial")
+def stop_trial(user_id: int, current_user=Depends(require_admin)):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE CG_USERS
+        SET subscription_status = 'CANCELLED', trial_end = CURDATE()
+        WHERE id = %s
+    """, (user_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return {"message": "Periode d'essai arretee"}
     if user_id == current_user["user_id"]:
         raise HTTPException(status_code=400, detail="Vous ne pouvez pas vous bloquer vous-meme")
     conn = get_connection()
