@@ -2,6 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.routes import auth, subscriptions, direct_messages, reviews, admin
+from src.routes import products, shoppers, orders
 
 app = FastAPI(
     title="LeCoinDZ API",
@@ -22,6 +23,9 @@ app.include_router(subscriptions.router, prefix="/subscriptions", tags=["Abonnem
 app.include_router(direct_messages.router, prefix="/direct", tags=["Messages directs"])
 app.include_router(reviews.router, prefix="/reviews", tags=["Avis"])
 app.include_router(admin.router, prefix="/admin-api", tags=["Administration"])
+app.include_router(products.router, prefix="/products", tags=["Produits"])
+app.include_router(shoppers.router, prefix="/shoppers", tags=["Shoppers"])
+app.include_router(orders.router, prefix="/orders", tags=["Commandes"])
 
 @app.get("/")
 def root():

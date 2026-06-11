@@ -5,7 +5,7 @@ def find_user_by_email(email: str):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        "SELECT id, email, password, first_name, last_name, phone, is_verified, rating FROM CG_USERS WHERE email = %s",
+        "SELECT id, email, password, first_name, last_name, phone, is_verified, rating FROM LCD_USERS WHERE email = %s",
         (email,)
     )
     row = cursor.fetchone()
@@ -19,9 +19,8 @@ def find_user_by_email(email: str):
         }
     return None
 
-def create_user(email: str, password: str, first_name: str, last_name: str,
-                phone: str = None, cgu_accepted_at: str = None, cgu_version: str = "1.0"):
-    # Convertir le format ISO (2026-06-09T15:13:18.397Z) en format MySQL (2026-06-09 15:13:18)
+def create_user(email, password, first_name, last_name,
+                phone=None, cgu_accepted_at=None, cgu_version="1.0"):
     cgu_dt = None
     if cgu_accepted_at:
         try:
@@ -33,8 +32,11 @@ def create_user(email: str, password: str, first_name: str, last_name: str,
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        """INSERT INTO CG_USERS (email, password, first_name, last_name, phone, cgu_accepted_at, cgu_version, is_verified)
-           VALUES (%s, %s, %s, %s, %s, %s, %s, 0)""",
+        """INSERT INTO LCD_USERS (email, password, first_name, last_name, phone,
+           cgu_accepted_at, cgu_version, is_verified, subscription_status,
+           trial_end)
+           VALUES (%s, %s, %s, %s, %s, %s, %s, 0, 'TRIAL',
+           DATE_ADD(CURDATE(), INTERVAL 30 DAY))""",
         (email, password, first_name, last_name, phone, cgu_dt, cgu_version)
     )
     conn.commit()
@@ -42,22 +44,19 @@ def create_user(email: str, password: str, first_name: str, last_name: str,
     conn.close()
     return find_user_by_email(email)
 
-def set_verification_token(user_id: int, token: str):
+def set_verification_token(user_id, token):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute(
-        "UPDATE CG_USERS SET verification_token = %s WHERE id = %s",
-        (token, user_id)
-    )
+    cursor.execute("UPDATE LCD_USERS SET verification_token = %s WHERE id = %s", (token, user_id))
     conn.commit()
     cursor.close()
     conn.close()
 
-def verify_user_token(token: str):
+def verify_user_token(token):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        "SELECT id, email, first_name, last_name FROM CG_USERS WHERE verification_token = %s AND is_verified = 0",
+        "SELECT id, email, first_name, last_name FROM LCD_USERS WHERE verification_token = %s AND is_verified = 0",
         (token,)
     )
     row = cursor.fetchone()
@@ -65,9 +64,8 @@ def verify_user_token(token: str):
         cursor.close()
         conn.close()
         return None
-    # Activer le compte et supprimer le token
     cursor.execute(
-        "UPDATE CG_USERS SET is_verified = 1, verification_token = NULL WHERE id = %s",
+        "UPDATE LCD_USERS SET is_verified = 1, verification_token = NULL WHERE id = %s",
         (row[0],)
     )
     conn.commit()
