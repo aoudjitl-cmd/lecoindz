@@ -68,7 +68,7 @@ def register(data: RegisterRequest):
                         Ce lien expire dans 24h. Si vous n'avez pas cree de compte, ignorez cet email.
                     </p>
                     <hr style="border:none; border-top:1px solid #e2e8f0; margin:1.5rem 0;">
-                    <p style="color:#94a3b8; font-size:0.8rem;">LeCoinDZ — Achetez en France, recevez en Algerie</p>
+                    <p style="color:#94a3b8; font-size:0.8rem;">LeCoinDZ - Achetez en France, recevez en Algerie</p>
                 </div>
             """
         })
