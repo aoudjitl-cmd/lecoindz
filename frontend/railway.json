@@ -1,0 +1,5 @@
+{
+  "deploy": {
+    "startCommand": "npx serve . -p $PORT"
+  }
+}
