@@ -3,89 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RayahDZ — Abonnement</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>LeCoinDZ � Abonnement</title>
   <style>
-    .pricing-container { max-width: 500px; margin: 3rem auto; padding: 0 1rem; text-align: center; }
-    .pricing-card { background: var(--white); border: 2px solid var(--primary); border-radius: var(--radius); padding: 2.5rem 2rem; box-shadow: var(--shadow-md); }
-    .price { font-size: 3rem; font-weight: 800; color: var(--primary); margin: 1rem 0; }
-    .price span { font-size: 1rem; font-weight: 400; color: var(--gray-400); }
-    .trial-badge { background: var(--secondary); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.875rem; font-weight: 600; display: inline-block; margin-bottom: 1.5rem; }
-    .features { list-style: none; padding: 0; margin: 1.5rem 0; text-align: left; }
-    .features li { padding: 8px 0; font-size: 0.95rem; color: var(--gray-600); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--gray-100); }
-    .features li:last-child { border-bottom: none; }
-    .status-card { background: var(--gray-100); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem; text-align: left; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; }
+    .navbar { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 0 1.5rem; display: flex; align-items: center; gap: 1rem; height: 56px; }
+    .navbar-brand { font-size: 1.4rem; font-weight: 800; color: #e63946; text-decoration: none; }
+    .navbar-brand span { color: #1a1a1a; }
+    .navbar-nav { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
+    .nav-link { color: #444; text-decoration: none; font-size: 0.875rem; }
+    .container { max-width: 480px; margin: 3rem auto; padding: 0 1rem; text-align: center; }
+    .pricing-card { background: white; border: 2px solid #e63946; border-radius: 12px; padding: 2.5rem 2rem; }
+    .badge { display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: 0.875rem; font-weight: 600; margin-bottom: 1.5rem; }
+    .badge-trial { background: #e63946; color: white; }
+    .price { font-size: 3rem; font-weight: 800; color: #e63946; margin: 1rem 0; }
+    .price span { font-size: 1rem; font-weight: 400; color: #888; }
+    .features { list-style: none; text-align: left; margin: 1.5rem 0; }
+    .features li { padding: 8px 0; font-size: 0.95rem; color: #444; border-bottom: 1px solid #f5f5f5; }
+    .btn { padding: 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 1rem; font-weight: 700; width: 100%; }
+    .btn-primary { background: #e63946; color: white; }
+    .btn-primary:hover { background: #c1121f; }
+    .btn-danger { background: #dc2626; color: white; }
+    .btn:disabled { opacity: 0.6; }
+    .status-card { background: #f5f5f5; border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem; text-align: left; }
+    .alert { padding: 12px; border-radius: 6px; margin-bottom: 1rem; font-size: 0.875rem; }
+    .alert-error { background: #fff5f5; color: #c1121f; border: 1px solid #fca5a5; }
+    .alert-success { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
+    .nav-auth-btn { padding: 6px 14px; border-radius: 6px; border: 1.5px solid #e0e0e0; background: white; cursor: pointer; font-size: 0.875rem; text-decoration: none; color: #444; }
   </style>
 </head>
 <body>
-
   <nav class="navbar">
-    <a href="index.html" class="navbar-brand">📦 RayahDZ</a>
+    <a href="index.html" class="navbar-brand">LeCoin<span>DZ</span></a>
     <div class="navbar-nav">
-      <a href="dashboard.html" class="nav-link">📋 <span>Dashboard</span></a>
-      <a href="trips.html" class="nav-link">✈️ <span>Trajets</span></a>
-      <a href="parcels.html" class="nav-link">📦 <span>Colis</span></a>
-      <a href="conversations.html" class="nav-link" id="nav-messages">💬 Messages</a>
-      <a href="subscription.html" class="nav-link">⭐ <span>Premium</span></a>
+      <a href="dashboard.html" class="nav-link">Dashboard</a>
       <div id="nav-auth"></div>
     </div>
   </nav>
 
-  <div class="pricing-container">
-
+  <div class="container">
     <div id="alert-container"></div>
-
-    <!-- STATUT ABONNEMENT -->
     <div id="status-section" style="display:none;">
       <div class="status-card" id="status-card"></div>
     </div>
-
-    <!-- CARTE ABONNEMENT -->
     <div class="pricing-card">
-      <div id="trial-badge-section" class="trial-badge">🎁 1 mois gratuit</div>
-      <h1 style="font-size:1.5rem; font-weight:700; margin-bottom:0.5rem;">RayahDZ Premium</h1>
-      <p style="color:var(--gray-400); font-size:0.9rem;">Accès complet à toutes les fonctionnalités</p>
-
-      <div class="price">3.99€ <span>/ mois</span></div>
-
+      <div class="badge badge-trial" id="trial-badge">?? 1 mois gratuit</div>
+      <h1 style="font-size:1.5rem; font-weight:700; margin-bottom:0.5rem;">LeCoinDZ Premium</h1>
+      <p style="color:#888; font-size:0.9rem;">Acc�s complet � toutes les fonctionnalit�s</p>
+      <div class="price">3.99� <span>/ mois</span></div>
       <ul class="features">
-        <li>✅ Publier des annonces de colis illimitées</li>
-        <li>✅ Publier des trajets illimités</li>
-        <li>✅ Messagerie avec les voyageurs</li>
-        <li>✅ Tableau de bord complet</li>
-        <li>✅ Support prioritaire</li>
-        <li>✅ Accès aux nouvelles fonctionnalités</li>
+        <li>? D�poser des annonces illimit�es</li>
+        <li>? Proposer vos services de shopper</li>
+        <li>? Messagerie avec les acheteurs</li>
+        <li>? Tableau de bord complet</li>
+        <li>? Support prioritaire</li>
       </ul>
-
       <div id="btn-section">
-        <button class="btn btn-primary btn-full" id="btn-subscribe" style="font-size:1rem; padding:14px;">
-          🚀 Démarrer mon mois gratuit
-        </button>
-        <p id="btn-note" style="font-size:0.8rem; color:var(--gray-400); margin-top:1rem;">
-          Aucune carte requise pendant l'essai · Annulez à tout moment
-        </p>
+        <button class="btn btn-primary" id="btn-subscribe">?? D�marrer mon mois gratuit</button>
+        <p id="btn-note" style="font-size:0.8rem; color:#888; margin-top:1rem;">Aucune carte requise pendant l'essai</p>
       </div>
     </div>
-
-    <!-- FAQ -->
-    <div style="margin-top:2rem; text-align:left;">
-      <h3 style="font-size:1rem; font-weight:600; margin-bottom:1rem; color:var(--gray-600);">Questions fréquentes</h3>
-      <div style="display:flex; flex-direction:column; gap:1rem;">
-        <div class="card" style="padding:1rem;">
-          <div style="font-weight:500; margin-bottom:4px;">Que se passe-t-il après le mois gratuit ?</div>
-          <div style="font-size:0.875rem; color:var(--gray-600);">Vous serez facturé 3.99€/mois automatiquement. Vous pouvez annuler à tout moment depuis votre dashboard.</div>
-        </div>
-        <div class="card" style="padding:1rem;">
-          <div style="font-weight:500; margin-bottom:4px;">Comment annuler mon abonnement ?</div>
-          <div style="font-size:0.875rem; color:var(--gray-600);">Depuis votre tableau de bord, section "Mon abonnement". L'annulation prend effet à la fin de la période en cours.</div>
-        </div>
-        <div class="card" style="padding:1rem;">
-          <div style="font-weight:500; margin-bottom:4px;">Le paiement entre expéditeur et voyageur est-il géré par RayahDZ ?</div>
-          <div style="font-size:0.875rem; color:var(--gray-600);">Non — le paiement entre les deux parties se fait directement entre eux (cash, virement, etc.). RayahDZ ne prélève que l'abonnement.</div>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <script src="js/api.js"></script>
@@ -95,122 +72,66 @@
 
     async function loadStatus() {
       if (!user) return;
-
       try {
         const data = await SubscriptionsAPI.getStatus();
         const statusSection = document.getElementById("status-section");
         const statusCard = document.getElementById("status-card");
         const btnSection = document.getElementById("btn-section");
-        const trialBadge = document.getElementById("trial-badge-section");
+        const trialBadge = document.getElementById("trial-badge");
         const btnNote = document.getElementById("btn-note");
-
         statusSection.style.display = "block";
 
         if (data.subscription_status === "ACTIVE") {
-          // Abonné actif — masquer le badge essai
           trialBadge.style.display = "none";
-          statusCard.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                <div style="font-weight:600; color:var(--secondary);">✅ Abonnement actif</div>
-                <div style="font-size:0.875rem; color:var(--gray-600); margin-top:4px;">
-                  Vous avez accès à toutes les fonctionnalités RayahDZ.
-                </div>
-              </div>
-            </div>`;
-          btnSection.innerHTML = `
-            <button class="btn btn-danger btn-full" id="btn-cancel">
-              Annuler mon abonnement
-            </button>`;
-          document.getElementById("btn-cancel").addEventListener("click", annulerAbonnement);
-
+          statusCard.innerHTML = `<div style="font-weight:600; color:#166534;">? Abonnement actif</div><div style="font-size:0.875rem; color:#666; margin-top:4px;">Vous avez acc�s � toutes les fonctionnalit�s.</div>`;
+          btnSection.innerHTML = `<button class="btn btn-danger" id="btn-cancel">Annuler mon abonnement</button>`;
+          document.getElementById("btn-cancel").addEventListener("click", annuler);
         } else if (data.subscription_status === "TRIAL") {
-          // En essai — adapter le badge et le bouton
-          const trialEnd = data.trial_end ? new Date(data.trial_end).toLocaleDateString("fr-FR") : "—";
-          const daysLeft = data.trial_end
-            ? Math.ceil((new Date(data.trial_end) - new Date()) / (1000 * 60 * 60 * 24))
-            : null;
-
-          trialBadge.textContent = daysLeft !== null
-            ? `⏳ Essai en cours — ${daysLeft > 0 ? daysLeft + " jours restants" : "expiré"}`
-            : "⏳ Essai en cours";
-          trialBadge.style.background = daysLeft <= 5 ? "#f59e0b" : "var(--secondary)";
-
-          statusCard.innerHTML = `
-            <div>
-              <div style="font-weight:600; color:#f59e0b;">🎁 Période d'essai gratuite</div>
-              <div style="font-size:0.875rem; color:var(--gray-600); margin-top:4px;">
-                Votre essai gratuit se termine le <strong>${trialEnd}</strong>.
-                Souscrivez maintenant pour continuer sans interruption.
-              </div>
-            </div>`;
-
-          // Bouton adapté — pas de "mois gratuit" puisqu'il est déjà en essai
-          document.getElementById("btn-subscribe").textContent = "💳 S'abonner maintenant — 3.99€/mois";
-          btnNote.textContent = "Votre abonnement démarre à la fin de votre période d'essai.";
+          const trialEnd = data.trial_end ? new Date(data.trial_end).toLocaleDateString("fr-FR") : "�";
+          const daysLeft = data.trial_end ? Math.ceil((new Date(data.trial_end) - new Date()) / 86400000) : null;
+          trialBadge.textContent = daysLeft !== null ? `? Essai � ${daysLeft > 0 ? daysLeft + ' jours restants' : 'expir�'}` : '? Essai en cours';
+          trialBadge.style.background = daysLeft <= 5 ? '#f59e0b' : '#e63946';
+          statusCard.innerHTML = `<div style="font-weight:600; color:#92400e;">?? P�riode d'essai gratuite</div><div style="font-size:0.875rem; color:#666; margin-top:4px;">Votre essai se termine le <strong>${trialEnd}</strong>.</div>`;
+          document.getElementById("btn-subscribe").textContent = "?? S'abonner � 3.99�/mois";
+          btnNote.textContent = "L'abonnement d�marre � la fin de votre essai.";
           document.getElementById("btn-subscribe").addEventListener("click", souscrire);
-
         } else if (data.subscription_status === "CANCELLED") {
           trialBadge.style.display = "none";
-          statusCard.innerHTML = `
-            <div>
-              <div style="font-weight:600; color:var(--danger);">❌ Abonnement annulé</div>
-              <div style="font-size:0.875rem; color:var(--gray-600); margin-top:4px;">
-                Votre abonnement a été annulé. Réabonnez-vous pour retrouver l'accès.
-              </div>
-            </div>`;
-          document.getElementById("btn-subscribe").textContent = "🔄 Se réabonner — 3.99€/mois";
-          btnNote.textContent = "Votre accès sera rétabli immédiatement.";
+          statusCard.innerHTML = `<div style="font-weight:600; color:#991b1b;">? Abonnement annul�</div><div style="font-size:0.875rem; color:#666; margin-top:4px;">R�abonnez-vous pour retrouver l'acc�s.</div>`;
+          document.getElementById("btn-subscribe").textContent = "?? Se r�abonner � 3.99�/mois";
           document.getElementById("btn-subscribe").addEventListener("click", souscrire);
-
         } else {
           document.getElementById("btn-subscribe").addEventListener("click", souscrire);
         }
-
       } catch(e) {
         document.getElementById("btn-subscribe").addEventListener("click", souscrire);
       }
     }
 
     async function souscrire() {
-      if (!Auth.isLoggedIn()) {
-        window.location.href = "login.html?mode=register";
-        return;
-      }
+      if (!Auth.isLoggedIn()) { window.location.href = "login.html?mode=register"; return; }
       const btn = document.getElementById("btn-subscribe");
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = "Redirection vers Stripe...";
-      }
+      if (btn) { btn.disabled = true; btn.textContent = "Redirection..."; }
       try {
         const data = await SubscriptionsAPI.createCheckout();
         window.location.href = data.checkout_url;
       } catch(e) {
         showAlert(e.message);
-        if (btn) {
-          btn.disabled = false;
-          btn.textContent = "💳 S'abonner maintenant — 3.99€/mois";
-        }
+        if (btn) { btn.disabled = false; btn.textContent = "?? S'abonner � 3.99�/mois"; }
       }
     }
 
-    async function annulerAbonnement() {
-      if (!confirm("Êtes-vous sûr de vouloir annuler votre abonnement ?")) return;
+    async function annuler() {
+      if (!confirm("Confirmer l'annulation ?")) return;
       try {
         await SubscriptionsAPI.cancel();
-        showAlert("Abonnement annulé avec succès !", "success");
+        showAlert("Abonnement annul�.", "success");
         loadStatus();
-      } catch(e) {
-        showAlert(e.message);
-      }
+      } catch(e) { showAlert(e.message); }
     }
 
     loadStatus();
-
-    if (!user) {
-      document.getElementById("btn-subscribe").addEventListener("click", souscrire);
-    }
+    if (!user) document.getElementById("btn-subscribe").addEventListener("click", souscrire);
   </script>
-  <script src="js/hamburger.js"></script>
 </body>
 </html>

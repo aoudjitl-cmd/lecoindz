@@ -1,41 +1,33 @@
-const API_URL = "https://rayahdz-production.up.railway.app";
+const API_URL = "https://lecoindz-production.up.railway.app";
 
 const Auth = {
-  getToken: () => localStorage.getItem("cg_token"),
-  getUser: () => JSON.parse(localStorage.getItem("cg_user") || "null"),
+  getToken: () => localStorage.getItem("lcd_token"),
+  getUser: () => JSON.parse(localStorage.getItem("lcd_user") || "null"),
   setSession: (token, user) => {
-    localStorage.setItem("cg_token", token);
-    localStorage.setItem("cg_user", JSON.stringify(user));
+    localStorage.setItem("lcd_token", token);
+    localStorage.setItem("lcd_user", JSON.stringify(user));
   },
   logout: () => {
-    localStorage.removeItem("cg_token");
-    localStorage.removeItem("cg_user");
+    localStorage.removeItem("lcd_token");
+    localStorage.removeItem("lcd_user");
     window.location.href = "login.html";
   },
-  isLoggedIn: () => !!localStorage.getItem("cg_token")
+  isLoggedIn: () => !!localStorage.getItem("lcd_token")
 };
 
 async function apiCall(endpoint, method = "GET", body = null) {
   const headers = { "Content-Type": "application/json" };
   const token = Auth.getToken();
   if (token) headers["Authorization"] = `Bearer ${token}`;
-
   const options = { method, headers };
   if (body) options.body = JSON.stringify(body);
-
   const response = await fetch(`${API_URL}${endpoint}`, options);
-
-  // Token expiré ou invalide → déconnexion propre (sauf sur la page login)
-  if (response.status === 401 && !window.location.pathname.includes('login')) {
+  if (response.status === 401 && !window.location.pathname.includes("login")) {
     Auth.logout();
     return;
   }
-
   const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.detail || "Une erreur est survenue");
-  }
+  if (!response.ok) throw new Error(data.detail || "Une erreur est survenue");
   return data;
 }
 
@@ -44,40 +36,31 @@ const AuthAPI = {
   login: (data) => apiCall("/auth/login", "POST", data),
 };
 
-const TripsAPI = {
+const ProductsAPI = {
   search: (params = {}) => {
     const query = new URLSearchParams(params).toString();
-    return apiCall(`/trips/?${query}`);
+    return apiCall(`/products/?${query}`);
   },
-  getMine: () => apiCall("/trips/mes-trajets"),
-  create: (data) => apiCall("/trips/", "POST", data),
-  get: (id) => apiCall(`/trips/${id}`),
-  delete: (id) => apiCall(`/trips/${id}`, "DELETE"),
+  create: (data) => apiCall("/products/", "POST", data),
+  get: (id) => apiCall(`/products/${id}`),
+  scrape: (url) => apiCall("/products/scrape", "POST", { url }),
 };
 
-const ParcelsAPI = {
+const ShoppersAPI = {
   search: (params = {}) => {
     const query = new URLSearchParams(params).toString();
-    return apiCall(`/parcels/?${query}`);
+    return apiCall(`/shoppers/?${query}`);
   },
-  create: (data) => apiCall("/parcels/", "POST", data),
-  get: (id) => apiCall(`/parcels/${id}`),
-  delete: (id) => apiCall(`/parcels/${id}`, "DELETE"),
+  create: (data) => apiCall("/shoppers/", "POST", data),
+  getMine: () => apiCall("/shoppers/mes-disponibilites"),
+  delete: (id) => apiCall(`/shoppers/${id}`, "DELETE"),
 };
 
-const BookingsAPI = {
-  create: (data) => apiCall("/bookings/", "POST", data),
-  getMine: () => apiCall("/bookings/mes-reservations"),
-  get: (id) => apiCall(`/bookings/${id}`),
-  updateStatus: (id, status) => apiCall(`/bookings/${id}/statut`, "PATCH", { status }),
-  markPaid: (id) => apiCall(`/bookings/${id}/paid`, "PATCH"),
-  delete: (id) => apiCall(`/bookings/${id}`, "DELETE"),
-};
-
-const MessagesAPI = {
-  send: (bookingId, content) => apiCall(`/messages/${bookingId}`, "POST", { content }),
-  getConversation: (bookingId) => apiCall(`/messages/${bookingId}`),
-  getUnread: () => apiCall("/messages/non-lus/count"),
+const OrdersAPI = {
+  create: (data) => apiCall("/orders/", "POST", data),
+  getMine: () => apiCall("/orders/mes-commandes"),
+  get: (id) => apiCall(`/orders/${id}`),
+  updateStatus: (id, status) => apiCall(`/orders/${id}/statut`, "PATCH", { status }),
 };
 
 const DirectAPI = {
@@ -86,9 +69,9 @@ const DirectAPI = {
   getConversations: () => apiCall("/direct/mes-conversations"),
 };
 
-const PaymentsAPI = {
-  createIntent: (bookingId) => apiCall("/payments/create-payment-intent", "POST", { booking_id: bookingId }),
-  getStatus: (bookingId) => apiCall(`/payments/status/${bookingId}`),
+const ReviewsAPI = {
+  getForUser: (userId) => apiCall(`/reviews/user/${userId}`),
+  create: (data) => apiCall("/reviews/", "POST", data),
 };
 
 const SubscriptionsAPI = {
@@ -103,7 +86,7 @@ function showAlert(message, type = "error", containerId = "alert-container") {
   if (!container) return;
   container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
   const delay = type === "error" ? 8000 : 4000;
-  setTimeout(() => container.innerHTML = "", delay);
+  setTimeout(() => { if (container) container.innerHTML = ""; }, delay);
 }
 
 function formatDate(dateStr) {
@@ -111,15 +94,19 @@ function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 }
 
+function formatPrice(price) {
+  if (!price) return "—";
+  return parseFloat(price).toFixed(2) + "€";
+}
+
 function getStatusBadge(status) {
   const map = {
-    "PENDING":    ["badge-warning", "En attente"],
-    "MATCHED":    ["badge-info",    "Trouve"],
-    "ACCEPTED":   ["badge-info",    "Accepte"],
-    "IN_TRANSIT": ["badge-warning", "En transit"],
-    "DELIVERED":  ["badge-success", "Livre"],
-    "CANCELLED":  ["badge-danger",  "Annule"],
-    "ACTIVE":     ["badge-success", "Actif"],
+    "PENDING":     ["badge-warning", "En attente"],
+    "ACCEPTED":    ["badge-info",    "Accepte"],
+    "IN_PROGRESS": ["badge-warning", "En cours"],
+    "DELIVERED":   ["badge-success", "Livre"],
+    "CANCELLED":   ["badge-danger",  "Annule"],
+    "ACTIVE":      ["badge-success", "Actif"],
   };
   const [cls, label] = map[status] || ["badge-info", status];
   return `<span class="badge ${cls}">${label}</span>`;
@@ -134,20 +121,15 @@ async function requireSubscription() {
     window.location.href = "login.html";
     return;
   }
-
   try {
     const data = await SubscriptionsAPI.getStatus();
     const status = data.subscription_status;
     const trialEnd = data.trial_end ? new Date(data.trial_end) : null;
     const now = new Date();
-
     if (status === "ACTIVE") return;
     if (status === "TRIAL" && trialEnd && trialEnd > now) return;
-
     window.location.href = "subscription.html";
-
   } catch(e) {
-    // Si l'appel échoue (token expiré, réseau...) → login
     console.log("Erreur verification abonnement:", e.message);
     window.location.href = "login.html";
   }
@@ -157,7 +139,6 @@ async function updateNavbar() {
   const user = Auth.getUser();
   const navAuth = document.getElementById("nav-auth");
   if (!navAuth) return;
-
   if (user) {
     navAuth.innerHTML = `
       <a href="dashboard.html" class="nav-link"><span>👤</span> <span>${user.first_name}</span></a>
@@ -169,15 +150,13 @@ async function updateNavbar() {
       <a href="login.html?mode=register" class="btn btn-primary btn-sm">S'inscrire</a>
     `;
   }
-
-  // Badge messages non lus
   if (user) {
     try {
       const data = await DirectAPI.getConversations();
-      const unread = data.conversations.reduce((total, conv) => total + (conv.unread || 0), 0);
+      const unread = data.conversations.reduce((t, c) => t + (c.unread || 0), 0);
       const msgLink = document.getElementById("nav-messages");
       if (msgLink && unread > 0) {
-        msgLink.innerHTML = `Messages <span style="background:var(--danger); color:white; border-radius:50%; padding:1px 6px; font-size:0.75rem; margin-left:4px;">${unread}</span>`;
+        msgLink.innerHTML += ` <span style="background:#e63946; color:white; border-radius:50%; padding:1px 6px; font-size:0.75rem;">${unread}</span>`;
       }
     } catch(e) {}
   }

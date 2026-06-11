@@ -3,33 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RayahDZ - Mes conversations</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>LeCoinDZ — Mes conversations</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; }
+    .navbar { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 0 1.5rem; display: flex; align-items: center; gap: 1rem; height: 56px; position: sticky; top: 0; z-index: 100; }
+    .navbar-brand { font-size: 1.4rem; font-weight: 800; color: #e63946; text-decoration: none; }
+    .navbar-brand span { color: #1a1a1a; }
+    .navbar-nav { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
+    .nav-link { color: #444; text-decoration: none; font-size: 0.875rem; padding: 6px 10px; border-radius: 6px; }
+    .container { max-width: 700px; margin: 2rem auto; padding: 0 1rem; }
+    .card { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.25rem; margin-bottom: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 1rem; }
+    .card:hover { border-color: #e63946; }
+    .avatar { width: 48px; height: 48px; border-radius: 50%; background: #e63946; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; flex-shrink: 0; }
+    .unread-badge { background: #e63946; color: white; border-radius: 50%; padding: 2px 7px; font-size: 0.75rem; font-weight: 600; }
+    .alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 1rem; font-size: 0.875rem; }
+    .alert-error { background: #fff5f5; color: #c1121f; border: 1px solid #fca5a5; }
+  </style>
 </head>
 <body>
 
   <nav class="navbar">
-    <a href="index.html" class="navbar-brand">📦 RayahDZ</a>
+    <a href="index.html" class="navbar-brand">LeCoin<span>DZ</span></a>
     <div class="navbar-nav">
-      <a href="dashboard.html" class="nav-link">📋 <span>Dashboard</span></a>
-      <a href="trips.html" class="nav-link">✈️ <span>Trajets</span></a>
-      <a href="parcels.html" class="nav-link active">📦 <span>Colis</span></a>
-	  <a href="conversations.html" class="nav-link" id="nav-messages">💬 Messages</a>
-      <a href="subscription.html" class="nav-link">⭐ <span>Premium</span></a>
+      <a href="products.html" class="nav-link">📦 Annonces</a>
+      <a href="dashboard.html" class="nav-link">📋 Dashboard</a>
       <div id="nav-auth"></div>
     </div>
   </nav>
 
-  <div class="container section">
-
+  <div class="container">
     <div id="alert-container"></div>
-
-    <h1 class="section-title">Mes conversations</h1>
-
+    <h1 style="font-size:1.2rem; font-weight:700; margin-bottom:1.5rem;">💬 Mes conversations</h1>
     <div id="conversations-container">
-      <p style="color:var(--gray-400);">Chargement...</p>
+      <p style="color:#888;">Chargement...</p>
     </div>
-
   </div>
 
   <script src="js/api.js"></script>
@@ -37,59 +45,33 @@
     (async () => {
       await requireSubscription();
       updateNavbar();
-
       const user = Auth.getUser();
-
-      async function loadConversations() {
-        try {
-          const data = await DirectAPI.getConversations();
-          const container = document.getElementById("conversations-container");
-
-          if (data.conversations.length === 0) {
-            container.innerHTML = `
-              <div class="card" style="text-align:center; padding:3rem;">
-                <div style="font-size:3rem; margin-bottom:1rem;">💬</div>
-                <p style="color:var(--gray-400);">Aucune conversation pour le moment.</p>
-                <a href="trips.html" class="btn btn-primary" style="margin-top:1rem;">
-                  Voir les trajets
-                </a>
-              </div>`;
-            return;
-          }
-
-          container.innerHTML = data.conversations.map(conv => {
-            const other = conv.user1.id === user.id ? conv.user2 : conv.user1;
-            return `
-              <div class="card" style="margin-bottom:1rem; cursor:pointer;"
-                onclick="window.location.href='direct-chat.html?user_id=${other.id}&name=${encodeURIComponent(other.first_name + ' ' + other.last_name)}'">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <div style="display:flex; align-items:center; gap:1rem;">
-                    <div style="width:48px; height:48px; border-radius:50%; background:var(--primary); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:1.2rem; flex-shrink:0;">
-                      ${other.first_name[0].toUpperCase()}
-                    </div>
-                    <div>
-                      <div style="font-weight:600;">${other.first_name} ${other.last_name}</div>
-                      <div style="font-size:0.85rem; color:var(--gray-400); margin-top:2px;">
-                        ${conv.last_message || "Pas encore de message"}
-                      </div>
-                    </div>
-                  </div>
-                  ${conv.unread > 0 ? `
-                    <span style="background:var(--danger); color:white; border-radius:50%; padding:4px 8px; font-size:0.75rem; font-weight:600;">
-                      ${conv.unread}
-                    </span>` : ""}
-                </div>
-              </div>`;
-          }).join("");
-
-        } catch (e) {
-          showAlert(e.message);
+      try {
+        const data = await DirectAPI.getConversations();
+        const container = document.getElementById("conversations-container");
+        if (data.conversations.length === 0) {
+          container.innerHTML = `
+            <div style="text-align:center; padding:3rem; background:white; border-radius:8px; border:1px solid #e0e0e0;">
+              <div style="font-size:3rem; margin-bottom:1rem;">💬</div>
+              <p style="color:#888;">Aucune conversation pour le moment.</p>
+              <a href="products.html" style="display:inline-block; margin-top:1rem; padding:10px 20px; background:#e63946; color:white; border-radius:6px; text-decoration:none; font-weight:600;">Voir les annonces</a>
+            </div>`;
+          return;
         }
-      }
-
-      loadConversations();
+        container.innerHTML = data.conversations.map(conv => {
+          const other = conv.user1.id === user.id ? conv.user2 : conv.user1;
+          return `
+            <div class="card" onclick="window.location.href='direct-chat.html?user_id=${other.id}&name=${encodeURIComponent(other.first_name + ' ' + other.last_name)}'">
+              <div class="avatar">${other.first_name[0].toUpperCase()}</div>
+              <div style="flex:1;">
+                <div style="font-weight:600;">${other.first_name} ${other.last_name}</div>
+                <div style="font-size:0.85rem; color:#888; margin-top:2px;">${conv.last_message || 'Pas encore de message'}</div>
+              </div>
+              ${conv.unread > 0 ? `<span class="unread-badge">${conv.unread}</span>` : ''}
+            </div>`;
+        }).join('');
+      } catch(e) { showAlert(e.message); }
     })();
   </script>
-  <script src="js/hamburger.js"></script>
 </body>
 </html>

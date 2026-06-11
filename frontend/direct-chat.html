@@ -3,279 +3,118 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RayahDZ - Message direct</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>LeCoinDZ � Message direct</title>
   <style>
-    .chat-container {
-      max-width: 700px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-    .chat-box {
-      background: var(--white);
-      border: 1px solid var(--gray-200);
-      border-radius: var(--radius);
-      height: 450px;
-      overflow-y: auto;
-      padding: 1.25rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-    }
-    .message {
-      display: flex;
-      flex-direction: column;
-      max-width: 70%;
-    }
-    .message.moi {
-      align-self: flex-end;
-      align-items: flex-end;
-    }
-    .message.autre {
-      align-self: flex-start;
-      align-items: flex-start;
-    }
-    .message-bubble {
-      padding: 10px 14px;
-      border-radius: 18px;
-      font-size: 0.9rem;
-      line-height: 1.4;
-      word-break: break-word;
-    }
-    .moi .message-bubble {
-      background: var(--primary);
-      color: white;
-      border-bottom-right-radius: 4px;
-    }
-    .autre .message-bubble {
-      background: var(--gray-100);
-      color: var(--gray-800);
-      border-bottom-left-radius: 4px;
-    }
-    .message-meta {
-      font-size: 0.75rem;
-      color: var(--gray-400);
-      margin-top: 3px;
-      padding: 0 4px;
-    }
-    .chat-input-area {
-      display: flex;
-      gap: 0.75rem;
-      align-items: flex-end;
-    }
-    .chat-input {
-      flex: 1;
-      padding: 12px 16px;
-      border: 1px solid var(--gray-200);
-      border-radius: 24px;
-      font-size: 0.95rem;
-      resize: none;
-      outline: none;
-      font-family: inherit;
-      max-height: 120px;
-    }
-    .chat-input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-    }
-    .btn-send {
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: white;
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: background 0.2s;
-    }
-    .btn-send:hover { background: var(--primary-dark); }
-    .chat-header {
-      background: var(--white);
-      border: 1px solid var(--gray-200);
-      border-radius: var(--radius);
-      padding: 1rem 1.25rem;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .empty-chat {
-      text-align: center;
-      color: var(--gray-400);
-      margin: auto;
-      padding: 2rem;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; }
+    .navbar { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 0 1.5rem; display: flex; align-items: center; gap: 1rem; height: 56px; }
+    .navbar-brand { font-size: 1.4rem; font-weight: 800; color: #e63946; text-decoration: none; }
+    .navbar-brand span { color: #1a1a1a; }
+    .chat-container { max-width: 700px; margin: 1.5rem auto; padding: 0 1rem; }
+    .chat-header { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+    .chat-box { background: white; border: 1px solid #e0e0e0; border-radius: 8px; height: 450px; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem; }
+    .message { display: flex; flex-direction: column; max-width: 70%; }
+    .message.moi { align-self: flex-end; align-items: flex-end; }
+    .message.autre { align-self: flex-start; }
+    .bubble { padding: 10px 14px; border-radius: 18px; font-size: 0.9rem; line-height: 1.4; word-break: break-word; }
+    .moi .bubble { background: #e63946; color: white; border-bottom-right-radius: 4px; }
+    .autre .bubble { background: #f5f5f5; color: #1a1a1a; border-bottom-left-radius: 4px; }
+    .meta { font-size: 0.75rem; color: #888; margin-top: 3px; }
+    .input-area { display: flex; gap: 0.75rem; align-items: flex-end; }
+    .chat-input { flex: 1; padding: 12px 16px; border: 1.5px solid #e0e0e0; border-radius: 24px; font-size: 0.95rem; resize: none; outline: none; font-family: inherit; max-height: 120px; }
+    .chat-input:focus { border-color: #e63946; }
+    .send-btn { width: 46px; height: 46px; border-radius: 50%; background: #e63946; color: white; border: none; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .send-btn:hover { background: #c1121f; }
   </style>
 </head>
 <body>
-
   <nav class="navbar">
-    <a href="index.html" class="navbar-brand">📦 RayahDZ</a>
-    <div class="navbar-nav">
-      <a href="dashboard.html" class="nav-link">📋 <span>Dashboard</span></a>
-      <a href="trips.html" class="nav-link">✈️ <span>Trajets</span></a>
-      <a href="parcels.html" class="nav-link active">📦 <span>Colis</span></a>
-	  <a href="conversations.html" class="nav-link" id="nav-messages">💬 Messages</a>
-      <a href="subscription.html" class="nav-link">⭐ <span>Premium</span></a>
-      <div id="nav-auth"></div>
-    </div>
+    <a href="index.html" class="navbar-brand">LeCoin<span>DZ</span></a>
   </nav>
 
   <div class="chat-container">
-
-    <div id="alert-container"></div>
-
     <div class="chat-header">
-      <div>
-        <a href="trips.html" style="color:var(--gray-400); font-size:0.85rem;">
-          Retour aux trajets
-        </a>
-        <div id="chat-title" style="font-weight:600; font-size:1.05rem; margin-top:4px;">
-          Chargement...
-        </div>
-        <div id="chat-subtitle" style="font-size:0.85rem; color:var(--gray-400);">
-          Message direct
-        </div>
-      </div>
+      <a href="conversations.html" style="font-size:0.85rem; color:#888;">? Retour</a>
+      <div id="chat-title" style="font-weight:600; font-size:1rem; margin-top:4px;">Chargement...</div>
     </div>
-
     <div class="chat-box" id="chat-box">
-      <div class="empty-chat">
-        <p>Chargement des messages...</p>
-      </div>
+      <p style="text-align:center; color:#888;">Chargement...</p>
     </div>
-
-    <div class="chat-input-area">
-      <textarea
-        id="message-input"
-        class="chat-input"
-        placeholder="Ecrivez votre message..."
-        rows="1"
-      ></textarea>
-      <button class="btn-send" id="btn-send">&#10148;</button>
+    <div class="input-area">
+      <textarea id="message-input" class="chat-input" placeholder="�crivez votre message..." rows="1"></textarea>
+      <button class="send-btn" id="btn-send">&#10148;</button>
     </div>
-
   </div>
 
   <script src="js/api.js"></script>
   <script>
     window.addEventListener("load", async () => {
       await requireSubscription();
-      updateNavbar();
-
       const user = Auth.getUser();
-      const urlParams = new URLSearchParams(window.location.search);
-      const otherUserId = urlParams.get("user_id");
-      const otherUserName = decodeURIComponent(urlParams.get("name") || "Utilisateur");
+      const params = new URLSearchParams(window.location.search);
+      const otherUserId = params.get("user_id");
+      const otherName = decodeURIComponent(params.get("name") || "Utilisateur");
+      if (!otherUserId) { window.location.href = "conversations.html"; return; }
+      document.getElementById("chat-title").textContent = "Conversation avec " + otherName;
 
-      if (!otherUserId) {
-        window.location.href = "trips.html";
-        return;
-      }
-
-      document.getElementById("chat-title").textContent = "Conversation avec " + otherUserName;
-
-      // ===== CHARGER LES MESSAGES =====
       async function loadMessages() {
         try {
           const data = await DirectAPI.getMessages(otherUserId);
           renderMessages(data.messages);
-          if (data.messages.length > 0) {
-            dernierMessageId = data.messages[data.messages.length - 1].id;
-          }
-        } catch (e) {
-          showAlert(e.message);
-        }
+          if (data.messages.length > 0) dernierId = data.messages[data.messages.length - 1].id;
+        } catch(e) {}
       }
 
-      // ===== AFFICHER LES MESSAGES =====
       function renderMessages(messages) {
         const box = document.getElementById("chat-box");
-        const wasAtBottom = box.scrollHeight - box.scrollTop <= box.clientHeight + 50;
-
+        const atBottom = box.scrollHeight - box.scrollTop <= box.clientHeight + 50;
         if (messages.length === 0) {
-          box.innerHTML = `
-            <div class="empty-chat">
-              <p>Aucun message pour le moment.<br>Commencez la conversation !</p>
-            </div>`;
+          box.innerHTML = `<p style="text-align:center; color:#888;">Commencez la conversation !</p>`;
           return;
         }
-
         box.innerHTML = messages.map(m => {
           const isMoi = m.sender_id === user.id;
-          const time = new Date(m.created_at).toLocaleTimeString("fr-FR", {
-            hour: "2-digit", minute: "2-digit"
-          });
-          return `
-            <div class="message ${isMoi ? 'moi' : 'autre'}">
-              <div class="message-bubble">${m.content}</div>
-              <div class="message-meta">
-                ${isMoi ? 'Vous' : m.sender.first_name} - ${time}
-              </div>
-            </div>`;
-        }).join("");
-
-        if (wasAtBottom) box.scrollTop = box.scrollHeight;
+          const time = new Date(m.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+          return `<div class="message ${isMoi ? 'moi' : 'autre'}">
+            <div class="bubble">${m.content}</div>
+            <div class="meta">${isMoi ? 'Vous' : m.sender.first_name} � ${time}</div>
+          </div>`;
+        }).join('');
+        if (atBottom) box.scrollTop = box.scrollHeight;
       }
 
-      // ===== ENVOYER UN MESSAGE =====
-      async function envoyerMessage() {
+      async function envoyer() {
         const input = document.getElementById("message-input");
         const content = input.value.trim();
         if (!content) return;
-
         try {
           await DirectAPI.send(otherUserId, content);
           input.value = "";
-          input.style.height = "auto";
           await loadMessages();
-        } catch (e) {
-          showAlert(e.message);
-        }
+        } catch(e) {}
       }
 
-      // ===== EVENEMENTS =====
-      document.getElementById("btn-send").addEventListener("click", envoyerMessage);
-
-      document.getElementById("message-input").addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          envoyerMessage();
-        }
-      });
-
+      document.getElementById("btn-send").addEventListener("click", envoyer);
+      document.getElementById("message-input").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); envoyer(); }});
       document.getElementById("message-input").addEventListener("input", function() {
         this.style.height = "auto";
         this.style.height = Math.min(this.scrollHeight, 120) + "px";
       });
 
-      // ===== RAFRAICHISSEMENT =====
-      let dernierMessageId = 0;
-
-      async function checkNouveauxMessages() {
+      let dernierId = 0;
+      async function checkNew() {
         try {
           const data = await DirectAPI.getMessages(otherUserId);
-          const messages = data.messages;
-          if (messages.length === 0) return;
-          const dernierMsg = messages[messages.length - 1];
-          if (dernierMsg.id > dernierMessageId) {
-            renderMessages(messages);
-            dernierMessageId = dernierMsg.id;
+          if (data.messages.length > 0) {
+            const last = data.messages[data.messages.length - 1];
+            if (last.id > dernierId) { renderMessages(data.messages); dernierId = last.id; }
           }
         } catch(e) {}
       }
 
-      // ===== CHARGEMENT INITIAL =====
       await loadMessages();
-      setInterval(checkNouveauxMessages, 3000);
+      setInterval(checkNew, 3000);
     });
   </script>
-  <script src="js/hamburger.js"></script>
 </body>
 </html>

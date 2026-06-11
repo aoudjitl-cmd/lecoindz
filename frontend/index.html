@@ -1,215 +1,245 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#2563eb">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="RayahDZ">
-  <link rel="apple-touch-icon" href="/icons/icon-192.png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RayahDZ — Envoyez vos colis avec des voyageurs</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>LeCoinDZ � Achetez en France, recevez en Alg�rie</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; }
+    /* NAVBAR */
+    .navbar { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 0 1.5rem; display: flex; align-items: center; gap: 1rem; height: 56px; position: sticky; top: 0; z-index: 100; }
+    .navbar-brand { font-size: 1.4rem; font-weight: 800; color: #e63946; text-decoration: none; }
+    .navbar-brand span { color: #1a1a1a; }
+    .navbar-search { flex: 1; max-width: 480px; }
+    .navbar-search input { width: 100%; padding: 8px 14px; border: 1.5px solid #e0e0e0; border-radius: 6px; font-size: 0.9rem; outline: none; }
+    .navbar-search input:focus { border-color: #e63946; }
+    .navbar-nav { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
+    .nav-link { color: #444; text-decoration: none; font-size: 0.875rem; padding: 6px 10px; border-radius: 6px; }
+    .nav-link:hover { background: #f5f5f5; }
+    .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.875rem; font-weight: 600; text-decoration: none; display: inline-block; }
+    .btn-primary { background: #e63946; color: white; }
+    .btn-primary:hover { background: #c1121f; }
+    .btn-outline { background: white; border: 1.5px solid #e0e0e0; color: #444; }
+    .btn-outline:hover { border-color: #e63946; color: #e63946; }
+    .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+    /* HERO */
+    .hero { background: #e63946; color: white; padding: 2.5rem 1.5rem; text-align: center; }
+    .hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.75rem; }
+    .hero p { font-size: 1rem; opacity: 0.9; margin-bottom: 1.5rem; }
+    .hero-search { display: flex; gap: 0.5rem; max-width: 560px; margin: 0 auto; }
+    .hero-search input { flex: 1; padding: 12px 16px; border: none; border-radius: 6px; font-size: 0.95rem; outline: none; }
+    .hero-search button { padding: 12px 20px; background: #1a1a1a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+    /* CATEGORIES */
+    .categories { background: white; border-bottom: 1px solid #e0e0e0; padding: 0.75rem 1.5rem; display: flex; gap: 0.5rem; overflow-x: auto; }
+    .cat-btn { padding: 6px 14px; border: 1.5px solid #e0e0e0; border-radius: 20px; background: white; cursor: pointer; font-size: 0.85rem; white-space: nowrap; }
+    .cat-btn:hover, .cat-btn.active { border-color: #e63946; color: #e63946; background: #fff5f5; }
+    /* MAIN */
+    .main { max-width: 1200px; margin: 0 auto; padding: 1.5rem; display: grid; grid-template-columns: 240px 1fr; gap: 1.5rem; }
+    /* FILTRES */
+    .filters { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.25rem; height: fit-content; }
+    .filters h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 1rem; }
+    .filter-group { margin-bottom: 1.25rem; }
+    .filter-group label { font-size: 0.8rem; color: #666; display: block; margin-bottom: 4px; }
+    .filter-group input, .filter-group select { width: 100%; padding: 8px 10px; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 0.85rem; outline: none; }
+    .filter-group input:focus { border-color: #e63946; }
+    /* ANNONCES */
+    .products-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .products-header h2 { font-size: 1.1rem; font-weight: 700; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+    .product-card { background: white; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; cursor: pointer; transition: box-shadow 0.2s; text-decoration: none; color: inherit; display: block; }
+    .product-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-color: #e63946; }
+    .product-img { width: 100%; height: 180px; object-fit: cover; background: #f5f5f5; display: flex; align-items: center; justify-content: center; color: #bbb; font-size: 3rem; }
+    .product-img img { width: 100%; height: 180px; object-fit: cover; }
+    .product-info { padding: 0.75rem; }
+    .product-title { font-size: 0.875rem; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .product-price { font-size: 1rem; font-weight: 700; color: #1a1a1a; }
+    .product-commission { font-size: 0.8rem; color: #e63946; font-weight: 600; }
+    .product-meta { font-size: 0.75rem; color: #888; margin-top: 4px; }
+    .product-site { font-size: 0.75rem; color: #e63946; margin-top: 2px; }
+    /* SHOPPERS SECTION */
+    .shoppers-section { background: white; border-radius: 8px; border: 1px solid #e0e0e0; padding: 1.25rem; margin-top: 1.5rem; }
+    .shoppers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .shopper-card { border: 1px solid #e0e0e0; border-radius: 8px; padding: 1rem; cursor: pointer; }
+    .shopper-card:hover { border-color: #e63946; }
+    .shopper-avatar { width: 44px; height: 44px; border-radius: 50%; background: #e63946; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; }
+    /* ALERT */
+    .alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 1rem; font-size: 0.9rem; }
+    .alert-error { background: #fff5f5; color: #c1121f; border: 1px solid #fca5a5; }
+    .alert-success { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
+    #alert-container { grid-column: 1/-1; }
+    @media (max-width: 768px) {
+      .main { grid-template-columns: 1fr; }
+      .filters { display: none; }
+      .hero h1 { font-size: 1.5rem; }
+      .hero-search { flex-direction: column; }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- NAVBAR -->
   <nav class="navbar">
-    <a href="index.html" class="navbar-brand">📦 RayahDZ</a>
+    <a href="index.html" class="navbar-brand">LeCoin<span>DZ</span></a>
+    <div class="navbar-search">
+      <input type="text" id="search-input" placeholder="Rechercher un produit... (ex: Nike Air Max, iPhone 15)">
+    </div>
     <div class="navbar-nav">
-	  <a href="dashboard.html" class="nav-link">📋 <span>Dashboard</span></a>
-      <a href="trips.html" class="nav-link">✈️ <span>Trajets</span></a>
-      <a href="parcels.html" class="nav-link active">📦 <span>Colis</span></a>
-	  <a href="conversations.html" class="nav-link" id="nav-messages">💬 Messages</a>
-      <a href="subscription.html" class="nav-link">⭐ <span>Premium</span></a>
+      <a href="products.html" class="nav-link">?? Annonces</a>
+      <a href="shoppers.html" class="nav-link">??? Shoppers</a>
+      <a href="conversations.html" class="nav-link" id="nav-messages">?? Messages</a>
       <div id="nav-auth"></div>
     </div>
   </nav>
 
-  <!-- HERO -->
   <section class="hero">
-    <h1>Envoyez vos colis<br>avec des voyageurs ✈️</h1>
-    <p>Connectez-vous avec des voyageurs qui font le même trajet et envoyez vos colis à moindre coût.</p>
-    <div class="hero-actions">
-      <a href="parcels.html" class="btn btn-white btn-lg">📦 Envoyer un colis</a>
-      <a href="trips.html" class="btn btn-ghost btn-lg">✈️ Publier un trajet</a>
+    <h1>Achetez en France,<br>recevez en Alg�rie ???</h1>
+    <p>Des shoppers en France ach�tent vos produits pr�f�r�s et vous les livrent</p>
+    <div class="hero-actions" style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+      <a href="products.html" class="btn" style="background:white; color:#e63946; padding:12px 24px; font-size:1rem;">?? D�poser une annonce</a>
+      <a href="shoppers.html" class="btn" style="background:rgba(255,255,255,0.2); color:white; border:2px solid white; padding:12px 24px; font-size:1rem;">??? Devenir shopper</a>
     </div>
   </section>
 
-  <!-- RECHERCHE RAPIDE -->
-  <div class="container" style="margin-top: -2rem; position: relative; z-index: 10;">
-    <div class="search-bar">
-      <div class="form-group" style="flex:1; margin:0;">
-        <label class="form-label">Ville de départ</label>
-        <input type="text" id="search-origin" class="form-input" placeholder="Ex: Paris">
-      </div>
-      <div class="form-group" style="flex:1; margin:0;">
-        <label class="form-label">Ville d'arrivée</label>
-        <input type="text" id="search-dest" class="form-input" placeholder="Ex: Alger">
-      </div>
-      <button class="btn btn-primary" onclick="rechercher()">🔍 Rechercher</button>
-    </div>
+  <div class="categories">
+    <button class="cat-btn active" onclick="filtrerCategorie('')">Tout</button>
+    <button class="cat-btn" onclick="filtrerCategorie('mode')">?? Mode</button>
+    <button class="cat-btn" onclick="filtrerCategorie('chaussures')">?? Chaussures</button>
+    <button class="cat-btn" onclick="filtrerCategorie('electronique')">?? �lectronique</button>
+    <button class="cat-btn" onclick="filtrerCategorie('beaute')">?? Beaut�</button>
+    <button class="cat-btn" onclick="filtrerCategorie('sport')">? Sport</button>
+    <button class="cat-btn" onclick="filtrerCategorie('maison')">?? Maison</button>
+    <button class="cat-btn" onclick="filtrerCategorie('enfants')">?? Enfants</button>
   </div>
 
-  <!-- COMMENT ÇA MARCHE -->
-  <section class="section">
-    <div class="container">
-      <h2 class="section-title" style="text-align:center;">Comment ça marche ?</h2>
-      <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
-        <div class="card" style="text-align:center;">
-          <div style="font-size:2.5rem; margin-bottom:1rem;">📝</div>
-          <h3 style="margin-bottom:0.5rem;">1. Publiez</h3>
-          <p style="color:var(--gray-600); font-size:0.9rem;">Déposez votre annonce de colis ou votre trajet en quelques secondes.</p>
-        </div>
-        <div class="card" style="text-align:center;">
-          <div style="font-size:2.5rem; margin-bottom:1rem;">🤝</div>
-          <h3 style="margin-bottom:0.5rem;">2. Contactez</h3>
-          <p style="color:var(--gray-600); font-size:0.9rem;">Trouvez le voyageur/expediteur idéal et discutez des détails.</p>
-        </div>
-        <div class="card" style="text-align:center;">
-          <div style="font-size:2.5rem; margin-bottom:1rem;">💵</div>
-          <h3 style="margin-bottom:0.5rem;">3. Payez</h3>
-          <p style="color:var(--gray-600); font-size:0.9rem;">Le paiement s'effctue directement entre vous et le voyageur/expediteur.</p>
-        </div>
-        <div class="card" style="text-align:center;">
-          <div style="font-size:2.5rem; margin-bottom:1rem;">✅</div>
-          <h3 style="margin-bottom:0.5rem;">4. Livré !</h3>
-          <p style="color:var(--gray-600); font-size:0.9rem;">Confirmez la réception et laissez un avis au voyageur/expediteur.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  <div class="main">
 
-  <!-- TRAJETS RÉCENTS -->
-  <section class="section" style="background: var(--gray-100);">
-    <div class="container">
-      <h2 class="section-title">Trajets disponibles</h2>
-      <div id="trips-container" class="card-grid">
-        <p style="color:var(--gray-400);">Chargement...</p>
+    <aside class="filters">
+      <h3>Filtres</h3>
+      <div class="filter-group">
+        <label>Commission max (�)</label>
+        <input type="number" id="filter-commission" placeholder="Ex: 20">
       </div>
-      <div style="text-align:center; margin-top:1.5rem;">
-        <a href="trips.html" class="btn btn-outline">Voir tous les trajets →</a>
-      </div>
-    </div>
-  </section>
+      <button class="btn btn-primary" style="width:100%;" onclick="searchProducts()">Appliquer</button>
+      <button class="btn btn-outline" style="width:100%; margin-top:0.5rem;" onclick="resetFilters()">R�initialiser</button>
+    </aside>
 
-  <!-- MODAL AVIS -->
-  <div id="avis-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:300; align-items:center; justify-content:center;">
-    <div class="card" style="width:100%; max-width:480px; max-height:80vh; overflow-y:auto; margin:1rem;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
-        <h2 id="avis-titre" style="font-size:1.1rem;">Avis</h2>
-        <button onclick="document.getElementById('avis-overlay').style.display='none'" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
+    <div>
+      <div id="alert-container"></div>
+      <div class="products-header">
+        <h2 id="products-count">Annonces disponibles</h2>
+        <a href="products.html" class="btn btn-primary btn-sm">+ D�poser une annonce</a>
       </div>
-      <div id="avis-moyenne" style="text-align:center; margin-bottom:1.25rem;"></div>
-      <div id="avis-liste"></div>
+      <div id="products-grid" class="products-grid">
+        <p style="color:#888;">Chargement...</p>
+      </div>
+
+      <div class="shoppers-section">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h2 style="font-size:1.1rem; font-weight:700;">??? Shoppers disponibles</h2>
+          <a href="shoppers.html" class="btn btn-outline btn-sm">Voir tous ?</a>
+        </div>
+        <div id="shoppers-grid" class="shoppers-grid">
+          <p style="color:#888;">Chargement...</p>
+        </div>
+      </div>
     </div>
+
   </div>
 
   <script src="js/api.js"></script>
   <script>
-    async function voirAvis(userId, userName) {
-      document.getElementById("avis-titre").textContent = "Avis sur " + userName;
-      document.getElementById("avis-moyenne").innerHTML = "<p style='color:var(--gray-400);'>Chargement...</p>";
-      document.getElementById("avis-liste").innerHTML = "";
-      document.getElementById("avis-overlay").style.display = "flex";
-      try {
-        const data = await apiCall("/reviews/user/" + userId);
-        if (data.total === 0) {
-          document.getElementById("avis-moyenne").innerHTML =
-            "<p style='color:var(--gray-400); font-size:0.9rem;'>Aucun avis pour le moment.</p>";
-          return;
-        }
-        const etoiles = "★".repeat(Math.round(data.average)) + "☆".repeat(5 - Math.round(data.average));
-        document.getElementById("avis-moyenne").innerHTML = `
-          <div style="font-size:1.8rem; color:#f59e0b;">${etoiles}</div>
-          <div style="font-weight:700; font-size:1.1rem; margin-top:4px;">${data.average} / 5</div>
-          <div style="font-size:0.85rem; color:var(--gray-400);">${data.total} avis</div>`;
-        document.getElementById("avis-liste").innerHTML = data.reviews.map(r => {
-          const etoilesR = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
-          const date = new Date(r.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
-          return `
-            <div style="border-top:1px solid var(--gray-100); padding:1rem 0;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                <div style="font-weight:600; font-size:0.9rem;">${r.reviewer.first_name} ${r.reviewer.last_name}</div>
-                <div style="color:#f59e0b; font-size:0.95rem;">${etoilesR}</div>
-              </div>
-              ${r.comment ? `<p style="font-size:0.875rem; color:var(--gray-600); margin:0;">${r.comment}</p>` : ""}
-              <div style="font-size:0.75rem; color:var(--gray-400); margin-top:4px;">${date}</div>
-            </div>`;
-        }).join("");
-      } catch(e) {
-        document.getElementById("avis-moyenne").innerHTML =
-          "<p style='color:var(--danger);'>Impossible de charger les avis.</p>";
-      }
-    }
-
     updateNavbar();
 
-    // Charger les trajets récents
-    async function loadTrips() {
+    let tousLesProduits = [];
+
+    function filtrerCategorie(cat) {
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      if (!cat) { renderProducts(tousLesProduits); return; }
+      const filtered = tousLesProduits.filter(p =>
+        p.title && p.title.toLowerCase().includes(cat)
+      );
+      renderProducts(filtered);
+    }
+
+    async function searchProducts() {
+      const params = {};
+      const commission = document.getElementById("filter-commission").value;
+      if (commission) params.max_commission = commission;
       try {
-        const data = await TripsAPI.search();
-        const container = document.getElementById("trips-container");
-        if (data.trips.length === 0) {
-          container.innerHTML = "<p style='color:var(--gray-400);'>Aucun trajet disponible pour le moment.</p>";
-          return;
-        }
-        container.innerHTML = data.trips.slice(0, 6).map(trip => `
-          <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:0.75rem;">
-              <div>
-                <div style="font-weight:600; font-size:1rem;">
-                  ${trip.origin_city} → ${trip.dest_city}
-                </div>
-                <div style="color:var(--gray-400); font-size:0.85rem;">
-                  ${trip.origin_country} → ${trip.dest_country}
-                </div>
-              </div>
-              <span style="font-weight:700; color:var(--primary); font-size:1.1rem;">
-                ${trip.price_per_kg}€/kg
-              </span>
-            </div>
-            <div style="color:var(--gray-600); font-size:0.875rem; margin-bottom:0.75rem;">
-              ✈️ Départ : ${formatDate(trip.departure_date)}<br>
-              ⚖️ Capacité : ${trip.max_weight} kg · ${trip.max_size}
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div style="font-size:0.85rem; color:var(--gray-600);">
-                👤 <span onclick="voirAvis(${trip.user_id}, '${trip.carrier.first_name} ${trip.carrier.last_name}')"
-                  style="cursor:pointer; text-decoration:underline; text-underline-offset:3px;">
-                  ${trip.carrier.first_name} ${trip.carrier.last_name}
-                </span><br>
-                <span style="color:#f59e0b;">★</span> ${trip.carrier.rating || "Nouveau"}
-              </div>
-              <a href="trips.html?id=${trip.id}" class="btn btn-primary btn-sm">Voir</a>
-            </div>
-            <div style="margin-top:0.75rem;">
-              <a href="direct-chat.html?user_id=${trip.user_id}&name=${encodeURIComponent(trip.carrier.first_name + ' ' + trip.carrier.last_name)}"
-                class="btn btn-outline btn-full btn-sm">
-                Contacter le voyageur
-              </a>
-            </div>
-            </div>
-          </div>
-        `).join("");
-      } catch (e) {
-        document.getElementById("trips-container").innerHTML =
-          "<p style='color:var(--gray-400);'>Impossible de charger les trajets.</p>";
+        const data = await ProductsAPI.search(params);
+        tousLesProduits = data.products;
+        renderProducts(data.products);
+        document.getElementById("products-count").textContent = `${data.total} annonce${data.total > 1 ? 's' : ''} disponible${data.total > 1 ? 's' : ''}`;
+      } catch(e) {
+        showAlert(e.message);
       }
     }
 
-    function rechercher() {
-  const origin = document.getElementById("search-origin").value;
-  const dest = document.getElementById("search-dest").value;
-  const params = new URLSearchParams();
-  if (origin) params.append("origin_city", origin);
-  if (dest) params.append("dest_city", dest);
-  if (params.toString()) window.location.href = `trips.html?${params.toString()}`;
-}
+    function resetFilters() {
+      document.getElementById("filter-commission").value = "";
+      searchProducts();
+    }
 
-    loadTrips();
+    function renderProducts(products) {
+      const grid = document.getElementById("products-grid");
+      if (products.length === 0) {
+        grid.innerHTML = `<p style="color:#888; grid-column:1/-1;">Aucune annonce pour le moment.</p>`;
+        return;
+      }
+      grid.innerHTML = products.slice(0, 12).map(p => {
+        const site = p.url ? new URL(p.url).hostname.replace('www.', '') : '';
+        return `
+          <a href="products.html?id=${p.id}" class="product-card">
+            <div class="product-img">
+              ${p.image_url
+                ? `<img src="${p.image_url}" alt="${p.title || 'Produit'}" onerror="this.parentElement.innerHTML='???'">`
+                : '???'}
+            </div>
+            <div class="product-info">
+              <div class="product-title">${p.title || 'Produit sans titre'}</div>
+              ${p.price ? `<div class="product-price">${parseFloat(p.price).toFixed(2)}�</div>` : ''}
+              ${p.commission ? `<div class="product-commission">+ ${parseFloat(p.commission).toFixed(2)}� commission</div>` : ''}
+              <div class="product-meta">?? ${p.buyer.first_name} ${p.buyer.last_name}</div>
+              ${site ? `<div class="product-site">${site}</div>` : ''}
+            </div>
+          </a>`;
+      }).join('');
+    }
+
+    async function loadShoppers() {
+      try {
+        const data = await ShoppersAPI.search();
+        const grid = document.getElementById("shoppers-grid");
+        if (data.shoppers.length === 0) {
+          grid.innerHTML = `<p style="color:#888;">Aucun shopper disponible.</p>`;
+          return;
+        }
+        grid.innerHTML = data.shoppers.slice(0, 4).map(s => `
+          <div class="shopper-card" onclick="window.location.href='direct-chat.html?user_id=${s.user_id}&name=${encodeURIComponent(s.shopper.first_name + ' ' + s.shopper.last_name)}'">
+            <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem;">
+              <div class="shopper-avatar">${s.shopper.first_name[0]}</div>
+              <div>
+                <div style="font-weight:600; font-size:0.9rem;">${s.shopper.first_name} ${s.shopper.last_name}</div>
+                <div style="font-size:0.8rem; color:#e63946;">?? ${s.city}, ${s.country}</div>
+              </div>
+            </div>
+            ${s.shopper.rating ? `<div style="font-size:0.8rem; color:#888;">? ${s.shopper.rating}</div>` : ''}
+            ${s.description ? `<div style="font-size:0.8rem; color:#666; margin-top:4px;">${s.description.substring(0, 60)}...</div>` : ''}
+            <button class="btn btn-outline btn-sm" style="margin-top:0.75rem; width:100%;">Contacter</button>
+          </div>
+        `).join('');
+      } catch(e) {}
+    }
+
+    document.getElementById("search-input").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        window.location.href = `products.html?q=${encodeURIComponent(e.target.value)}`;
+      }
+    });
+
+    searchProducts();
+    loadShoppers();
   </script>
-  <script src="js/hamburger.js"></script>
 </body>
 </html>
