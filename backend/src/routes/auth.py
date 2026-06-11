@@ -44,25 +44,23 @@ def register(data: RegisterRequest):
         cgu_version=data.cgu_version
     )
 
-    # Generer et sauvegarder le token de verification
     token = secrets.token_urlsafe(32)
     set_verification_token(user["id"], token)
 
-    # Envoyer l'email de verification
-    verification_url = f"https://www.rayahdz.com/verify-email.html?token={token}"
+    verification_url = f"https://www.lecoindz.com/verify-email.html?token={token}"
     try:
         resend.api_key = os.getenv("RESEND_API_KEY")
         resend.Emails.send({
-            "from": "RayahDZ <noreply@rayahdz.com>",
+            "from": "LeCoinDZ <noreply@rayahdz.com>",
             "to": [data.email],
-            "subject": "Verifiez votre adresse email - RayahDZ",
+            "subject": "Verifiez votre adresse email - LeCoinDZ",
             "html": f"""
                 <div style="font-family:sans-serif; max-width:500px; margin:0 auto; padding:2rem;">
-                    <h2 style="color:#2563eb;">📦 Bienvenue sur RayahDZ !</h2>
+                    <h2 style="color:#e63946;">??? Bienvenue sur LeCoinDZ !</h2>
                     <p>Bonjour {data.first_name},</p>
                     <p>Merci de vous etre inscrit. Cliquez sur le bouton ci-dessous pour verifier votre adresse email :</p>
                     <a href="{verification_url}"
-                       style="display:inline-block; background:#2563eb; color:white; padding:12px 24px;
+                       style="display:inline-block; background:#e63946; color:white; padding:12px 24px;
                               border-radius:8px; text-decoration:none; font-weight:600; margin:1rem 0;">
                         Verifier mon email
                     </a>
@@ -70,7 +68,7 @@ def register(data: RegisterRequest):
                         Ce lien expire dans 24h. Si vous n'avez pas cree de compte, ignorez cet email.
                     </p>
                     <hr style="border:none; border-top:1px solid #e2e8f0; margin:1.5rem 0;">
-                    <p style="color:#94a3b8; font-size:0.8rem;">RayahDZ — Envoyez vos colis avec des voyageurs</p>
+                    <p style="color:#94a3b8; font-size:0.8rem;">LeCoinDZ � Achetez en France, recevez en Algerie</p>
                 </div>
             """
         })
