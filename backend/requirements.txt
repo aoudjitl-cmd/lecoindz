@@ -9,3 +9,5 @@ email-validator
 pydantic-settings
 stripe
 resend
+httpx
+beautifulsoup4
