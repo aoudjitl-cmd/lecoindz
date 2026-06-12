@@ -3,228 +3,284 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RayahDZ - Mon tableau de bord</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>LeCoinDZ — Mon tableau de bord</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; }
+    .navbar { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 0 1.5rem; display: flex; align-items: center; gap: 1rem; height: 56px; position: sticky; top: 0; z-index: 100; }
+    .navbar-brand { font-size: 1.4rem; font-weight: 800; color: #e63946; text-decoration: none; }
+    .navbar-brand span { color: #1a1a1a; }
+    .navbar-nav { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
+    .nav-link { color: #444; text-decoration: none; font-size: 0.875rem; padding: 6px 10px; border-radius: 6px; }
+    .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.875rem; font-weight: 600; text-decoration: none; display: inline-block; }
+    .btn-primary { background: #e63946; color: white; }
+    .btn-primary:hover { background: #c1121f; }
+    .btn-outline { background: white; border: 1.5px solid #e0e0e0; color: #444; }
+    .btn-outline:hover { border-color: #e63946; color: #e63946; }
+    .btn-secondary { background: #1a1a1a; color: white; }
+    .btn-danger { background: #dc2626; color: white; }
+    .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+    .container { max-width: 900px; margin: 0 auto; padding: 1.5rem; }
+    .welcome { margin-bottom: 1.5rem; }
+    .welcome h1 { font-size: 1.4rem; font-weight: 700; }
+    .welcome p { color: #666; font-size: 0.9rem; margin-top: 4px; }
+    .quick-actions { display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .tab-btn { padding: 8px 16px; border-radius: 20px; border: 1.5px solid #e0e0e0; background: white; cursor: pointer; font-size: 0.85rem; }
+    .tab-btn.active { background: #e63946; color: white; border-color: #e63946; }
+    .card { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; }
+    .order-header { display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 0.75rem; }
+    .order-role { font-size: 0.75rem; color: #888; margin-bottom: 4px; }
+    .order-id { font-weight: 700; font-size: 1rem; }
+    .order-info { font-size: 0.875rem; color: #666; margin-top: 6px; line-height: 1.6; }
+    .order-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-top: 1rem; }
+    .badge { padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+    .badge-info { background: #dbeafe; color: #1e40af; }
+    .alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 1rem; font-size: 0.875rem; }
+    .alert-error { background: #fff5f5; color: #c1121f; border: 1px solid #fca5a5; }
+    .alert-success { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
+    /* MODAL AVIS */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; }
+    .modal { background: white; border-radius: 12px; padding: 1.5rem; width: 100%; max-width: 420px; margin: 1rem; }
+    .star { font-size: 2rem; cursor: pointer; color: #e0e0e0; }
+    .star.active { color: #f59e0b; }
+    textarea { width: 100%; padding: 10px; border: 1.5px solid #e0e0e0; border-radius: 6px; font-size: 0.875rem; font-family: inherit; resize: vertical; outline: none; }
+    textarea:focus { border-color: #e63946; }
+  </style>
 </head>
 <body>
 
   <nav class="navbar">
-    <a href="index.html" class="navbar-brand">📦 RayahDZ</a>
+    <a href="index.html" class="navbar-brand">LeCoin<span>DZ</span></a>
     <div class="navbar-nav">
-	  <a href="dashboard.html" class="nav-link">📋 <span>Dashboard</span></a>
-      <a href="trips.html" class="nav-link"><span>✈️</span> <span>Trajets</span></a>
-      <a href="parcels.html" class="nav-link"><span>📦</span> <span>Colis</span></a>
+      <a href="products.html" class="nav-link">📦 Annonces</a>
+      <a href="shoppers.html" class="nav-link">🛍️ Shoppers</a>
       <a href="conversations.html" class="nav-link" id="nav-messages">💬 Messages</a>
-      <a href="subscription.html" class="nav-link">⭐ <span>Premium</span></a>
+      <a href="subscription.html" class="nav-link">⭐ Premium</a>
       <div id="nav-auth"></div>
     </div>
   </nav>
 
-  <div class="container section">
+  <div class="container">
 
     <div id="alert-container"></div>
 
-    <div style="margin-bottom:2rem;">
-      <h1 id="welcome-title" style="font-size:1.6rem; font-weight:700;">Bonjour !</h1>
-      <p style="color:var(--gray-600);">Gerez vos colis et reservations depuis votre tableau de bord.</p>
+    <div class="welcome">
+      <h1 id="welcome-title">Bonjour !</h1>
+      <p>Gérez vos annonces et commandes depuis votre tableau de bord.</p>
     </div>
 
-    <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:2.5rem;">
-      <a href="trips.html" class="btn btn-primary">Publier un trajet</a>
-      <a href="parcels.html" class="btn btn-secondary">Envoyer un colis</a>
+    <div class="quick-actions">
+      <a href="products.html" class="btn btn-primary">📦 Déposer une annonce</a>
+      <a href="shoppers.html" class="btn btn-secondary">🛍️ Proposer mes services</a>
     </div>
 
-    <h2 class="section-title">Mes reservations</h2>
-    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem;">
-      <button class="btn btn-primary btn-sm" id="tab-tous" onclick="filtrerReservations('tous')">Tous</button>
-      <button class="btn btn-outline btn-sm" id="tab-pending" onclick="filtrerReservations('pending')">En attente</button>
-      <button class="btn btn-outline btn-sm" id="tab-accepted" onclick="filtrerReservations('accepted')">Acceptes</button>
-      <button class="btn btn-outline btn-sm" id="tab-transit" onclick="filtrerReservations('transit')">En transit</button>
-      <button class="btn btn-outline btn-sm" id="tab-delivered" onclick="filtrerReservations('delivered')">Livres</button>
+    <h2 style="font-size:1.1rem; font-weight:700; margin-bottom:1rem;">Mes commandes</h2>
+
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-tous" onclick="filtrer('tous')">Toutes</button>
+      <button class="tab-btn" id="tab-pending" onclick="filtrer('pending')">En attente</button>
+      <button class="tab-btn" id="tab-accepted" onclick="filtrer('accepted')">Acceptées</button>
+      <button class="tab-btn" id="tab-progress" onclick="filtrer('progress')">En cours</button>
+      <button class="tab-btn" id="tab-delivered" onclick="filtrer('delivered')">Livrées</button>
     </div>
 
-    <div id="bookings-container">
-      <p style="color:var(--gray-400);">Chargement...</p>
+    <div id="orders-container">
+      <p style="color:#888;">Chargement...</p>
     </div>
 
   </div>
 
+  <!-- MODAL AVIS -->
+  <div class="modal-overlay" id="avis-overlay">
+    <div class="modal">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h2 style="font-size:1rem; font-weight:700;">⭐ Laisser un avis</h2>
+        <button onclick="fermerAvis()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">✕</button>
+      </div>
+      <div id="alert-avis"></div>
+      <p id="avis-pour" style="color:#666; margin-bottom:1rem; font-size:0.9rem;"></p>
+      <div style="margin-bottom:1rem;">
+        <div style="display:flex; gap:0.5rem; font-size:2rem;">
+          <span class="star" data-value="1">☆</span>
+          <span class="star" data-value="2">☆</span>
+          <span class="star" data-value="3">☆</span>
+          <span class="star" data-value="4">☆</span>
+          <span class="star" data-value="5">☆</span>
+        </div>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <textarea id="avis-comment" rows="3" placeholder="Votre commentaire (optionnel)..."></textarea>
+      </div>
+      <input type="hidden" id="avis-order-id">
+      <input type="hidden" id="avis-rating" value="0">
+      <button class="btn btn-primary" style="width:100%;" id="btn-soumettre-avis">Publier l'avis</button>
+    </div>
+  </div>
+
   <script src="js/api.js"></script>
   <script>
-    let tousLesBookings = [];
+    let toutesLesCommandes = [];
     let filtreActuel = "tous";
     let currentUser = null;
 
-    function filtrerReservations(filtre) {
-      filtreActuel = filtre;
-      const tabs = ["tous", "pending", "accepted", "transit", "delivered"];
-      tabs.forEach(t => {
-        const tab = document.getElementById(`tab-${t}`);
-        tab.className = t === filtre ? "btn btn-primary btn-sm" : "btn btn-outline btn-sm";
-      });
-
-      let filtered = tousLesBookings;
-      if (filtre === "pending") filtered = tousLesBookings.filter(b => b.status === "PENDING");
-      else if (filtre === "accepted") filtered = tousLesBookings.filter(b => b.status === "ACCEPTED");
-      else if (filtre === "transit") filtered = tousLesBookings.filter(b => b.status === "IN_TRANSIT");
-      else if (filtre === "delivered") filtered = tousLesBookings.filter(b => b.status === "DELIVERED");
-
-      renderBookings(filtered);
+    function filtrer(f) {
+      filtreActuel = f;
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.getElementById("tab-" + f).classList.add("active");
+      let filtered = toutesLesCommandes;
+      if (f === "pending") filtered = toutesLesCommandes.filter(o => o.status === "PENDING");
+      else if (f === "accepted") filtered = toutesLesCommandes.filter(o => o.status === "ACCEPTED");
+      else if (f === "progress") filtered = toutesLesCommandes.filter(o => o.status === "IN_PROGRESS");
+      else if (f === "delivered") filtered = toutesLesCommandes.filter(o => o.status === "DELIVERED");
+      renderOrders(filtered);
     }
 
-    async function changerStatut(bookingId, status) {
+    async function changerStatut(orderId, status) {
       try {
-        await BookingsAPI.updateStatus(bookingId, status);
-        showAlert("Statut mis a jour !", "success");
-        await loadBookings();
-      } catch (e) {
-        showAlert(e.message);
-      }
+        await OrdersAPI.updateStatus(orderId, status);
+        showAlert("Statut mis à jour !", "success");
+        await loadOrders();
+      } catch(e) { showAlert(e.message); }
     }
 
-    function renderBookings(bookings) {
-      const container = document.getElementById("bookings-container");
-      const user = currentUser;
-
-      if (bookings.length === 0) {
+    function renderOrders(orders) {
+      const container = document.getElementById("orders-container");
+      if (orders.length === 0) {
         container.innerHTML = `
           <div class="card" style="text-align:center; padding:3rem;">
             <div style="font-size:3rem; margin-bottom:1rem;">📭</div>
-            <p style="color:var(--gray-400);">Aucune reservation dans cette categorie.</p>
+            <p style="color:#888;">Aucune commande dans cette catégorie.</p>
           </div>`;
         return;
       }
-
-      container.innerHTML = bookings.map(b => {
-        const isCarrier = b.carrier_id === user.id;
-        const role = isCarrier ? "Vous transportez" : "Votre colis";
-
+      container.innerHTML = orders.map(o => {
+        const isShopper = o.shopper_id === currentUser.id;
+        const role = isShopper ? "Vous transportez" : "Votre demande";
         const actions = [];
 
-        // L'expediteur accepte ou refuse toujours
-        if (!isCarrier && b.status === "PENDING") {
-          actions.push(`<button class="btn btn-secondary btn-sm" onclick="changerStatut(${b.id}, 'ACCEPTED')">Accepter</button>`);
-          actions.push(`<button class="btn btn-danger btn-sm" onclick="changerStatut(${b.id}, 'CANCELLED')">Refuser</button>`);
+        if (!isShopper && o.status === "PENDING") {
+          actions.push(`<button class="btn btn-secondary btn-sm" onclick="changerStatut(${o.id}, 'ACCEPTED')">Accepter</button>`);
+          actions.push(`<button class="btn btn-danger btn-sm" onclick="changerStatut(${o.id}, 'CANCELLED')">Refuser</button>`);
+        }
+        if (isShopper && o.status === "PENDING") {
+          actions.push(`<span style="font-size:0.8rem; color:#888;">En attente de l'acheteur</span>`);
+        }
+        if (isShopper && o.status === "ACCEPTED") {
+          actions.push(`<button class="btn btn-primary btn-sm" onclick="changerStatut(${o.id}, 'IN_PROGRESS')">Commande effectuée</button>`);
+        }
+        if (!isShopper && o.status === "IN_PROGRESS") {
+          actions.push(`<button class="btn btn-secondary btn-sm" onclick="changerStatut(${o.id}, 'DELIVERED')">Confirmer réception</button>`);
+        }
+        if (o.status === "DELIVERED") {
+          const reviewedName = isShopper ? o.buyer.first_name + " " + o.buyer.last_name : o.shopper.first_name + " " + o.shopper.last_name;
+          actions.push(`<button class="btn btn-outline btn-sm" onclick="ouvrirAvis(${o.id}, '${reviewedName}')">⭐ Laisser un avis</button>`);
         }
 
-        // Le voyageur attend
-        if (isCarrier && b.status === "PENDING") {
-          actions.push(`<span style="font-size:0.8rem; color:var(--gray-400);">En attente de l'expediteur</span>`);
-        }
-
-
-        // Le voyageur confirme la prise en charge — sans condition de paiement
-if (isCarrier && b.status === "ACCEPTED") {
-  actions.push(`<button class="btn btn-primary btn-sm" onclick="changerStatut(${b.id}, 'IN_TRANSIT')">Prise en charge</button>`);
-}
-
-// L'expediteur confirme la livraison
-if (!isCarrier && b.status === "IN_TRANSIT") {
-  actions.push(`<button class="btn btn-secondary btn-sm" onclick="changerStatut(${b.id}, 'DELIVERED')">Confirmer livraison</button>`);
-}
+        const statusBadge = {
+          "PENDING": '<span class="badge badge-warning">En attente</span>',
+          "ACCEPTED": '<span class="badge badge-info">Acceptée</span>',
+          "IN_PROGRESS": '<span class="badge badge-warning">En cours</span>',
+          "DELIVERED": '<span class="badge badge-success">Livrée</span>',
+          "CANCELLED": '<span class="badge badge-danger">Annulée</span>',
+        }[o.status] || o.status;
 
         return `
-          <div class="card" style="margin-bottom:1rem;">
-            <div style="display:flex; justify-content:space-between; align-items:start; flex-wrap:wrap; gap:1rem;">
+          <div class="card">
+            <div class="order-header">
               <div>
-                <div style="font-size:0.8rem; color:var(--gray-400); margin-bottom:4px;">${role}</div>
-                <div style="font-weight:600;">Reservation #${b.id}</div>
-                <div style="font-size:0.875rem; color:var(--gray-600); margin-top:4px;">
-                  Expediteur : ${b.sender.first_name} ${b.sender.last_name}<br>
-                  Voyageur : ${b.carrier.first_name} ${b.carrier.last_name}<br>
-                  Prix convenu : <strong>${b.agreed_price}€</strong>
+                <div class="order-role">${role}</div>
+                <div class="order-id">Commande #${o.id}</div>
+                <div class="order-info">
+                  Acheteur : ${o.buyer.first_name} ${o.buyer.last_name}<br>
+                  Shopper : ${o.shopper.first_name} ${o.shopper.last_name}<br>
+                  Commission : <strong>${o.agreed_commission ? parseFloat(o.agreed_commission).toFixed(2) + '€' : '—'}</strong>
                 </div>
               </div>
               <div style="text-align:right;">
-                ${getStatusBadge(b.status)}
-                ${b.status === "ACCEPTED" ? `
-                  <div style="margin-top:8px; font-size:0.8rem; color:var(--gray-600);">
-                    Code remise : <strong>${b.pickup_code}</strong>
-                  </div>` : ""}
-                ${b.status === "IN_TRANSIT" ? `
-                  <div style="margin-top:8px; font-size:0.8rem; color:var(--gray-600);">
-                    Code livraison : <strong>${b.delivery_code}</strong>
-                  </div>` : ""}
-
+                ${statusBadge}
+                ${o.status === "ACCEPTED" ? `<div style="margin-top:8px; font-size:0.8rem; color:#666;">Code remise : <strong>${o.pickup_code}</strong></div>` : ''}
+                ${o.status === "IN_PROGRESS" ? `<div style="margin-top:8px; font-size:0.8rem; color:#666;">Code livraison : <strong>${o.delivery_code}</strong></div>` : ''}
               </div>
             </div>
-            <div style="margin-top:1rem; display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
-              <a href="chat.html?booking_id=${b.id}" class="btn btn-outline btn-sm">
-                Chat <span id="unread-${b.id}" style="display:none; background:var(--danger); color:white; border-radius:50%; padding:1px 6px; font-size:0.75rem; margin-left:4px;"></span>
-              </a>
-              ${actions.join("")}
+            <div class="order-actions">
+              <a href="order-chat.html?order_id=${o.id}" class="btn btn-outline btn-sm">💬 Chat</a>
+              ${actions.join('')}
             </div>
           </div>`;
-      }).join("");
+      }).join('');
     }
 
-    async function loadBookings() {
+    async function loadOrders() {
       try {
-        const data = await BookingsAPI.getMine();
-
-        if (data.bookings.length === 0) {
-          tousLesBookings = [];
-          document.getElementById("bookings-container").innerHTML = `
-            <div class="card" style="text-align:center; padding:3rem;">
-              <div style="font-size:3rem; margin-bottom:1rem;">📭</div>
-              <p style="color:var(--gray-400);">Aucune reservation pour le moment.</p>
-              <a href="parcels.html" class="btn btn-primary" style="margin-top:1rem;">Envoyer un colis</a>
-            </div>`;
-          return;
-        }
-
-        tousLesBookings = await Promise.all(
-          data.bookings.map(async b => {
-            let paymentStatus = "NOT_PAID";
-            try {
-              const payment = await PaymentsAPI.getStatus(b.id);
-              paymentStatus = payment.status || "NOT_PAID";
-            } catch(e) {}
-            return { ...b, paymentStatus };
-          })
-        );
-
-        filtrerReservations(filtreActuel);
-
-      } catch (e) {
-        showAlert(e.message);
-      }
+        const data = await OrdersAPI.getMine();
+        toutesLesCommandes = data.orders;
+        filtrer(filtreActuel);
+      } catch(e) { showAlert(e.message); }
     }
 
-    async function loadUnreadCounts() {
+    // AVIS
+    function ouvrirAvis(orderId, reviewedName) {
+      document.getElementById("avis-order-id").value = orderId;
+      document.getElementById("avis-rating").value = 0;
+      document.getElementById("avis-comment").value = "";
+      document.getElementById("avis-pour").textContent = "Votre avis sur : " + reviewedName;
+      document.getElementById("avis-overlay").style.display = "flex";
+      resetStars();
+    }
+
+    function fermerAvis() { document.getElementById("avis-overlay").style.display = "none"; }
+
+    function resetStars() {
+      document.querySelectorAll(".star").forEach(s => { s.textContent = "☆"; s.classList.remove("active"); });
+      document.getElementById("avis-rating").value = 0;
+    }
+
+    function setStars(value) {
+      document.querySelectorAll(".star").forEach(s => {
+        const v = parseInt(s.dataset.value);
+        s.textContent = v <= value ? "★" : "☆";
+        v <= value ? s.classList.add("active") : s.classList.remove("active");
+      });
+      document.getElementById("avis-rating").value = value;
+    }
+
+    document.querySelectorAll(".star").forEach(star => {
+      star.addEventListener("click", () => setStars(parseInt(star.dataset.value)));
+      star.addEventListener("mouseover", () => {
+        document.querySelectorAll(".star").forEach(s => {
+          s.textContent = parseInt(s.dataset.value) <= parseInt(star.dataset.value) ? "★" : "☆";
+        });
+      });
+      star.addEventListener("mouseout", () => setStars(parseInt(document.getElementById("avis-rating").value)));
+    });
+
+    document.getElementById("btn-soumettre-avis").addEventListener("click", async () => {
+      const rating = parseInt(document.getElementById("avis-rating").value);
+      if (rating === 0) { showAlert("Veuillez sélectionner une note.", "error", "alert-avis"); return; }
       try {
-        const data = await BookingsAPI.getMine();
-        for (const b of data.bookings) {
-          try {
-            const msgs = await MessagesAPI.getConversation(b.id);
-            const unread = msgs.messages.filter(m =>
-              m.sender_id !== currentUser.id && m.is_read === 0
-            ).length;
-            const badge = document.getElementById(`unread-${b.id}`);
-            if (badge && unread > 0) {
-              badge.textContent = unread;
-              badge.style.display = "inline";
-            }
-          } catch(e) {}
-        }
-      } catch(e) {}
-    }
+        await ReviewsAPI.create({
+          order_id: parseInt(document.getElementById("avis-order-id").value),
+          rating: rating,
+          comment: document.getElementById("avis-comment").value || null
+        });
+        fermerAvis();
+        showAlert("Avis publié avec succès !", "success");
+      } catch(e) { showAlert(e.message, "error", "alert-avis"); }
+    });
 
     (async () => {
       await requireSubscription();
       updateNavbar();
-
       currentUser = Auth.getUser();
-
       if (currentUser) {
         document.getElementById("welcome-title").textContent = `Bonjour, ${currentUser.first_name} !`;
       }
-
-      await loadBookings();
-      loadUnreadCounts();
-      setInterval(loadUnreadCounts, 10000);
+      await loadOrders();
     })();
   </script>
-  <script src="js/hamburger.js"></script>
 </body>
 </html>

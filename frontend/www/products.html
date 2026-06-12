@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeCoinDZ — Annonces produits</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; }
+    .navbar { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 0 1.5rem; display: flex; align-items: center; gap: 1rem; height: 56px; position: sticky; top: 0; z-index: 100; }
+    .navbar-brand { font-size: 1.4rem; font-weight: 800; color: #e63946; text-decoration: none; }
+    .navbar-brand span { color: #1a1a1a; }
+    .navbar-nav { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
+    .nav-link { color: #444; text-decoration: none; font-size: 0.875rem; padding: 6px 10px; border-radius: 6px; }
+    .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.875rem; font-weight: 600; text-decoration: none; display: inline-block; }
+    .btn-primary { background: #e63946; color: white; }
+    .btn-primary:hover { background: #c1121f; }
+    .btn-outline { background: white; border: 1.5px solid #e0e0e0; color: #444; }
+    .btn-outline:hover { border-color: #e63946; color: #e63946; }
+    .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+    .btn-full { width: 100%; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .page-header h1 { font-size: 1.3rem; font-weight: 700; }
+    .search-bar { display: flex; gap: 0.75rem; background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .search-bar input { flex: 1; min-width: 150px; padding: 8px 12px; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 0.875rem; outline: none; }
+    .search-bar input:focus { border-color: #e63946; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+    .product-card { background: white; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; cursor: pointer; transition: box-shadow 0.2s; }
+    .product-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-color: #e63946; }
+    .product-img { width: 100%; height: 180px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; color: #bbb; font-size: 3rem; overflow: hidden; }
+    .product-img img { width: 100%; height: 100%; object-fit: cover; }
+    .product-info { padding: 0.75rem; }
+    .product-title { font-size: 0.875rem; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .product-price { font-size: 1rem; font-weight: 700; }
+    .product-commission { font-size: 0.8rem; color: #e63946; font-weight: 600; }
+    .product-meta { font-size: 0.75rem; color: #888; margin-top: 4px; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; }
+    .modal { background: white; border-radius: 12px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; margin: 1rem; padding: 1.5rem; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+    .modal-header h2 { font-size: 1.1rem; font-weight: 700; }
+    .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.85rem; color: #444; margin-bottom: 4px; font-weight: 500; }
+    .form-group input, .form-group textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #e0e0e0; border-radius: 6px; font-size: 0.875rem; outline: none; font-family: inherit; }
+    .form-group input:focus, .form-group textarea:focus { border-color: #e63946; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .url-preview { background: #f5f5f5; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; display: none; }
+    .url-preview img { width: 80px; height: 80px; object-fit: cover; border-radius: 6px; float: left; margin-right: 0.75rem; }
+    .alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 1rem; font-size: 0.875rem; }
+    .alert-error { background: #fff5f5; color: #c1121f; border: 1px solid #fca5a5; }
+    .alert-success { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
+    .badge { padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+    .badge-info { background: #dbeafe; color: #1e40af; }
+    /* Detail modal */
+    .detail-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; }
+    .detail-content { background: white; border-radius: 12px; width: 100%; max-width: 680px; max-height: 90vh; overflow-y: auto; margin: 1rem; }
+    .detail-img { width: 100%; height: 280px; object-fit: cover; border-radius: 12px 12px 0 0; background: #f5f5f5; display: flex; align-items: center; justify-content: center; font-size: 5rem; }
+    .detail-body { padding: 1.5rem; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand">LeCoin<span>DZ</span></a>
+    <div class="navbar-nav">
+      <a href="products.html" class="nav-link">📦 Annonces</a>
+      <a href="shoppers.html" class="nav-link">🛍️ Shoppers</a>
+      <a href="dashboard.html" class="nav-link">📋 Dashboard</a>
+      <a href="conversations.html" class="nav-link" id="nav-messages">💬 Messages</a>
+      <div id="nav-auth"></div>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <div id="alert-container"></div>
+
+    <div class="page-header">
+      <h1>📦 Annonces produits</h1>
+      <button class="btn btn-primary" id="btn-publier">+ Déposer une annonce</button>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" id="filter-q" placeholder="🔍 Rechercher un produit...">
+      <input type="number" id="filter-commission" placeholder="Commission max (€)" style="max-width:180px;">
+      <button class="btn btn-primary btn-sm" onclick="searchProducts()">Filtrer</button>
+      <button class="btn btn-outline btn-sm" onclick="resetFilters()">Réinitialiser</button>
+    </div>
+
+    <div id="products-grid" class="products-grid">
+      <p style="color:#888;">Chargement...</p>
+    </div>
+
+  </div>
+
+  <!-- MODAL PUBLIER -->
+  <div class="modal-overlay" id="publish-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>📦 Déposer une annonce</h2>
+        <button class="close-btn" onclick="fermerModal()">✕</button>
+      </div>
+      <div id="alert-modal"></div>
+
+      <div class="form-group">
+        <label>Lien du produit *</label>
+        <div style="display:flex; gap:0.5rem;">
+          <input type="url" id="p-url" placeholder="https://www.zara.com/fr/..." style="flex:1;">
+          <button class="btn btn-outline btn-sm" id="btn-scrape" onclick="scrapeUrl()">Récupérer infos</button>
+        </div>
+        <p style="font-size:0.75rem; color:#888; margin-top:4px;">Collez le lien du produit depuis Zara, H&M, Nike, etc.</p>
+      </div>
+
+      <div class="url-preview" id="url-preview">
+        <div id="preview-content"></div>
+        <div style="clear:both;"></div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Taille (optionnel)</label>
+          <input type="text" id="p-size" placeholder="Ex: M, 42, L">
+        </div>
+        <div class="form-group">
+          <label>Couleur (optionnel)</label>
+          <input type="text" id="p-color" placeholder="Ex: Noir, Bleu">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Quantité</label>
+          <input type="number" id="p-quantity" value="1" min="1">
+        </div>
+        <div class="form-group">
+          <label>Commission proposée (€) *</label>
+          <input type="number" id="p-commission" placeholder="Ex: 15" step="0.5" min="0">
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-full" id="btn-submit" onclick="publierAnnonce()">Publier l'annonce</button>
+    </div>
+  </div>
+
+  <!-- MODAL DETAIL -->
+  <div class="detail-modal" id="detail-overlay">
+    <div class="detail-content">
+      <div id="detail-img" class="detail-img">🛍️</div>
+      <div class="detail-body">
+        <div id="detail-content-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    (async () => {
+      await requireSubscription();
+      updateNavbar();
+
+      const user = Auth.getUser();
+
+      document.getElementById("btn-publier").addEventListener("click", () => {
+        document.getElementById("publish-overlay").style.display = "flex";
+      });
+
+      async function searchProducts() {
+        const params = {};
+        const commission = document.getElementById("filter-commission").value;
+        if (commission) params.max_commission = commission;
+        try {
+          const data = await ProductsAPI.search(params);
+          let products = data.products;
+          const q = document.getElementById("filter-q").value.toLowerCase();
+          if (q) products = products.filter(p => p.title && p.title.toLowerCase().includes(q));
+          renderProducts(products);
+        } catch(e) {
+          showAlert(e.message);
+        }
+      }
+
+      window.searchProducts = searchProducts;
+      window.resetFilters = () => {
+        document.getElementById("filter-q").value = "";
+        document.getElementById("filter-commission").value = "";
+        searchProducts();
+      };
+
+      function renderProducts(products) {
+        const grid = document.getElementById("products-grid");
+        if (products.length === 0) {
+          grid.innerHTML = `<p style="color:#888; grid-column:1/-1;">Aucune annonce disponible.</p>`;
+          return;
+        }
+        grid.innerHTML = products.map(p => {
+          const site = p.url ? (() => { try { return new URL(p.url).hostname.replace('www.',''); } catch(e) { return ''; }})() : '';
+          return `
+            <div class="product-card" onclick="voirDetail(${p.id})">
+              <div class="product-img">
+                ${p.image_url ? `<img src="${p.image_url}" alt="${p.title || ''}" onerror="this.parentElement.innerHTML='🛍️'">` : '🛍️'}
+              </div>
+              <div class="product-info">
+                <div class="product-title">${p.title || 'Produit sans titre'}</div>
+                ${p.price ? `<div class="product-price">${parseFloat(p.price).toFixed(2)}€</div>` : ''}
+                ${p.commission ? `<div class="product-commission">+ ${parseFloat(p.commission).toFixed(2)}€ commission</div>` : ''}
+                <div class="product-meta">👤 ${p.buyer.first_name} ${p.buyer.last_name}</div>
+                ${site ? `<div style="font-size:0.75rem; color:#e63946;">${site}</div>` : ''}
+              </div>
+            </div>`;
+        }).join('');
+      }
+
+      window.voirDetail = async (id) => {
+        try {
+          const p = await ProductsAPI.get(id);
+          const site = p.url ? (() => { try { return new URL(p.url).hostname.replace('www.',''); } catch(e) { return ''; }})() : '';
+          const isOwner = user && p.user_id === user.id;
+          const detailImg = document.getElementById("detail-img");
+          if (p.image_url) {
+            detailImg.innerHTML = `<img src="${p.image_url}" alt="${p.title || ''}" style="width:100%; height:280px; object-fit:cover; border-radius:12px 12px 0 0;" onerror="this.parentElement.innerHTML='🛍️'">`;
+          }
+          document.getElementById("detail-content-body").innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:1rem;">
+              <div>
+                <h2 style="font-size:1.2rem; font-weight:700; margin-bottom:4px;">${p.title || 'Produit sans titre'}</h2>
+                ${site ? `<a href="${p.url}" target="_blank" style="font-size:0.85rem; color:#e63946;">${site} ↗</a>` : ''}
+              </div>
+              <div style="text-align:right;">
+                ${p.price ? `<div style="font-size:1.4rem; font-weight:800;">${parseFloat(p.price).toFixed(2)}€</div>` : ''}
+                ${p.commission ? `<div style="color:#e63946; font-weight:600;">+ ${parseFloat(p.commission).toFixed(2)}€ commission</div>` : ''}
+              </div>
+            </div>
+            ${p.description ? `<p style="color:#666; font-size:0.9rem; margin-bottom:1rem;">${p.description}</p>` : ''}
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;">
+              ${p.size ? `<span style="background:#f5f5f5; padding:4px 10px; border-radius:4px; font-size:0.85rem;">Taille: ${p.size}</span>` : ''}
+              ${p.color ? `<span style="background:#f5f5f5; padding:4px 10px; border-radius:4px; font-size:0.85rem;">Couleur: ${p.color}</span>` : ''}
+              ${p.quantity > 1 ? `<span style="background:#f5f5f5; padding:4px 10px; border-radius:4px; font-size:0.85rem;">Qté: ${p.quantity}</span>` : ''}
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e0e0e0; padding-top:1rem;">
+              <div style="font-size:0.875rem; color:#666;">
+                👤 ${p.buyer.first_name} ${p.buyer.last_name}
+                ${p.buyer.rating ? `<span style="color:#f59e0b;">★ ${p.buyer.rating}</span>` : ''}
+              </div>
+              ${!isOwner ? `
+                <div style="display:flex; gap:0.5rem;">
+                  <a href="direct-chat.html?user_id=${p.user_id}&name=${encodeURIComponent(p.buyer.first_name + ' ' + p.buyer.last_name)}"
+                    class="btn btn-outline btn-sm">Contacter</a>
+                  ${p.status === 'PENDING' ? `<button class="btn btn-primary btn-sm" onclick="proposerTransport(${p.id}, ${p.commission})">Je transporte</button>` : ''}
+                </div>` : `<span style="font-size:0.85rem; color:#888;">📦 Votre annonce</span>`}
+            </div>
+            <button onclick="document.getElementById('detail-overlay').style.display='none'" class="btn btn-outline btn-full" style="margin-top:1rem;">Fermer</button>
+          `;
+          document.getElementById("detail-overlay").style.display = "flex";
+        } catch(e) {
+          showAlert(e.message);
+        }
+      };
+
+      window.proposerTransport = async (productId, commission) => {
+        const confirmed = confirm(`Proposer de transporter ce produit pour ${commission}€ de commission ?`);
+        if (!confirmed) return;
+        try {
+          await OrdersAPI.create({ product_id: productId, agreed_commission: commission });
+          showAlert("Proposition envoyée ! Consultez votre dashboard.", "success");
+          document.getElementById("detail-overlay").style.display = "none";
+        } catch(e) {
+          showAlert(e.message);
+        }
+      };
+
+      // Fermer modals
+      window.fermerModal = () => { document.getElementById("publish-overlay").style.display = "none"; };
+      document.getElementById("detail-overlay").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("detail-overlay"))
+          document.getElementById("detail-overlay").style.display = "none";
+      });
+
+      // Scraping URL
+      window.scrapeUrl = async () => {
+        const url = document.getElementById("p-url").value;
+        if (!url) return;
+        const btn = document.getElementById("btn-scrape");
+        btn.textContent = "Chargement...";
+        btn.disabled = true;
+        try {
+          const info = await ProductsAPI.scrape(url);
+          const preview = document.getElementById("url-preview");
+          const content = document.getElementById("preview-content");
+          if (info.title || info.image_url) {
+            preview.style.display = "block";
+            content.innerHTML = `
+              ${info.image_url ? `<img src="${info.image_url}" alt="" onerror="this.style.display='none'">` : ''}
+              <div>
+                <div style="font-weight:600; font-size:0.9rem;">${info.title || '—'}</div>
+                ${info.price ? `<div style="color:#e63946; font-weight:600;">${info.price}€</div>` : ''}
+                ${info.description ? `<div style="font-size:0.8rem; color:#666; margin-top:4px;">${info.description.substring(0,100)}...</div>` : ''}
+              </div>`;
+          }
+        } catch(e) {}
+        btn.textContent = "Récupérer infos";
+        btn.disabled = false;
+      };
+
+      // Publier annonce
+      window.publierAnnonce = async () => {
+        const btn = document.getElementById("btn-submit");
+        btn.disabled = true;
+        btn.textContent = "Publication...";
+        try {
+          await ProductsAPI.create({
+            url: document.getElementById("p-url").value,
+            size: document.getElementById("p-size").value || null,
+            color: document.getElementById("p-color").value || null,
+            quantity: parseInt(document.getElementById("p-quantity").value) || 1,
+            commission: parseFloat(document.getElementById("p-commission").value) || null,
+          });
+          fermerModal();
+          showAlert("Annonce publiée avec succès !", "success");
+          searchProducts();
+        } catch(e) {
+          showAlert(e.message, "error", "alert-modal");
+          btn.disabled = false;
+          btn.textContent = "Publier l'annonce";
+        }
+      };
+
+      searchProducts();
+    })();
+  </script>
+</body>
+</html>

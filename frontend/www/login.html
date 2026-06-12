@@ -3,152 +3,182 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RayahDZ - Connexion</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>LeCoinDZ — Connexion</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #e63946 0%, #c1121f 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .card { background: white; border-radius: 12px; padding: 2rem; width: 100%; max-width: 420px; margin: 1rem; }
+    .brand { text-align: center; margin-bottom: 1.5rem; }
+    .brand a { font-size: 1.8rem; font-weight: 800; color: #e63946; text-decoration: none; }
+    .brand a span { color: #1a1a1a; }
+    .brand p { color: #888; font-size: 0.9rem; margin-top: 0.25rem; }
+    .tabs { display: flex; border-bottom: 1px solid #e0e0e0; margin-bottom: 1.5rem; }
+    .tab { flex: 1; padding: 12px; border: none; background: none; cursor: pointer; font-size: 0.9rem; color: #888; border-bottom: 2px solid transparent; }
+    .tab.active { color: #e63946; border-bottom-color: #e63946; font-weight: 600; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.85rem; color: #444; margin-bottom: 4px; font-weight: 500; }
+    .form-group input { width: 100%; padding: 10px 12px; border: 1.5px solid #e0e0e0; border-radius: 6px; font-size: 0.9rem; outline: none; }
+    .form-group input:focus { border-color: #e63946; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .btn { padding: 12px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.95rem; font-weight: 600; width: 100%; }
+    .btn-primary { background: #e63946; color: white; }
+    .btn-primary:hover { background: #c1121f; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .alert { padding: 12px; border-radius: 6px; margin-bottom: 1rem; font-size: 0.85rem; }
+    .alert-error { background: #fff5f5; color: #c1121f; border: 1px solid #fca5a5; }
+    .alert-success { background: #f0fdf4; color: #166534; border: 1px solid #86efac; text-align: center; }
+    .cgu-container { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.85rem; }
+    .cgu-container input { width: auto; margin-top: 3px; }
+    .cgu-container a { color: #e63946; }
+    .cgu-error { color: #c1121f; font-size: 0.8rem; display: none; margin-top: 4px; }
+    .back-link { text-align: center; margin-top: 1rem; }
+    .back-link a { color: rgba(255,255,255,0.8); font-size: 0.85rem; text-decoration: none; }
+  </style>
 </head>
-<body style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); min-height:100vh; display:flex; align-items:center; justify-content:center;">
+<body>
 
-  <div style="width:100%; max-width:420px; padding:1rem;">
-    <div style="text-align:center; margin-bottom:2rem;">
-      <a href="index.html" style="font-size:1.8rem; font-weight:800; color:white;">RayahDZ</a>
-      <p style="color:rgba(255,255,255,0.8); margin-top:0.5rem; font-size:0.9rem;">
-        Envoyez vos colis avec des voyageurs
-      </p>
+  <div>
+    <div class="brand" style="text-align:center; margin-bottom:1rem;">
+      <a href="index.html" style="font-size:1.8rem; font-weight:800; color:white; text-decoration:none;">LeCoin<span style="color:rgba(255,255,255,0.7);">DZ</span></a>
     </div>
 
     <div class="card">
-      <!-- Onglets -->
-      <div style="display:flex; border-bottom:1px solid var(--gray-200); margin-bottom:1.5rem;">
-        <button id="tab-login" onclick="switchTab('login')"
-          style="flex:1; padding:12px; border:none; background:none; font-weight:600; color:var(--primary); border-bottom:2px solid var(--primary); cursor:pointer;">
-          Connexion
-        </button>
-        <button id="tab-register" onclick="switchTab('register')"
-          style="flex:1; padding:12px; border:none; background:none; color:var(--gray-400); cursor:pointer;">
-          Inscription
-        </button>
+      <div class="tabs">
+        <button class="tab active" id="tab-login" onclick="switchTab('login')">Connexion</button>
+        <button class="tab" id="tab-register" onclick="switchTab('register')">Inscription</button>
       </div>
 
       <div id="alert-container"></div>
 
-      <!-- FORMULAIRE CONNEXION -->
       <div id="form-login">
         <div class="form-group">
-          <label class="form-label">Email</label>
-          <input type="email" id="login-email" class="form-input" placeholder="votre@email.com">
+          <label>Email</label>
+          <input type="email" id="login-email" placeholder="votre@email.com" autocomplete="off">
         </div>
         <div class="form-group">
-          <label class="form-label">Mot de passe</label>
-          <input type="password" id="login-password" class="form-input" placeholder="��������">
+          <label>Mot de passe</label>
+          <input type="password" id="login-password" placeholder="••••••••" autocomplete="off">
         </div>
-        <button class="btn btn-primary btn-full" id="btn-login">Se connecter</button>
+        <button class="btn btn-primary" id="btn-login">Se connecter</button>
       </div>
 
-      <!-- FORMULAIRE INSCRIPTION -->
       <div id="form-register" style="display:none;">
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Prenom</label>
-            <input type="text" id="reg-firstname" class="form-input" placeholder="Jean">
+            <label>Prénom</label>
+            <input type="text" id="reg-firstname" placeholder="Karim">
           </div>
           <div class="form-group">
-            <label class="form-label">Nom</label>
-            <input type="text" id="reg-lastname" class="form-input" placeholder="Dupont">
+            <label>Nom</label>
+            <input type="text" id="reg-lastname" placeholder="Benali">
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">Email</label>
-          <input type="email" id="reg-email" class="form-input" placeholder="votre@email.com">
+          <label>Email</label>
+          <input type="email" id="reg-email" placeholder="votre@email.com">
         </div>
         <div class="form-group">
-          <label class="form-label">Telephone</label>
-          <input type="tel" id="reg-phone" class="form-input" placeholder="06 12 34 56 78">
+          <label>Téléphone</label>
+          <input type="tel" id="reg-phone" placeholder="06 12 34 56 78">
         </div>
         <div class="form-group">
-          <label class="form-label">Mot de passe</label>
-          <input type="password" id="reg-password" class="form-input" placeholder="��������">
+          <label>Mot de passe</label>
+          <input type="password" id="reg-password" placeholder="••••••••">
         </div>
-        <button class="btn btn-primary btn-full" id="btn-register">Creer mon compte</button>
+        <div class="form-group">
+          <div class="cgu-container">
+            <input type="checkbox" id="acceptCGU">
+            <label for="acceptCGU">J'accepte les <a href="cgu.html" target="_blank">Conditions Générales d'Utilisation</a></label>
+          </div>
+          <div class="cgu-error" id="cguError">Vous devez accepter les CGU pour continuer.</div>
+        </div>
+        <button class="btn btn-primary" id="btn-register">Créer mon compte</button>
       </div>
     </div>
 
-    <div style="text-align:center; margin-top:1rem;">
-      <a href="index.html" style="color:rgba(255,255,255,0.7); font-size:0.85rem;">
-        Retour a l'accueil
-      </a>
+    <div class="back-link">
+      <a href="index.html">← Retour à l'accueil</a>
     </div>
   </div>
 
   <script src="js/api.js"></script>
   <script>
-    // Si deja connecte, rediriger vers index
     if (Auth.isLoggedIn()) window.location.href = "index.html";
 
-    // Lire le parametre mode dans l'URL
     const params = new URLSearchParams(window.location.search);
     if (params.get("mode") === "register") switchTab("register");
 
     function switchTab(tab) {
       document.getElementById("form-login").style.display = tab === "login" ? "block" : "none";
       document.getElementById("form-register").style.display = tab === "register" ? "block" : "none";
-      document.getElementById("tab-login").style.color = tab === "login" ? "var(--primary)" : "var(--gray-400)";
-      document.getElementById("tab-login").style.borderBottom = tab === "login" ? "2px solid var(--primary)" : "none";
-      document.getElementById("tab-login").style.fontWeight = tab === "login" ? "600" : "400";
-      document.getElementById("tab-register").style.color = tab === "register" ? "var(--primary)" : "var(--gray-400)";
-      document.getElementById("tab-register").style.borderBottom = tab === "register" ? "2px solid var(--primary)" : "none";
-      document.getElementById("tab-register").style.fontWeight = tab === "register" ? "600" : "400";
+      document.getElementById("tab-login").className = "tab" + (tab === "login" ? " active" : "");
+      document.getElementById("tab-register").className = "tab" + (tab === "register" ? " active" : "");
+      document.getElementById("alert-container").innerHTML = "";
     }
 
     async function handleLogin() {
       const btn = document.getElementById("btn-login");
+      const alertContainer = document.getElementById("alert-container");
+      const emailVal = document.getElementById("login-email").value;
+      const passVal = document.getElementById("login-password").value;
+      alertContainer.innerHTML = "";
       btn.disabled = true;
       btn.textContent = "Connexion...";
       try {
-        const data = await AuthAPI.login({
-          email: document.getElementById("login-email").value,
-          password: document.getElementById("login-password").value,
-        });
+        const data = await AuthAPI.login({ email: emailVal, password: passVal });
+        if (!data || !data.token) throw new Error("Reponse invalide");
         Auth.setSession(data.token, data.user);
         window.location.href = "index.html";
-      } catch (e) {
-        showAlert(e.message);
+      } catch(e) {
+        document.getElementById("login-email").value = emailVal;
+        document.getElementById("login-password").value = passVal;
+        alertContainer.innerHTML = `
+          <div class="alert alert-error" style="display:flex; justify-content:space-between;">
+            <span>${e.message}</span>
+            <button onclick="document.getElementById('alert-container').innerHTML=''" style="background:none; border:none; cursor:pointer; font-size:1.1rem;">✕</button>
+          </div>`;
         btn.disabled = false;
         btn.textContent = "Se connecter";
       }
     }
 
     async function handleRegister() {
+      const checkbox = document.getElementById("acceptCGU");
+      const cguError = document.getElementById("cguError");
+      if (!checkbox.checked) { cguError.style.display = "block"; return; }
+      cguError.style.display = "none";
+      const emailVal = document.getElementById("reg-email").value;
       const btn = document.getElementById("btn-register");
       btn.disabled = true;
-      btn.textContent = "Creation...";
+      btn.textContent = "Création...";
       try {
-        const data = await AuthAPI.register({
-          email: document.getElementById("reg-email").value,
+        await AuthAPI.register({
+          email: emailVal,
           password: document.getElementById("reg-password").value,
           first_name: document.getElementById("reg-firstname").value,
           last_name: document.getElementById("reg-lastname").value,
           phone: document.getElementById("reg-phone").value,
+          cgu_accepted_at: new Date().toISOString(),
+          cgu_version: "1.0"
         });
-        Auth.setSession(data.token, data.user);
-        window.location.href = "index.html";
-      } catch (e) {
+        document.getElementById("form-register").style.display = "none";
+        document.getElementById("alert-container").innerHTML = `
+          <div class="alert alert-success" style="padding:1.5rem;">
+            <div style="font-size:2rem; margin-bottom:0.5rem;">📧</div>
+            <div style="font-weight:600; margin-bottom:0.25rem;">Compte créé !</div>
+            <div style="font-size:0.85rem;">Un email de vérification a été envoyé à <strong>${emailVal}</strong>. Cliquez sur le lien pour activer votre compte.</div>
+          </div>`;
+      } catch(e) {
         showAlert(e.message);
         btn.disabled = false;
-        btn.textContent = "Creer mon compte";
+        btn.textContent = "Créer mon compte";
       }
     }
 
     document.getElementById("btn-login").addEventListener("click", handleLogin);
     document.getElementById("btn-register").addEventListener("click", handleRegister);
-
-    // Connexion avec la touche Entree
-    document.getElementById("login-password").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") handleLogin();
-    });
-    document.getElementById("reg-password").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") handleRegister();
-    });
+    document.getElementById("login-password").addEventListener("keydown", e => { if (e.key === "Enter") handleLogin(); });
+    document.getElementById("reg-password").addEventListener("keydown", e => { if (e.key === "Enter") handleRegister(); });
   </script>
-  <script src="js/hamburger.js"></script>
 </body>
 </html>

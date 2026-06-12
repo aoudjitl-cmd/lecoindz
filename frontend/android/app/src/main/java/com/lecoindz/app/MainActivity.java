@@ -1,4 +1,4 @@
-package com.rayahdz.app;
+package com.lecoindz.app;
 
 import com.getcapacitor.BridgeActivity;
 
