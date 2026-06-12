@@ -3,109 +3,126 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RayahDZ — Administration</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>LeCoinDZ — Administration</title>
   <style>
-    .admin-container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; }
+    .navbar { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 0 1.5rem; display: flex; align-items: center; gap: 1rem; height: 56px; }
+    .navbar-brand { font-size: 1.4rem; font-weight: 800; color: #e63946; text-decoration: none; }
+    .navbar-brand span { color: #1a1a1a; }
+    .navbar-nav { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
+    .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.875rem; font-weight: 600; text-decoration: none; display: inline-block; }
+    .btn-primary { background: #e63946; color: white; }
+    .btn-primary:hover { background: #c1121f; }
+    .btn-outline { background: white; border: 1.5px solid #e0e0e0; color: #444; }
+    .btn-danger { background: #dc2626; color: white; }
+    .btn-warning { background: #f59e0b; color: white; border: none; }
+    .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+    .btn-full { width: 100%; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-    .stat-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 1.25rem; text-align: center; }
-    .stat-value { font-size: 2rem; font-weight: 800; color: var(--primary); }
-    .stat-label { font-size: 0.85rem; color: var(--gray-400); margin-top: 4px; }
-    .users-table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-    .users-table th { background: var(--gray-100); padding: 12px 16px; text-align: left; font-size: 0.8rem; color: var(--gray-600); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
-    .users-table td { padding: 12px 16px; border-top: 1px solid var(--gray-100); font-size: 0.875rem; vertical-align: middle; }
-    .users-table tr:hover td { background: var(--gray-50, #f9fafb); }
+    .stat-card { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.25rem; text-align: center; }
+    .stat-value { font-size: 2rem; font-weight: 800; color: #e63946; }
+    .stat-label { font-size: 0.85rem; color: #888; margin-top: 4px; }
+    .search-input { padding: 10px 14px; border: 1.5px solid #e0e0e0; border-radius: 6px; font-size: 0.9rem; width: 100%; max-width: 320px; outline: none; margin-bottom: 1rem; }
+    .search-input:focus { border-color: #e63946; }
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e0e0e0; }
+    th { background: #f5f5f5; padding: 12px 16px; text-align: left; font-size: 0.8rem; color: #666; font-weight: 600; text-transform: uppercase; white-space: nowrap; }
+    td { padding: 12px 16px; border-top: 1px solid #f0f0f0; font-size: 0.875rem; vertical-align: middle; }
+    tr:hover td { background: #fafafa; }
     .actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-    .search-input { padding: 10px 14px; border: 1px solid var(--gray-200); border-radius: var(--radius-sm); font-size: 0.9rem; width: 100%; max-width: 320px; outline: none; }
-    .search-input:focus { border-color: var(--primary); }
-    #login-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .badge { padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+    .badge-info { background: #dbeafe; color: #1e40af; }
+    .alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 1rem; font-size: 0.875rem; }
+    .alert-error { background: #fff5f5; color: #c1121f; border: 1px solid #fca5a5; }
+    .alert-success { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
+    #login-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, #e63946 0%, #c1121f 100%); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .login-card { background: white; border-radius: 12px; padding: 2rem; width: 100%; max-width: 380px; margin: 1rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.85rem; color: #444; margin-bottom: 4px; font-weight: 500; }
+    .form-group input { width: 100%; padding: 10px 12px; border: 1.5px solid #e0e0e0; border-radius: 6px; font-size: 0.9rem; outline: none; }
+    .form-group input:focus { border-color: #e63946; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; }
+    .modal { background: white; border-radius: 12px; padding: 1.5rem; width: 100%; max-width: 400px; margin: 1rem; text-align: center; }
   </style>
 </head>
 <body>
 
-  <!-- ECRAN DE CONNEXION ADMIN -->
+  <!-- LOGIN -->
   <div id="login-overlay">
-    <div class="card" style="width:100%; max-width:380px; margin:1rem;">
+    <div class="login-card">
       <div style="text-align:center; margin-bottom:1.5rem;">
         <div style="font-size:2rem;">🔐</div>
-        <h1 style="font-size:1.3rem; font-weight:700; margin-top:0.5rem;">Administration RayahDZ</h1>
+        <h1 style="font-size:1.3rem; font-weight:700; margin-top:0.5rem;">Administration LeCoinDZ</h1>
       </div>
       <div id="alert-login"></div>
       <div class="form-group">
-        <label class="form-label">Email</label>
-        <input type="email" id="admin-email" class="form-input" placeholder="votre@email.com">
+        <label>Email</label>
+        <input type="email" id="admin-email" placeholder="votre@email.com">
       </div>
       <div class="form-group">
-        <label class="form-label">Mot de passe</label>
-        <input type="password" id="admin-password" class="form-input" placeholder="••••••••">
+        <label>Mot de passe</label>
+        <input type="password" id="admin-password" placeholder="••••••••">
       </div>
       <button class="btn btn-primary btn-full" id="btn-admin-login">Se connecter</button>
     </div>
   </div>
 
-  <!-- INTERFACE ADMIN -->
+  <!-- INTERFACE -->
   <nav class="navbar">
-    <a href="index.html" class="navbar-brand">📦 RayahDZ</a>
+    <a href="index.html" class="navbar-brand">LeCoin<span>DZ</span></a>
     <div class="navbar-nav">
-      <span style="color:var(--gray-600); font-size:0.9rem;">🔐 Administration</span>
-      <button class="btn btn-outline btn-sm" onclick="Auth.logout()">Déconnexion</button>
+      <span style="color:#666; font-size:0.9rem;">Administration</span>
+      <button class="btn btn-outline btn-sm" onclick="Auth.logout()">Deconnexion</button>
     </div>
   </nav>
 
-  <div class="admin-container">
-
+  <div class="container">
     <div id="alert-container"></div>
+    <h1 style="font-size:1.4rem; font-weight:700; margin-bottom:1.5rem;">Gestion des utilisateurs</h1>
 
-    <div style="margin-bottom:2rem;">
-      <h1 style="font-size:1.5rem; font-weight:700;">Gestion des utilisateurs</h1>
-    </div>
-
-    <!-- STATS -->
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-value" id="stat-total">—</div><div class="stat-label">Utilisateurs</div></div>
-      <div class="stat-card"><div class="stat-value" id="stat-verified">—</div><div class="stat-label">Vérifiés</div></div>
-      <div class="stat-card"><div class="stat-value" id="stat-active">—</div><div class="stat-label">Abonnés actifs</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-verified">—</div><div class="stat-label">Verifies</div></div>
+      <div class="stat-card"><div class="stat-value" id="stat-active">—</div><div class="stat-label">Abonnes actifs</div></div>
       <div class="stat-card"><div class="stat-value" id="stat-trial">—</div><div class="stat-label">En essai</div></div>
     </div>
 
-    <!-- RECHERCHE -->
-    <div style="margin-bottom:1rem;">
-      <input type="text" id="search-users" class="search-input" placeholder="🔍 Rechercher par nom ou email...">
-    </div>
+    <input type="text" class="search-input" id="search-users" placeholder="Rechercher par nom ou email...">
 
-    <!-- TABLEAU -->
     <div style="overflow-x:auto;">
-      <table class="users-table">
+      <table>
         <thead>
           <tr>
             <th>ID</th>
             <th>Nom</th>
             <th>Email</th>
             <th>Inscrit le</th>
-            <th>Vérifié</th>
+            <th>Verifie</th>
             <th>Abonnement</th>
-            <th>Fin d'essai</th>
+            <th>Fin essai</th>
             <th>Note</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody id="users-tbody">
-          <tr><td colspan="9" style="text-align:center; color:var(--gray-400); padding:2rem;">Chargement...</td></tr>
+          <tr><td colspan="9" style="text-align:center; color:#888; padding:2rem;">Chargement...</td></tr>
         </tbody>
       </table>
     </div>
-
   </div>
 
-  <!-- MODAL CONFIRMATION SUPPRESSION -->
-  <div id="delete-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center;">
-    <div class="card" style="width:100%; max-width:400px; margin:1rem; text-align:center;">
+  <!-- MODAL SUPPRESSION -->
+  <div class="modal-overlay" id="delete-overlay">
+    <div class="modal">
       <div style="font-size:3rem; margin-bottom:1rem;">⚠️</div>
       <h2 style="margin-bottom:0.5rem;">Supprimer cet utilisateur ?</h2>
-      <p id="delete-name" style="color:var(--gray-600); margin-bottom:1.5rem;"></p>
-      <p style="font-size:0.85rem; color:var(--danger); margin-bottom:1.5rem;">
-        Toutes ses données seront supprimées (trajets, colis, réservations, messages, avis).
-      </p>
+      <p id="delete-name" style="color:#666; margin-bottom:1rem;"></p>
+      <p style="font-size:0.85rem; color:#dc2626; margin-bottom:1.5rem;">Toutes ses donnees seront supprimees.</p>
       <div style="display:flex; gap:1rem;">
         <button class="btn btn-outline btn-full" onclick="fermerDelete()">Annuler</button>
         <button class="btn btn-danger btn-full" id="btn-confirmer-delete">Supprimer</button>
@@ -118,7 +135,7 @@
     let tousLesUsers = [];
     let userToDelete = null;
 
-    // ===== CONNEXION ADMIN =====
+    // LOGIN
     document.getElementById("btn-admin-login").addEventListener("click", async () => {
       const btn = document.getElementById("btn-admin-login");
       btn.disabled = true;
@@ -150,16 +167,13 @@
       if (e.key === "Enter") document.getElementById("btn-admin-login").click();
     });
 
-    // ===== CHARGEMENT USERS =====
     async function loadUsers() {
       try {
         const data = await apiCall("/admin-api/users");
         tousLesUsers = data.users;
         updateStats(data.users);
         renderUsers(data.users);
-      } catch(e) {
-        showAlert(e.message);
-      }
+      } catch(e) { showAlert(e.message); }
     }
 
     function updateStats(users) {
@@ -172,87 +186,69 @@
     function renderUsers(users) {
       const tbody = document.getElementById("users-tbody");
       if (users.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--gray-400); padding:2rem;">Aucun utilisateur trouvé.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:#888; padding:2rem;">Aucun utilisateur.</td></tr>`;
         return;
       }
       tbody.innerHTML = users.map(u => {
         const subBadge = {
-          "ACTIVE":    `<span class="badge badge-success">Actif</span>`,
-          "TRIAL":     `<span class="badge badge-warning">Essai</span>`,
-          "CANCELLED": `<span class="badge badge-danger">Annulé</span>`,
+          "ACTIVE": `<span class="badge badge-success">Actif</span>`,
+          "TRIAL": `<span class="badge badge-warning">Essai</span>`,
+          "CANCELLED": `<span class="badge badge-danger">Annule</span>`,
         }[u.subscription_status] || `<span class="badge badge-info">${u.subscription_status || "—"}</span>`;
 
-        const date = new Date(u.created_at).toLocaleDateString("fr-FR", {
-          day: "numeric", month: "short", year: "numeric"
-        });
+        const date = new Date(u.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
 
-        // Date de fin d'essai avec alerte si proche
         let trialEndCell = "—";
         if (u.trial_end) {
           const trialDate = new Date(u.trial_end);
-          const today = new Date();
-          const daysLeft = Math.ceil((trialDate - today) / (1000 * 60 * 60 * 24));
-          const formattedTrial = trialDate.toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
-          if (daysLeft < 0) {
-            trialEndCell = `<span style="color:var(--danger);">${formattedTrial} (expiré)</span>`;
-          } else if (daysLeft <= 5) {
-            trialEndCell = `<span style="color:#f59e0b;">${formattedTrial} (${daysLeft}j)</span>`;
-          } else {
-            trialEndCell = `<span style="color:var(--gray-600);">${formattedTrial}</span>`;
-          }
+          const daysLeft = Math.ceil((trialDate - new Date()) / 86400000);
+          const formatted = trialDate.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+          trialEndCell = daysLeft < 0
+            ? `<span style="color:#dc2626;">${formatted} (expire)</span>`
+            : daysLeft <= 5
+            ? `<span style="color:#f59e0b;">${formatted} (${daysLeft}j)</span>`
+            : `<span style="color:#666;">${formatted}</span>`;
         }
 
         return `
           <tr>
-            <td style="color:var(--gray-400);">#${u.id}</td>
-            <td style="font-weight:600;">${u.first_name} ${u.last_name}${u.is_admin ? ' <span style="font-size:0.7rem; background:#7c3aed; color:white; padding:2px 6px; border-radius:4px;">ADMIN</span>' : ""}</td>
+            <td style="color:#888;">#${u.id}</td>
+            <td style="font-weight:600;">${u.first_name} ${u.last_name}${u.is_admin ? ' <span style="font-size:0.7rem; background:#e63946; color:white; padding:2px 6px; border-radius:4px;">ADMIN</span>' : ''}</td>
             <td>${u.email}</td>
-            <td style="color:var(--gray-400); white-space:nowrap;">${date}</td>
-            <td>${u.is_verified
-              ? '<span style="color:var(--secondary);">✅ Oui</span>'
-              : '<span style="color:var(--danger);">❌ Non</span>'}</td>
+            <td style="color:#888; white-space:nowrap;">${date}</td>
+            <td>${u.is_verified ? '<span style="color:#166534;">Oui</span>' : '<span style="color:#dc2626;">Non</span>'}</td>
             <td>${subBadge}</td>
             <td style="white-space:nowrap;">${trialEndCell}</td>
-            <td>${u.rating ? "★ " + u.rating + " (" + u.nb_ratings + ")" : "—"}</td>
+            <td>${u.rating ? "★ " + u.rating : "—"}</td>
             <td>
               <div class="actions">
-                ${!u.is_verified ? `
-                  <button class="btn btn-outline btn-sm" onclick="verifierUser(${u.id}, '${u.first_name}')">
-                    ✅ Vérifier
-                  </button>` : `
-                  <button class="btn btn-outline btn-sm" onclick="bloquerUser(${u.id}, '${u.first_name}')">
-                    🚫 Bloquer
-                  </button>`}
-                ${u.subscription_status === "TRIAL" && !u.is_admin ? `
-                  <button class="btn btn-warning btn-sm" style="background:#f59e0b; color:white; border:none;"
-                    onclick="stopTrial(${u.id}, '${u.first_name}')">
-                    ⏹ Arrêter essai
-                  </button>` : ""}
-                ${!u.is_admin ? `
-                  <button class="btn btn-danger btn-sm" onclick="ouvrirDelete(${u.id}, '${u.first_name} ${u.last_name}')">
-                    🗑️ Supprimer
-                  </button>` : ""}
+                ${!u.is_verified
+                  ? `<button class="btn btn-outline btn-sm" onclick="verifierUser(${u.id}, '${u.first_name}')">Verifier</button>`
+                  : `<button class="btn btn-outline btn-sm" onclick="bloquerUser(${u.id}, '${u.first_name}')">Bloquer</button>`}
+                ${u.subscription_status === "TRIAL" && !u.is_admin
+                  ? `<button class="btn btn-warning btn-sm" onclick="stopTrial(${u.id}, '${u.first_name}')">Stopper essai</button>`
+                  : ''}
+                ${!u.is_admin
+                  ? `<button class="btn btn-danger btn-sm" onclick="ouvrirDelete(${u.id}, '${u.first_name} ${u.last_name}')">Supprimer</button>`
+                  : ''}
               </div>
             </td>
           </tr>`;
-      }).join("");
+      }).join('');
     }
 
-    // ===== RECHERCHE =====
     document.getElementById("search-users").addEventListener("input", function() {
       const q = this.value.toLowerCase();
-      const filtered = tousLesUsers.filter(u =>
+      renderUsers(tousLesUsers.filter(u =>
         u.email.toLowerCase().includes(q) ||
         (u.first_name + " " + u.last_name).toLowerCase().includes(q)
-      );
-      renderUsers(filtered);
+      ));
     });
 
-    // ===== ACTIONS =====
     async function verifierUser(userId, name) {
       try {
         await apiCall("/admin-api/users/" + userId + "/verify", "PATCH");
-        showAlert(name + " verifie avec succes !", "success");
+        showAlert(name + " verifie !", "success");
         loadUsers();
       } catch(e) { showAlert(e.message); }
     }
@@ -267,10 +263,10 @@
     }
 
     async function stopTrial(userId, name) {
-      if (!confirm("Arreter la periode d'essai de " + name + " ? Il devra souscrire un abonnement payant pour continuer.")) return;
+      if (!confirm("Stopper l'essai de " + name + " ?")) return;
       try {
         await apiCall("/admin-api/users/" + userId + "/stop-trial", "PATCH");
-        showAlert("Periode d'essai de " + name + " arretee.", "success");
+        showAlert("Essai de " + name + " stoppe.", "success");
         loadUsers();
       } catch(e) { showAlert(e.message); }
     }
@@ -291,15 +287,11 @@
       try {
         await apiCall("/admin-api/users/" + userToDelete, "DELETE");
         fermerDelete();
-        showAlert("Utilisateur supprime avec succes.", "success");
+        showAlert("Utilisateur supprime.", "success");
         loadUsers();
-      } catch(e) {
-        showAlert(e.message);
-        fermerDelete();
-      }
+      } catch(e) { showAlert(e.message); fermerDelete(); }
     });
 
-    // ===== INIT =====
     if (Auth.isLoggedIn()) {
       apiCall("/admin-api/users").then(data => {
         document.getElementById("login-overlay").style.display = "none";
