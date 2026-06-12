@@ -47,7 +47,7 @@ def register(data: RegisterRequest):
     token = secrets.token_urlsafe(32)
     set_verification_token(user["id"], token)
 
-    verification_url = f"https://lecoindz.vercel.app/verify-email.html?token={token}"
+    verification_url = f"https://www.lecoindz.com/verify-email.html?token={token}"
     try:
         resend.api_key = os.getenv("RESEND_API_KEY")
         resend.Emails.send({
