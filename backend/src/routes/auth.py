@@ -51,7 +51,7 @@ def register(data: RegisterRequest):
     try:
         resend.api_key = os.getenv("RESEND_API_KEY")
         resend.Emails.send({
-            "from": "LeCoinDZ <noreply@rayahdz.com>",
+            "from": "LeCoinDZ <noreply@lecoindz.com>",
             "to": [data.email],
             "subject": "Verifiez votre adresse email - LeCoinDZ",
             "html": f"""
