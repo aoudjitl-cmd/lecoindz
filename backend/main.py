@@ -192,7 +192,7 @@ def set_admin():
     from src.config.database import get_connection
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("UPDATE LCD_USERS SET is_admin = 1 WHERE email = 'rayah.plateforme@email.com'")
+    cursor.execute("UPDATE LCD_USERS SET is_admin = 1 WHERE email = 'rayah.plateforme@gmail.com'")
     conn.commit()
     affected = cursor.rowcount
     cursor.close()
