@@ -56,9 +56,9 @@ def register(data: RegisterRequest):
             "subject": "Verifiez votre adresse email - LeCoinDZ",
             "html": f"""
                 <div style="font-family:sans-serif; max-width:500px; margin:0 auto; padding:2rem;">
-                    <h2 style="color:#e63946;">??? Bienvenue sur LeCoinDZ !</h2>
+                    <h2 style="color:#e63946;">Bienvenue sur LeCoinDZ !</h2>
                     <p>Bonjour {data.first_name},</p>
-                    <p>Merci de vous etre inscrit. Cliquez sur le bouton ci-dessous pour verifier votre adresse email :</p>
+                    <p>Merci de vous etre inscrit sur LeCoinDZ. Cliquez sur le bouton ci-dessous pour verifier votre adresse email :</p>
                     <a href="{verification_url}"
                        style="display:inline-block; background:#e63946; color:white; padding:12px 24px;
                               border-radius:8px; text-decoration:none; font-weight:600; margin:1rem 0;">
