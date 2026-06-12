@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LeCoinDZ — Abonnement</title>
+  <title>LeCoinDZ â€” Abonnement</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; }
@@ -47,19 +47,19 @@
       <div class="status-card" id="status-card"></div>
     </div>
     <div class="pricing-card">
-      <div class="badge badge-trial" id="trial-badge">?? 1 mois gratuit</div>
+      <div class="badge badge-trial" id="trial-badge">ğŸ 1 mois gratuit</div>
       <h1 style="font-size:1.5rem; font-weight:700; margin-bottom:0.5rem;">LeCoinDZ Premium</h1>
-      <p style="color:#888; font-size:0.9rem;">Accès complet à toutes les fonctionnalités</p>
-      <div class="price">3.99€ <span>/ mois</span></div>
+      <p style="color:#888; font-size:0.9rem;">AccÃ¨s complet Ã  toutes les fonctionnalitÃ©s</p>
+      <div class="price">3.99â‚¬ <span>/ mois</span></div>
       <ul class="features">
-        <li>? Déposer des annonces illimitées</li>
-        <li>? Proposer vos services de shopper</li>
-        <li>? Messagerie avec les acheteurs</li>
-        <li>? Tableau de bord complet</li>
-        <li>? Support prioritaire</li>
+        <li>âœ… DÃ©poser des annonces illimitÃ©es</li>
+        <li>âœ… Proposer vos services de shopper</li>
+        <li>âœ… Messagerie avec les acheteurs</li>
+        <li>âœ… Tableau de bord complet</li>
+        <li>âœ… Support prioritaire</li>
       </ul>
       <div id="btn-section">
-        <button class="btn btn-primary" id="btn-subscribe">?? Démarrer mon mois gratuit</button>
+        <button class="btn btn-primary" id="btn-subscribe">ğŸš€ DÃ©marrer mon mois gratuit</button>
         <p id="btn-note" style="font-size:0.8rem; color:#888; margin-top:1rem;">Aucune carte requise pendant l'essai</p>
       </div>
     </div>
@@ -83,22 +83,22 @@
 
         if (data.subscription_status === "ACTIVE") {
           trialBadge.style.display = "none";
-          statusCard.innerHTML = `<div style="font-weight:600; color:#166534;">? Abonnement actif</div><div style="font-size:0.875rem; color:#666; margin-top:4px;">Vous avez accès à toutes les fonctionnalités.</div>`;
+          statusCard.innerHTML = `<div style="font-weight:600; color:#166534;">âœ… Abonnement actif</div><div style="font-size:0.875rem; color:#666; margin-top:4px;">Vous avez accÃ¨s Ã  toutes les fonctionnalitÃ©s.</div>`;
           btnSection.innerHTML = `<button class="btn btn-danger" id="btn-cancel">Annuler mon abonnement</button>`;
           document.getElementById("btn-cancel").addEventListener("click", annuler);
         } else if (data.subscription_status === "TRIAL") {
-          const trialEnd = data.trial_end ? new Date(data.trial_end).toLocaleDateString("fr-FR") : "—";
+          const trialEnd = data.trial_end ? new Date(data.trial_end).toLocaleDateString("fr-FR") : "â€”";
           const daysLeft = data.trial_end ? Math.ceil((new Date(data.trial_end) - new Date()) / 86400000) : null;
-          trialBadge.textContent = daysLeft !== null ? `? Essai — ${daysLeft > 0 ? daysLeft + ' jours restants' : 'expiré'}` : '? Essai en cours';
+          trialBadge.textContent = daysLeft !== null ? `â³ Essai â€” ${daysLeft > 0 ? daysLeft + ' jours restants' : 'expirÃ©'}` : 'â³ Essai en cours';
           trialBadge.style.background = daysLeft <= 5 ? '#f59e0b' : '#e63946';
-          statusCard.innerHTML = `<div style="font-weight:600; color:#92400e;">?? Période d'essai gratuite</div><div style="font-size:0.875rem; color:#666; margin-top:4px;">Votre essai se termine le <strong>${trialEnd}</strong>.</div>`;
-          document.getElementById("btn-subscribe").textContent = "?? S'abonner — 3.99€/mois";
-          btnNote.textContent = "L'abonnement démarre à la fin de votre essai.";
+          statusCard.innerHTML = `<div style="font-weight:600; color:#92400e;">ğŸ PÃ©riode d'essai gratuite</div><div style="font-size:0.875rem; color:#666; margin-top:4px;">Votre essai se termine le <strong>${trialEnd}</strong>.</div>`;
+          document.getElementById("btn-subscribe").textContent = "ğŸ’³ S'abonner â€” 3.99â‚¬/mois";
+          btnNote.textContent = "L'abonnement dÃ©marre Ã  la fin de votre essai.";
           document.getElementById("btn-subscribe").addEventListener("click", souscrire);
         } else if (data.subscription_status === "CANCELLED") {
           trialBadge.style.display = "none";
-          statusCard.innerHTML = `<div style="font-weight:600; color:#991b1b;">? Abonnement annulé</div><div style="font-size:0.875rem; color:#666; margin-top:4px;">Réabonnez-vous pour retrouver l'accès.</div>`;
-          document.getElementById("btn-subscribe").textContent = "?? Se réabonner — 3.99€/mois";
+          statusCard.innerHTML = `<div style="font-weight:600; color:#991b1b;">âŒ Abonnement annulÃ©</div><div style="font-size:0.875rem; color:#666; margin-top:4px;">RÃ©abonnez-vous pour retrouver l'accÃ¨s.</div>`;
+          document.getElementById("btn-subscribe").textContent = "ğŸ”„ Se rÃ©abonner â€” 3.99â‚¬/mois";
           document.getElementById("btn-subscribe").addEventListener("click", souscrire);
         } else {
           document.getElementById("btn-subscribe").addEventListener("click", souscrire);
@@ -117,7 +117,7 @@
         window.location.href = data.checkout_url;
       } catch(e) {
         showAlert(e.message);
-        if (btn) { btn.disabled = false; btn.textContent = "?? S'abonner — 3.99€/mois"; }
+        if (btn) { btn.disabled = false; btn.textContent = "ğŸ’³ S'abonner â€” 3.99â‚¬/mois"; }
       }
     }
 
@@ -125,7 +125,7 @@
       if (!confirm("Confirmer l'annulation ?")) return;
       try {
         await SubscriptionsAPI.cancel();
-        showAlert("Abonnement annulé.", "success");
+        showAlert("Abonnement annulÃ©.", "success");
         loadStatus();
       } catch(e) { showAlert(e.message); }
     }

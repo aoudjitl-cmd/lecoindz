@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LeCoinDZ ó Connexion</title>
+  <title>LeCoinDZ ‚Äî Connexion</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #e63946 0%, #c1121f 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
@@ -57,7 +57,7 @@
         </div>
         <div class="form-group">
           <label>Mot de passe</label>
-          <input type="password" id="login-password" placeholder="ïïïïïïïï" autocomplete="off">
+          <input type="password" id="login-password" placeholder="‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢" autocomplete="off">
         </div>
         <button class="btn btn-primary" id="btn-login">Se connecter</button>
       </div>
@@ -65,7 +65,7 @@
       <div id="form-register" style="display:none;">
         <div class="form-row">
           <div class="form-group">
-            <label>PrÈnom</label>
+            <label>Pr√©nom</label>
             <input type="text" id="reg-firstname" placeholder="Karim">
           </div>
           <div class="form-group">
@@ -78,26 +78,26 @@
           <input type="email" id="reg-email" placeholder="votre@email.com">
         </div>
         <div class="form-group">
-          <label>TÈlÈphone</label>
+          <label>T√©l√©phone</label>
           <input type="tel" id="reg-phone" placeholder="06 12 34 56 78">
         </div>
         <div class="form-group">
           <label>Mot de passe</label>
-          <input type="password" id="reg-password" placeholder="ïïïïïïïï">
+          <input type="password" id="reg-password" placeholder="‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢">
         </div>
         <div class="form-group">
           <div class="cgu-container">
             <input type="checkbox" id="acceptCGU">
-            <label for="acceptCGU">J'accepte les <a href="cgu.html" target="_blank">Conditions GÈnÈrales d'Utilisation</a></label>
+            <label for="acceptCGU">J'accepte les <a href="cgu.html" target="_blank">Conditions G√©n√©rales d'Utilisation</a></label>
           </div>
           <div class="cgu-error" id="cguError">Vous devez accepter les CGU pour continuer.</div>
         </div>
-        <button class="btn btn-primary" id="btn-register">CrÈer mon compte</button>
+        <button class="btn btn-primary" id="btn-register">Cr√©er mon compte</button>
       </div>
     </div>
 
     <div class="back-link">
-      <a href="index.html">? Retour ‡ l'accueil</a>
+      <a href="index.html">‚Üê Retour √† l'accueil</a>
     </div>
   </div>
 
@@ -135,7 +135,7 @@
         alertContainer.innerHTML = `
           <div class="alert alert-error" style="display:flex; justify-content:space-between;">
             <span>${e.message}</span>
-            <button onclick="document.getElementById('alert-container').innerHTML=''" style="background:none; border:none; cursor:pointer; font-size:1.1rem;">?</button>
+            <button onclick="document.getElementById('alert-container').innerHTML=''" style="background:none; border:none; cursor:pointer; font-size:1.1rem;">‚úï</button>
           </div>`;
         btn.disabled = false;
         btn.textContent = "Se connecter";
@@ -150,7 +150,7 @@
       const emailVal = document.getElementById("reg-email").value;
       const btn = document.getElementById("btn-register");
       btn.disabled = true;
-      btn.textContent = "CrÈation...";
+      btn.textContent = "Cr√©ation...";
       try {
         await AuthAPI.register({
           email: emailVal,
@@ -164,14 +164,14 @@
         document.getElementById("form-register").style.display = "none";
         document.getElementById("alert-container").innerHTML = `
           <div class="alert alert-success" style="padding:1.5rem;">
-            <div style="font-size:2rem; margin-bottom:0.5rem;">??</div>
-            <div style="font-weight:600; margin-bottom:0.25rem;">Compte crÈÈ !</div>
-            <div style="font-size:0.85rem;">Un email de vÈrification a ÈtÈ envoyÈ ‡ <strong>${emailVal}</strong>. Cliquez sur le lien pour activer votre compte.</div>
+            <div style="font-size:2rem; margin-bottom:0.5rem;">üìß</div>
+            <div style="font-weight:600; margin-bottom:0.25rem;">Compte cr√©√© !</div>
+            <div style="font-size:0.85rem;">Un email de v√©rification a √©t√© envoy√© √† <strong>${emailVal}</strong>. Cliquez sur le lien pour activer votre compte.</div>
           </div>`;
       } catch(e) {
         showAlert(e.message);
         btn.disabled = false;
-        btn.textContent = "CrÈer mon compte";
+        btn.textContent = "Cr√©er mon compte";
       }
     }
 

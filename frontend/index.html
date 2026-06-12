@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LeCoinDZ � Achetez en France, recevez en Alg�rie</title>
+  <title>LeCoinDZ — Achetez en France, recevez en Algérie</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; }
@@ -84,31 +84,31 @@
       <input type="text" id="search-input" placeholder="Rechercher un produit... (ex: Nike Air Max, iPhone 15)">
     </div>
     <div class="navbar-nav">
-      <a href="products.html" class="nav-link">?? Annonces</a>
-      <a href="shoppers.html" class="nav-link">??? Shoppers</a>
-      <a href="conversations.html" class="nav-link" id="nav-messages">?? Messages</a>
+      <a href="products.html" class="nav-link">📦 Annonces</a>
+      <a href="shoppers.html" class="nav-link">🛍️ Shoppers</a>
+      <a href="conversations.html" class="nav-link" id="nav-messages">💬 Messages</a>
       <div id="nav-auth"></div>
     </div>
   </nav>
 
   <section class="hero">
-    <h1>Achetez en France,<br>recevez en Alg�rie ???</h1>
-    <p>Des shoppers en France ach�tent vos produits pr�f�r�s et vous les livrent</p>
+    <h1>Achetez en France,<br>recevez en Algérie 🛍️</h1>
+    <p>Des shoppers en France achètent vos produits préférés et vous les livrent</p>
     <div class="hero-actions" style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
-      <a href="products.html" class="btn" style="background:white; color:#e63946; padding:12px 24px; font-size:1rem;">?? D�poser une annonce</a>
-      <a href="shoppers.html" class="btn" style="background:rgba(255,255,255,0.2); color:white; border:2px solid white; padding:12px 24px; font-size:1rem;">??? Devenir shopper</a>
+      <a href="products.html" class="btn" style="background:white; color:#e63946; padding:12px 24px; font-size:1rem;">📦 Déposer une annonce</a>
+      <a href="shoppers.html" class="btn" style="background:rgba(255,255,255,0.2); color:white; border:2px solid white; padding:12px 24px; font-size:1rem;">🛍️ Devenir shopper</a>
     </div>
   </section>
 
   <div class="categories">
     <button class="cat-btn active" onclick="filtrerCategorie('')">Tout</button>
-    <button class="cat-btn" onclick="filtrerCategorie('mode')">?? Mode</button>
-    <button class="cat-btn" onclick="filtrerCategorie('chaussures')">?? Chaussures</button>
-    <button class="cat-btn" onclick="filtrerCategorie('electronique')">?? �lectronique</button>
-    <button class="cat-btn" onclick="filtrerCategorie('beaute')">?? Beaut�</button>
-    <button class="cat-btn" onclick="filtrerCategorie('sport')">? Sport</button>
-    <button class="cat-btn" onclick="filtrerCategorie('maison')">?? Maison</button>
-    <button class="cat-btn" onclick="filtrerCategorie('enfants')">?? Enfants</button>
+    <button class="cat-btn" onclick="filtrerCategorie('mode')">👗 Mode</button>
+    <button class="cat-btn" onclick="filtrerCategorie('chaussures')">👟 Chaussures</button>
+    <button class="cat-btn" onclick="filtrerCategorie('electronique')">📱 Électronique</button>
+    <button class="cat-btn" onclick="filtrerCategorie('beaute')">💄 Beauté</button>
+    <button class="cat-btn" onclick="filtrerCategorie('sport')">⚽ Sport</button>
+    <button class="cat-btn" onclick="filtrerCategorie('maison')">🏠 Maison</button>
+    <button class="cat-btn" onclick="filtrerCategorie('enfants')">👶 Enfants</button>
   </div>
 
   <div class="main">
@@ -116,18 +116,18 @@
     <aside class="filters">
       <h3>Filtres</h3>
       <div class="filter-group">
-        <label>Commission max (�)</label>
+        <label>Commission max (€)</label>
         <input type="number" id="filter-commission" placeholder="Ex: 20">
       </div>
       <button class="btn btn-primary" style="width:100%;" onclick="searchProducts()">Appliquer</button>
-      <button class="btn btn-outline" style="width:100%; margin-top:0.5rem;" onclick="resetFilters()">R�initialiser</button>
+      <button class="btn btn-outline" style="width:100%; margin-top:0.5rem;" onclick="resetFilters()">Réinitialiser</button>
     </aside>
 
     <div>
       <div id="alert-container"></div>
       <div class="products-header">
         <h2 id="products-count">Annonces disponibles</h2>
-        <a href="products.html" class="btn btn-primary btn-sm">+ D�poser une annonce</a>
+        <a href="products.html" class="btn btn-primary btn-sm">+ Déposer une annonce</a>
       </div>
       <div id="products-grid" class="products-grid">
         <p style="color:#888;">Chargement...</p>
@@ -135,8 +135,8 @@
 
       <div class="shoppers-section">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-          <h2 style="font-size:1.1rem; font-weight:700;">??? Shoppers disponibles</h2>
-          <a href="shoppers.html" class="btn btn-outline btn-sm">Voir tous ?</a>
+          <h2 style="font-size:1.1rem; font-weight:700;">🛍️ Shoppers disponibles</h2>
+          <a href="shoppers.html" class="btn btn-outline btn-sm">Voir tous →</a>
         </div>
         <div id="shoppers-grid" class="shoppers-grid">
           <p style="color:#888;">Chargement...</p>
@@ -193,14 +193,14 @@
           <a href="products.html?id=${p.id}" class="product-card">
             <div class="product-img">
               ${p.image_url
-                ? `<img src="${p.image_url}" alt="${p.title || 'Produit'}" onerror="this.parentElement.innerHTML='???'">`
-                : '???'}
+                ? `<img src="${p.image_url}" alt="${p.title || 'Produit'}" onerror="this.parentElement.innerHTML='🛍️'">`
+                : '🛍️'}
             </div>
             <div class="product-info">
               <div class="product-title">${p.title || 'Produit sans titre'}</div>
-              ${p.price ? `<div class="product-price">${parseFloat(p.price).toFixed(2)}�</div>` : ''}
-              ${p.commission ? `<div class="product-commission">+ ${parseFloat(p.commission).toFixed(2)}� commission</div>` : ''}
-              <div class="product-meta">?? ${p.buyer.first_name} ${p.buyer.last_name}</div>
+              ${p.price ? `<div class="product-price">${parseFloat(p.price).toFixed(2)}€</div>` : ''}
+              ${p.commission ? `<div class="product-commission">+ ${parseFloat(p.commission).toFixed(2)}€ commission</div>` : ''}
+              <div class="product-meta">👤 ${p.buyer.first_name} ${p.buyer.last_name}</div>
               ${site ? `<div class="product-site">${site}</div>` : ''}
             </div>
           </a>`;
@@ -221,10 +221,10 @@
               <div class="shopper-avatar">${s.shopper.first_name[0]}</div>
               <div>
                 <div style="font-weight:600; font-size:0.9rem;">${s.shopper.first_name} ${s.shopper.last_name}</div>
-                <div style="font-size:0.8rem; color:#e63946;">?? ${s.city}, ${s.country}</div>
+                <div style="font-size:0.8rem; color:#e63946;">📍 ${s.city}, ${s.country}</div>
               </div>
             </div>
-            ${s.shopper.rating ? `<div style="font-size:0.8rem; color:#888;">? ${s.shopper.rating}</div>` : ''}
+            ${s.shopper.rating ? `<div style="font-size:0.8rem; color:#888;">⭐ ${s.shopper.rating}</div>` : ''}
             ${s.description ? `<div style="font-size:0.8rem; color:#666; margin-top:4px;">${s.description.substring(0, 60)}...</div>` : ''}
             <button class="btn btn-outline btn-sm" style="margin-top:0.75rem; width:100%;">Contacter</button>
           </div>
