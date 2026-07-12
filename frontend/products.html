@@ -60,6 +60,22 @@
     .detail-content { background: white; border-radius: 12px; width: 100%; max-width: 680px; max-height: 90vh; overflow-y: auto; margin: 1rem; }
     .detail-img { width: 100%; height: 280px; object-fit: cover; border-radius: 12px 12px 0 0; background: #f5f5f5; display: flex; align-items: center; justify-content: center; font-size: 5rem; }
     .detail-body { padding: 1.5rem; }
+  
+    /* HAMBURGER & MOBILE */
+    .hamburger-btn { display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:6px; margin-left:auto; }
+    .hamburger-btn span { display:block; width:22px; height:2px; background:#444; border-radius:2px; transition:all 0.3s; }
+    .hamburger-btn.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+    .hamburger-btn.open span:nth-child(2) { opacity:0; }
+    .hamburger-btn.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+    @media (max-width:768px) {
+      .hamburger-btn { display:flex; }
+      .navbar-nav { display:none; position:fixed; top:56px; left:0; right:0; bottom:0; background:rgba(0,0,0,0.45); z-index:99; flex-direction:row; align-items:flex-start; justify-content:flex-start; gap:0; padding:0; margin-left:0; }
+      .navbar-nav.open { display:flex; }
+      .nav-drawer { background:white; width:78%; max-width:280px; height:100%; padding:0.5rem 0 2rem; box-shadow:0 4px 12px rgba(0,0,0,0.15); display:flex; flex-direction:column; overflow-y:auto; }
+      .nav-link { display:flex; align-items:center; padding:15px 1.5rem; font-size:1rem; border-radius:0; width:100%; border-bottom:1px solid #f0f0f0; color:#444; white-space:normal; }
+      .nav-link:hover { background:#f5f5f5; color:#e63946; }
+      #nav-auth { padding:1rem 1.5rem; margin-top:auto; display:flex; flex-direction:column; gap:0.5rem; }
+    }
   </style>
 </head>
 <body>
