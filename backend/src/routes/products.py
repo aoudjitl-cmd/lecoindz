@@ -99,3 +99,23 @@ async def scrape_url(data: dict):
         raise HTTPException(status_code=400, detail="URL requise")
     info = await scrape_product(url)
     return info
+@router.delete("/{product_id}")
+def delete_product(product_id: int, current_user=Depends(get_current_user)):
+    from src.config.database import get_connection
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT user_id FROM LCD_PRODUCTS WHERE id = %s", (product_id,))
+    row = cursor.fetchone()
+    if not row:
+        cursor.close()
+        conn.close()
+        raise HTTPException(status_code=404, detail="Produit introuvable")
+    if row[0] != current_user["user_id"]:
+        cursor.close()
+        conn.close()
+        raise HTTPException(status_code=403, detail="Vous ne pouvez pas supprimer cette annonce")
+    cursor.execute("DELETE FROM LCD_PRODUCTS WHERE id = %s", (product_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return {"message": "Annonce supprimee"}
