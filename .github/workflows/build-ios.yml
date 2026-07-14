@@ -34,10 +34,6 @@ jobs:
         working-directory: frontend
         run: npx cap sync ios
 
-      - name: Install CocoaPods
-        working-directory: frontend/ios/App
-        run: pod install
-
       - name: Decode P12 certificate
         run: |
           echo "${{ secrets.IOS_P12_BASE64 }}" | base64 --decode > $RUNNER_TEMP/certificate.p12
@@ -103,7 +99,7 @@ jobs:
             <string>Apple Distribution</string>
             <key>provisioningProfiles</key>
             <dict>
-              <key>com.lecoindz.app</key>
+              <key>com.lecoindzapp.ios</key>
               <string>${{ steps.profile.outputs.name }}</string>
             </dict>
             <key>uploadSymbols</key>
