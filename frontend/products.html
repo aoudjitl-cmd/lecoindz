@@ -173,6 +173,16 @@
 
   <script src="js/api.js"></script>
   <script>
+    async function supprimerAnnonce(productId) {
+      if (!confirm("Supprimer cette annonce ?")) return;
+      try {
+        await apiCall("/products/" + productId, "DELETE");
+        document.getElementById("detail-overlay").style.display = "none";
+        showAlert("Annonce supprimee !", "success");
+        if (typeof searchProducts === "function") searchProducts();
+      } catch(e) { showAlert(e.message); }
+    }
+
     (async () => {
       await requireSubscription();
       updateNavbar();
@@ -268,7 +278,7 @@
                 </div>` : `
                 <div style="display:flex; gap:0.5rem; align-items:center;">
                   <span style="font-size:0.85rem; color:#888;">Votre annonce</span>
-                  <button class="btn btn-danger btn-sm" onclick="supprimerAnnonce(${p.id})" style="background:#dc2626; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600;">Supprimer</button>
+                  <button onclick="supprimerAnnonce(${p.id})" style="background:#dc2626; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600;">Supprimer</button>
                 </div>`}
             </div>
             <button onclick="document.getElementById('detail-overlay').style.display='none'" class="btn btn-outline btn-full" style="margin-top:1rem;">Fermer</button>
