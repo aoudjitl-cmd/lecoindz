@@ -1,0 +1,58 @@
+name: Convert Apple Certificates - LeCoinDZ
+
+on:
+  workflow_dispatch:
+    inputs:
+      p12_password:
+        description: 'Mot de passe pour le fichier .p12'
+        required: true
+        type: string
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify required files
+        run: |
+          if [ ! -f "apple-certs/lecoindz.key" ]; then
+            echo "::error::Fichier apple-certs/lecoindz.key manquant"
+            exit 1
+          fi
+          if [ ! -f "apple-certs/distribution.cer" ]; then
+            echo "::error::Fichier apple-certs/distribution.cer manquant"
+            exit 1
+          fi
+          if [ ! -f "apple-certs/LeCoinDZ_App_Store.mobileprovision" ]; then
+            echo "::error::Fichier apple-certs/LeCoinDZ_App_Store.mobileprovision manquant"
+            exit 1
+          fi
+
+      - name: Convert .cer to .pem
+        run: |
+          openssl x509 -in apple-certs/distribution.cer -inform DER -out distribution.pem -outform PEM
+
+      - name: Create .p12 file
+        run: |
+          openssl pkcs12 -export \
+            -inkey apple-certs/lecoindz.key \
+            -in distribution.pem \
+            -out lecoindz.p12 \
+            -password pass:${{ inputs.p12_password }} \
+            -legacy
+
+      - name: Convert files to base64
+        run: |
+          base64 -w 0 lecoindz.p12 > p12.base64
+          base64 -w 0 apple-certs/LeCoinDZ_App_Store.mobileprovision > provision.base64
+
+      - name: Upload converted files
+        uses: actions/upload-artifact@v4
+        with:
+          name: lecoindz-secrets-ready
+          path: |
+            p12.base64
+            provision.base64
+          retention-days: 1

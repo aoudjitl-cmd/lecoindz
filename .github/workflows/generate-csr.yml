@@ -1,0 +1,33 @@
+name: Generate CSR for Apple - LeCoinDZ
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate-csr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate private key and CSR
+        run: |
+          openssl genrsa -out lecoindz.key 2048
+          openssl req -new -key lecoindz.key -out lecoindz.csr \
+            -subj "/emailAddress=aoudjitl@gmail.com/CN=LeCoinDZ/C=FR"
+
+      - name: Convert key to base64
+        run: |
+          base64 -w 0 lecoindz.key > lecoindz.key.base64
+
+      - name: Display CSR content
+        run: |
+          echo "===== CSR Content ====="
+          cat lecoindz.csr
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lecoindz-csr-files
+          path: |
+            lecoindz.csr
+            lecoindz.key
+            lecoindz.key.base64
+          retention-days: 1
