@@ -3,7 +3,8 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from src.models.user import find_user_by_email, create_user, set_verification_token, verify_user_token
-from src.middleware.auth import hash_password, verify_password, create_token
+from src.middleware.auth import hash_password, verify_password, create_token, get_current_user
+from fastapi import Depends
 import resend
 import os
 import secrets
@@ -126,3 +127,52 @@ def login(data: LoginRequest):
             "last_name": user["last_name"]
         }
     }
+
+class ChangePasswordRequest(BaseModel):
+    password: str
+
+@router.patch("/change-password")
+def change_password(data: ChangePasswordRequest, current_user=Depends(get_current_user)):
+    if len(data.password) < 6:
+        raise HTTPException(status_code=400, detail="Le mot de passe doit contenir au moins 6 caracteres")
+    from src.config.database import get_connection
+    hashed = hash_password(data.password)
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE LCD_USERS SET password = %s WHERE id = %s", (hashed, current_user["user_id"]))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return {"message": "Mot de passe mis a jour"}
+
+@router.delete("/delete-account")
+def delete_account(current_user=Depends(get_current_user)):
+    from src.config.database import get_connection
+    user_id = current_user["user_id"]
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("DELETE FROM LCD_REVIEWS WHERE reviewer_id = %s OR reviewed_id = %s", (user_id, user_id))
+        cursor.execute("SELECT id FROM LCD_CONVERSATIONS WHERE user1_id = %s OR user2_id = %s", (user_id, user_id))
+        conv_ids = [r[0] for r in cursor.fetchall()]
+        if conv_ids:
+            placeholders = ",".join(["%s"] * len(conv_ids))
+            cursor.execute(f"DELETE FROM LCD_DIRECT_MESSAGES WHERE conversation_id IN ({placeholders})", conv_ids)
+        cursor.execute("DELETE FROM LCD_CONVERSATIONS WHERE user1_id = %s OR user2_id = %s", (user_id, user_id))
+        cursor.execute("SELECT id FROM LCD_ORDERS WHERE buyer_id = %s OR shopper_id = %s", (user_id, user_id))
+        order_ids = [r[0] for r in cursor.fetchall()]
+        if order_ids:
+            placeholders = ",".join(["%s"] * len(order_ids))
+            cursor.execute(f"DELETE FROM LCD_MESSAGES WHERE order_id IN ({placeholders})", order_ids)
+            cursor.execute(f"DELETE FROM LCD_ORDERS WHERE id IN ({placeholders})", order_ids)
+        cursor.execute("DELETE FROM LCD_PRODUCTS WHERE user_id = %s", (user_id,))
+        cursor.execute("DELETE FROM LCD_SHOPPERS WHERE user_id = %s", (user_id,))
+        cursor.execute("DELETE FROM LCD_USERS WHERE id = %s", (user_id,))
+        conn.commit()
+        return {"message": "Compte supprime"}
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        conn.close()
