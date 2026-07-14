@@ -36,7 +36,7 @@ def create_user(email, password, first_name, last_name,
            cgu_accepted_at, cgu_version, is_verified, subscription_status,
            trial_end)
            VALUES (%s, %s, %s, %s, %s, %s, %s, 0, 'TRIAL',
-           DATE_ADD(CURDATE(), INTERVAL 30 DAY))""",
+           DATE_ADD(CURDATE(), INTERVAL 1 YEAR))""",
         (email, password, first_name, last_name, phone, cgu_dt, cgu_version)
     )
     conn.commit()

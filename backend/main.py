@@ -198,3 +198,16 @@ def set_admin():
     cursor.close()
     conn.close()
     return {"updated": affected}
+    
+    
+@app.get("/admin/extend-trials")
+def extend_trials():
+    from src.config.database import get_connection
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE LCD_USERS SET trial_end = DATE_ADD(CURDATE(), INTERVAL 1 YEAR) WHERE subscription_status = 'TRIAL'")
+    conn.commit()
+    affected = cursor.rowcount
+    cursor.close()
+    conn.close()
+    return {"updated": affected}
