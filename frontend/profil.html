@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeCoinDZ — Mon profil</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; }
+    .navbar { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 0 1.5rem; display: flex; align-items: center; gap: 1rem; height: 56px; position: sticky; top: 0; z-index: 100; }
+    .navbar-brand { font-size: 1.4rem; font-weight: 800; color: #e63946; text-decoration: none; }
+    .navbar-brand span { color: #1a1a1a; }
+    .navbar-nav { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
+    .nav-link { color: #444; text-decoration: none; font-size: 0.875rem; padding: 6px 10px; border-radius: 6px; }
+    .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.875rem; font-weight: 600; text-decoration: none; display: inline-block; }
+    .btn-primary { background: #e63946; color: white; }
+    .btn-primary:hover { background: #c1121f; }
+    .btn-outline { background: white; border: 1.5px solid #e0e0e0; color: #444; }
+    .btn-outline:hover { border-color: #e63946; color: #e63946; }
+    .btn-danger { background: #dc2626; color: white; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+    .btn-full { width: 100%; }
+    .container { max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
+    .card { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .card-title { font-size: 1rem; font-weight: 700; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid #f0f0f0; }
+    .avatar { width: 72px; height: 72px; border-radius: 50%; background: #e63946; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.8rem; margin: 0 auto 1rem; }
+    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f5f5f5; font-size: 0.9rem; }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: #888; font-size: 0.85rem; }
+    .info-value { font-weight: 500; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.85rem; color: #444; margin-bottom: 4px; font-weight: 500; }
+    .form-group input { width: 100%; padding: 10px 12px; border: 1.5px solid #e0e0e0; border-radius: 6px; font-size: 0.875rem; outline: none; }
+    .form-group input:focus { border-color: #e63946; }
+    .alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 1rem; font-size: 0.875rem; }
+    .alert-error { background: #fff5f5; color: #c1121f; border: 1px solid #fca5a5; }
+    .alert-success { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
+    .danger-zone { border: 1.5px solid #fca5a5; border-radius: 8px; padding: 1.5rem; background: #fff5f5; }
+    .danger-title { font-size: 1rem; font-weight: 700; color: #dc2626; margin-bottom: 0.5rem; }
+    .danger-desc { font-size: 0.875rem; color: #666; margin-bottom: 1rem; }
+    /* HAMBURGER */
+    .hamburger-btn { display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:6px; margin-left:auto; }
+    .hamburger-btn span { display:block; width:22px; height:2px; background:#444; border-radius:2px; transition:all 0.3s; }
+    .hamburger-btn.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+    .hamburger-btn.open span:nth-child(2) { opacity:0; }
+    .hamburger-btn.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+    @media (max-width:768px) {
+      .hamburger-btn { display:flex; }
+      .navbar-nav { display:none; position:fixed; top:56px; left:0; right:0; bottom:0; background:rgba(0,0,0,0.45); z-index:99; flex-direction:row; align-items:flex-start; justify-content:flex-start; gap:0; padding:0; margin-left:0; }
+      .navbar-nav.open { display:flex; }
+      .nav-drawer { background:white; width:78%; max-width:280px; height:100%; padding:0.5rem 0 2rem; box-shadow:0 4px 12px rgba(0,0,0,0.15); display:flex; flex-direction:column; overflow-y:auto; }
+      .nav-link { display:flex; align-items:center; padding:15px 1.5rem; font-size:1rem; border-radius:0; width:100%; border-bottom:1px solid #f0f0f0; color:#444; white-space:normal; }
+      .nav-link:hover { background:#f5f5f5; color:#e63946; }
+      #nav-auth { padding:1rem 1.5rem; margin-top:auto; display:flex; flex-direction:column; gap:0.5rem; }
+    }
+
+    /* MODAL */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center; }
+    .modal { background:white; border-radius:12px; padding:1.5rem; width:100%; max-width:400px; margin:1rem; text-align:center; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand">LeCoin<span>DZ</span></a>
+    <div class="navbar-nav">
+      <a href="dashboard.html" class="nav-link">📋 Dashboard</a>
+      <a href="products.html" class="nav-link">📦 Annonces</a>
+      <a href="shoppers.html" class="nav-link">🛍️ Shoppers</a>
+      <a href="conversations.html" class="nav-link" id="nav-messages">💬 Messages</a>
+      <div id="nav-auth"></div>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <div id="alert-container"></div>
+
+    <!-- INFOS PROFIL -->
+    <div class="card">
+      <div id="avatar" class="avatar">?</div>
+      <div class="card-title" style="text-align:center;">Mon profil</div>
+
+      <div class="info-row">
+        <span class="info-label">Prenom</span>
+        <span class="info-value" id="info-firstname">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Nom</span>
+        <span class="info-value" id="info-lastname">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Email</span>
+        <span class="info-value" id="info-email">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Telephone</span>
+        <span class="info-value" id="info-phone">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Note</span>
+        <span class="info-value" id="info-rating">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Abonnement</span>
+        <span class="info-value" id="info-subscription">—</span>
+      </div>
+    </div>
+
+    <!-- CHANGER MOT DE PASSE -->
+    <div class="card">
+      <div class="card-title">Changer le mot de passe</div>
+      <div id="alert-password"></div>
+      <div class="form-group">
+        <label>Nouveau mot de passe</label>
+        <input type="password" id="new-password" placeholder="••••••••">
+      </div>
+      <div class="form-group">
+        <label>Confirmer le mot de passe</label>
+        <input type="password" id="confirm-password" placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary btn-full" onclick="changerMotDePasse()">Mettre a jour</button>
+    </div>
+
+    <!-- ZONE DANGER -->
+    <div class="danger-zone">
+      <div class="danger-title">Zone dangereuse</div>
+      <div class="danger-desc">
+        La suppression de votre compte est irreversible. Toutes vos annonces, commandes et messages seront definitivement supprimes.
+      </div>
+      <button class="btn btn-danger btn-full" onclick="ouvrirSuppressionCompte()">Supprimer mon compte</button>
+    </div>
+
+  </div>
+
+  <!-- MODAL CONFIRMATION SUPPRESSION -->
+  <div class="modal-overlay" id="delete-overlay">
+    <div class="modal">
+      <div style="font-size:3rem; margin-bottom:1rem;">⚠️</div>
+      <h2 style="margin-bottom:0.5rem;">Supprimer votre compte ?</h2>
+      <p style="color:#666; font-size:0.875rem; margin-bottom:1rem;">
+        Cette action est irreversible. Toutes vos donnees seront supprimees.
+      </p>
+      <div class="form-group" style="text-align:left;">
+        <label>Tapez <strong>SUPPRIMER</strong> pour confirmer</label>
+        <input type="text" id="confirm-delete-text" placeholder="SUPPRIMER" style="width:100%; padding:10px 12px; border:1.5px solid #e0e0e0; border-radius:6px; font-size:0.875rem; outline:none; margin-top:4px;">
+      </div>
+      <div id="alert-delete"></div>
+      <div style="display:flex; gap:1rem; margin-top:1rem;">
+        <button class="btn btn-outline btn-full" onclick="fermerSuppression()">Annuler</button>
+        <button class="btn btn-danger btn-full" onclick="supprimerCompte()">Supprimer definitivement</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    (async () => {
+      await requireSubscription();
+      updateNavbar();
+
+      const user = Auth.getUser();
+      if (!user) { window.location.href = "login.html"; return; }
+
+      // Afficher les infos
+      document.getElementById("avatar").textContent = user.first_name[0].toUpperCase();
+      document.getElementById("info-firstname").textContent = user.first_name;
+      document.getElementById("info-lastname").textContent = user.last_name;
+      document.getElementById("info-email").textContent = user.email;
+
+      // Charger les infos supplémentaires depuis le backend
+      try {
+        const data = await SubscriptionsAPI.getStatus();
+        const status = {
+          "TRIAL": "Essai gratuit",
+          "ACTIVE": "Actif",
+          "CANCELLED": "Annule"
+        }[data.subscription_status] || data.subscription_status;
+        document.getElementById("info-subscription").textContent = status;
+      } catch(e) {}
+
+    })();
+
+    async function changerMotDePasse() {
+      const newPass = document.getElementById("new-password").value;
+      const confirmPass = document.getElementById("confirm-password").value;
+
+      if (!newPass || newPass.length < 6) {
+        showAlert("Le mot de passe doit contenir au moins 6 caracteres.", "error", "alert-password");
+        return;
+      }
+      if (newPass !== confirmPass) {
+        showAlert("Les mots de passe ne correspondent pas.", "error", "alert-password");
+        return;
+      }
+
+      try {
+        await apiCall("/auth/change-password", "PATCH", { password: newPass });
+        showAlert("Mot de passe mis a jour !", "success", "alert-password");
+        document.getElementById("new-password").value = "";
+        document.getElementById("confirm-password").value = "";
+      } catch(e) {
+        showAlert(e.message, "error", "alert-password");
+      }
+    }
+
+    function ouvrirSuppressionCompte() {
+      document.getElementById("confirm-delete-text").value = "";
+      document.getElementById("delete-overlay").style.display = "flex";
+    }
+
+    function fermerSuppression() {
+      document.getElementById("delete-overlay").style.display = "none";
+    }
+
+    async function supprimerCompte() {
+      const texte = document.getElementById("confirm-delete-text").value;
+      if (texte !== "SUPPRIMER") {
+        showAlert("Tapez exactement SUPPRIMER pour confirmer.", "error", "alert-delete");
+        return;
+      }
+      try {
+        await apiCall("/auth/delete-account", "DELETE");
+        Auth.logout();
+      } catch(e) {
+        showAlert(e.message, "error", "alert-delete");
+      }
+    }
+  </script>
+  <script src="js/hamburger.js"></script>
+</body>
+</html>

@@ -141,7 +141,7 @@ async function updateNavbar() {
   if (!navAuth) return;
   if (user) {
     navAuth.innerHTML = `
-      <a href="dashboard.html" class="nav-link"><span>👤</span> <span>${user.first_name}</span></a>
+      <a href="profil.html" class="nav-link"><span>👤</span> <span>${user.first_name}</span></a>
       <button class="btn btn-outline btn-sm" onclick="Auth.logout()">Deconnexion</button>
     `;
   } else {
